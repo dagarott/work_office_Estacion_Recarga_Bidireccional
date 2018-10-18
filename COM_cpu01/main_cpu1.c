@@ -31,9 +31,6 @@
 
 /* USER CODE END Includes */
 //#define ISR_ENABLE
-uint16_t CANMsg[10];
-uint16_t *ptrCANMsg;
-uint16_t status = 0;
 
 /*
  *
@@ -46,9 +43,16 @@ void main(void)
     Hablitar_ISR();
 #endif
 
+    uint16_t status = 0;
     OD_Index = Vo_Chademo; //CAN command array Index. Commands present in Diccionario_CANOpen.c file
+    Init_CANOpenMsgFIFO();
     status = Set_CANOpenMsg_To_Tx(OD_Index);
-
+    OD_Index = Io_Chademo; //CAN command array Index. Commands present in Diccionario_CANOpen.c file
+    status = Set_CANOpenMsg_To_Tx(OD_Index);
+    OD_Index = TempPos_Chademo; //CAN command array Index. Commands present in Diccionario_CANOpen.c file
+    status = Set_CANOpenMsg_To_Tx(OD_Index);
+    OD_Index = TempNeg_Chademo; //CAN command array Index. Commands present in Diccionario_CANOpen.c file
+    status = Set_CANOpenMsg_To_Tx(OD_Index);
     for (;;)
     {
         //Chademo ();
