@@ -57,6 +57,7 @@ uint16_t Set_CANOpenMsg_To_Tx(enum Indice_Diccionario_TPO Idx)
     uint32_t tmp = 0;
     uint16_t CANMsg[10];
     uint16_t *ptrMsg;
+    sEstadoFIFO status= PILA_OK;
 
     memset(CANMsg, 0x00, 10); //Set array to zero for first iteration
 
@@ -82,7 +83,9 @@ uint16_t Set_CANOpenMsg_To_Tx(enum Indice_Diccionario_TPO Idx)
     
     memcpy((void *)(PowerSupplyMsgTX.New_Datos), (void *)(ptrMsg), 9);  //Message in correct format
                                                                         //stored in one item of FIFO struct
-    Encolar_FIFO(&PowerSupplyMsgTX);    //Finally CAN message is queued on the stack
+    status=Encolar_FIFO(&PowerSupplyMsgTX);    //Finally CAN message is queued on the stack
+
+    if(status == PILA_LLENA) return(0x00);
 
     memset(CANMsg, 0x00, 10);   //Reset array to zero for the next time
 

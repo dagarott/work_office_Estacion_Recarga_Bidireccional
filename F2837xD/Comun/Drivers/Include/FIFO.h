@@ -71,7 +71,7 @@ typedef struct  sFIFO
 } FIFO;
 
 sEstadoFIFO Encolar_FIFO    (FIFO *fifo);
-void Desencolar_FIFO       (FIFO *fifo);
+sEstadoFIFO Desencolar_FIFO       (FIFO *fifo);
 void Init_FIFO             (FIFO *fifo, uint16_t NumWords, uint16_t NumMsg);
 
 #endif /* DRIVERS_INCLUDE_FIFO_H_ */
