@@ -43,9 +43,12 @@ void main(void)
     Hablitar_ISR();
 #endif
 
+    Config_CANB (500, 1); //500bit/s
+    
     uint16_t status = 0;
-    OD_Index = Vo_Chademo; //CAN command array Index. Commands present in Diccionario_CANOpen.c file
+    
     Init_CANOpenMsgFIFO();
+    OD_Index = Vo_Chademo; //CAN command array Index. Commands present in Diccionario_CANOpen.c file
     status = Set_CANOpenMsg_To_Tx(OD_Index);
     OD_Index = Io_Chademo; //CAN command array Index. Commands present in Diccionario_CANOpen.c file
     status = Set_CANOpenMsg_To_Tx(OD_Index);
@@ -53,6 +56,7 @@ void main(void)
     status = Set_CANOpenMsg_To_Tx(OD_Index);
     OD_Index = TempNeg_Chademo; //CAN command array Index. Commands present in Diccionario_CANOpen.c file
     status = Set_CANOpenMsg_To_Tx(OD_Index);
+    Transmit_CANOPenMsg();
     for (;;)
     {
         //Chademo ();

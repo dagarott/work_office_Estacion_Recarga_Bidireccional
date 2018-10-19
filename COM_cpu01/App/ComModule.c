@@ -66,7 +66,7 @@ uint16_t Set_CANOpenMsg_To_Tx(enum Indice_Diccionario_TPO Idx)
     if (ptrMsg == NULL) //For sanity, checking pointer
         return (0x00);  //NULL pointer. Error
 
-    *(ptrMsg++) = PS_NODE_ID;           //0x630(default from manufacturer)
+    *(ptrMsg++) = PS_NODE_ID;                                         //0x630(default from manufacturer)
     *(ptrMsg++) = Diccionario_CanOpen[Idx].Modo_Acceso;               //Command Byte, Read or Write operation 
     *(ptrMsg++) = (uint16_t)((Diccionario_CanOpen[Idx].ID) & 0x00FF); //Object Dictionary Index
     *(ptrMsg++) = (uint16_t)((Diccionario_CanOpen[Idx].ID) >> 8);     //Stored as little endian
@@ -98,7 +98,7 @@ uint16_t Transmit_CANOPenMsg(void)
 {
     sEstadoFIFO status = PILA_OK;
 
-    if ((status = Desencolar_FIFO(&PowerSupplyMsgTX)) == PILA_OK) //Are there messages to send?
+    while ((status = Desencolar_FIFO(&PowerSupplyMsgTX)) == PILA_OK) //Are there messages to send?
     {     
         sTXCANOpenMsg.ui32MsgID = *(PowerSupplyMsgTX.Datos_Recibidos++);    //Node_ID , default 0x630
         sTXCANOpenMsg.ui32MsgIDMask = 0;
@@ -107,7 +107,7 @@ uint16_t Transmit_CANOPenMsg(void)
         memcpy((void *)sTXCANOpenMsg.pucMsgData, (void *)PowerSupplyMsgTX.Datos_Recibidos, MSG_DATA_LENGTH);
 
         CANMessageSet(CANB_BASE, 1, &sTXCANOpenMsg, MSG_OBJ_TYPE_TX);
-       
+        DELAY_US(1000);
     }
      return(status);
 }
