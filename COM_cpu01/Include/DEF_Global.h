@@ -18,7 +18,6 @@
 //
 typedef enum { FALSE = 0, TRUE } BOOL;
 
-
 typedef union
     {
     uint32_t DATOS_32bits;

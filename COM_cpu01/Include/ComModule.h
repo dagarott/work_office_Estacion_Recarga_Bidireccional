@@ -23,7 +23,8 @@
 #include "FIFO.h"
 
 #define MSG_DATA_LENGTH  8
-#define NumMsg  8
+#define NumMsg  10 
+#define PS_NODE_ID 0x630    //Power Module 0        
 
 
 extern tCanMsg Diccionario_CanOpen[];

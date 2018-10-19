@@ -17,8 +17,8 @@
 /* Private variables ---------------------------------------------------------*/
 FIFO PowerSupplyMsgTX; //FIFO Tx defined for Power Supply
 FIFO PowerSupplyMsgRX; //FIFO Rx defined for Power Supply
-FIFO PCMsgRX; //FIFO Tx defined for Industrial PC
-FIFO PCMsgTX; //FIFO Rx defined for Industrial PC
+FIFO PCMsgRX;          //FIFO Tx defined for Industrial PC
+FIFO PCMsgTX;          //FIFO Rx defined for Industrial PC
 tCANMsgObject sTXCANOpenMsg;
 /* USER CODE END PV */
 
@@ -33,15 +33,15 @@ enum Indice_Diccionario_TPO OD_Index = FIN_Diccionario;
  */
 void Init_CANOpenMsgFIFO(void)
 {
-    
-    Init_FIFO (&PowerSupplyMsgTX, MSG_DATA_LENGTH+1, NumMsg );  // NumWords = ID + MSG_DATA_LENGTH = 9  bytes
-                                                                // ID = 1 byte
-                                                                // MSG_DATA_LENGTH= 8 bytes
-                                                                // NumMsg = Depth of the stack
-    Init_FIFO (&PowerSupplyMsgRX, MSG_DATA_LENGTH+1, NumMsg );  // NumWords = ID + MSG_DATA_LENGTH = 9  bytes
-                                                                // ID = 1 byte
-                                                                // MSG_DATA_LENGTH= 8 bytes
-                                                                // NumMsg = Depth of the stack
+
+    Init_FIFO(&PowerSupplyMsgTX, MSG_DATA_LENGTH + 1, NumMsg); // NumWords = ID + MSG_DATA_LENGTH = 9  bytes
+                                                               // ID = 1 byte
+                                                               // MSG_DATA_LENGTH= 8 bytes
+                                                               // NumMsg = Depth of the stack
+    Init_FIFO(&PowerSupplyMsgRX, MSG_DATA_LENGTH + 1, NumMsg); // NumWords = ID + MSG_DATA_LENGTH = 9  bytes
+                                                               // ID = 1 byte
+                                                               // MSG_DATA_LENGTH= 8 bytes
+                                                               // NumMsg = Depth of the stack
 }
 /**
  * @brief  Build a message in the correct CANOpen Protocol way and stack it in FIFO,
@@ -57,62 +57,53 @@ uint16_t Set_CANOpenMsg_To_Tx(enum Indice_Diccionario_TPO Idx)
     uint32_t tmp = 0;
     uint16_t CANMsg[10];
     uint16_t *ptrMsg;
-    sEstadoFIFO status= PILA_OK;
+    sEstadoFIFO status = PILA_OK;
 
     memset(CANMsg, 0x00, 10); //Set array to zero for first iteration
 
-    ptrMsg=&CANMsg;
+    ptrMsg = &CANMsg;
 
     if (ptrMsg == NULL) //For sanity, checking pointer
-        return (0x00); //NULL pointer. Error
+        return (0x00);  //NULL pointer. Error
 
-    *(ptrMsg++) = Diccionario_CanOpen[Idx].Modo_Acceso;
-    *(ptrMsg++) = (uint16_t) ((Diccionario_CanOpen[Idx].ID) & 0x00FF); //Object Dictionary Index
-    *(ptrMsg++) = (uint16_t) ((Diccionario_CanOpen[Idx].ID) >> 8); //Stored as little endian
-    *(ptrMsg++)=((Diccionario_CanOpen[Idx].SubIndice)); //Stored SunIndex
+    *(ptrMsg++) = PS_NODE_ID;           //0x630(default from manufacturer)
+    *(ptrMsg++) = Diccionario_CanOpen[Idx].Modo_Acceso;               //Command Byte, Read or Write operation 
+    *(ptrMsg++) = (uint16_t)((Diccionario_CanOpen[Idx].ID) & 0x00FF); //Object Dictionary Index
+    *(ptrMsg++) = (uint16_t)((Diccionario_CanOpen[Idx].ID) >> 8);     //Stored as little endian
+    *(ptrMsg++) = ((Diccionario_CanOpen[Idx].SubIndice));             //Stored SunIndex
     tmp = Diccionario_CanOpen[Idx].Buf;
-    *(ptrMsg++) = (uint16_t) (tmp & 0x00FF);   //Buffer Data.Stored as little endian
+    *(ptrMsg++) = (uint16_t)(tmp & 0x00FF); //Buffer Data.Stored as little endian
     tmp = tmp >> 8;
-    *(ptrMsg++) = (uint16_t) (tmp & 0x00FF);   //Buffer Data. Stored as little endian
+    *(ptrMsg++) = (uint16_t)(tmp & 0x00FF); //Buffer Data. Stored as little endian
     tmp = tmp >> 8;
-    *(ptrMsg++) = (uint16_t) (tmp & 0x00FF);   //Buffer Data. Stored as little endian
+    *(ptrMsg++) = (uint16_t)(tmp & 0x00FF); //Buffer Data. Stored as little endian
     tmp = tmp >> 8;
-    *(ptrMsg++) = (uint16_t) (tmp & 0x00FF);   //Buffer Data. Stored as little endian
+    *(ptrMsg++) = (uint16_t)(tmp & 0x00FF); //Buffer Data. Stored as little endian
 
-    ptrMsg=&CANMsg;
-    
-    memcpy((void *)(PowerSupplyMsgTX.New_Datos), (void *)(ptrMsg), 9);  //Message in correct format
-                                                                        //stored in one item of FIFO struct
-    status=Encolar_FIFO(&PowerSupplyMsgTX);    //Finally CAN message is queued on the stack
+    ptrMsg = &CANMsg;
 
-    if(status == PILA_LLENA) return(0x00);
+    memcpy((void *)(PowerSupplyMsgTX.New_Datos), (void *)(ptrMsg), MSG_DATA_LENGTH+1); //Message in correct format
+                                                                       //stored in one item of FIFO struct
+    status = Encolar_FIFO(&PowerSupplyMsgTX);                          //Finally CAN message is queued on the stack
 
-    memset(CANMsg, 0x00, 10);   //Reset array to zero for the next time
+    if (status == PILA_LLENA)
+        return (0x00);
 
-    return(0x01); //All OK
+    memset(CANMsg, 0x00, 10); //Reset array to zero for the next time
+
+    return (0x01); //All OK
 }
 
 uint16_t Transmit_CANOPenMsg(void)
 {
-    Desencolar_FIFO(&PowerSupplyMsgTX);
+    if (Desencolar_FIFO(&PowerSupplyMsgTX) == PILA_OK) //Are there messages to send?
+    {     
+        sTXCANOpenMsg.ui32MsgID = *(PowerSupplyMsgTX.Datos_Recibidos++);    //Node_ID , default 0x630
+        sTXCANOpenMsg.ui32MsgIDMask = 0;
+        sTXCANOpenMsg.ui32Flags = 0;
+        sTXCANOpenMsg.ui32MsgLen = MSG_DATA_LENGTH;
+        memcpy((void *)sTXCANOpenMsg.pucMsgData, (void *)PowerSupplyMsgTX.Datos_Recibidos, MSG_DATA_LENGTH);
 
-    sTXCANOpenMsg.ui32MsgID =*(PowerSupplyMsgTX.Datos_Recibidos++);
-    sTXCANOpenMsg.ui32MsgIDMask = 0;
-    sTXCANOpenMsg.ui32Flags = 0;
-    sTXCANOpenMsg.ui32MsgLen = MSG_DATA_LENGTH;
-
-
-    sTXCANOpenMsg.pucMsgData = PowerSupplyMsgTX.Datos_FIFO;
-
-    CANMessageSet(CANB_BASE, 1, &sTXCANOpenMsg, MSG_OBJ_TYPE_TX);
-
+        CANMessageSet(CANB_BASE, 1, &sTXCANOpenMsg, MSG_OBJ_TYPE_TX);
+    }
 }
-
-    
-
-
-
-
-
-
-
