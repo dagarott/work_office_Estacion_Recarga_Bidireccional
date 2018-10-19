@@ -89,12 +89,16 @@ uint16_t Set_CANOpenMsg_To_Tx(enum Indice_Diccionario_TPO Idx)
     return(0x01); //All OK
 }
 
-uint16_t Transmit_CANOPenMsg(uint16_t NodeID)
+uint16_t Transmit_CANOPenMsg(void)
 {
-    sTXCANOpenMsg.ui32MsgID =NodeID;
+    Desencolar_FIFO(&PowerSupplyMsgTX);
+
+    sTXCANOpenMsg.ui32MsgID =*(PowerSupplyMsgTX.Datos_Recibidos++);
     sTXCANOpenMsg.ui32MsgIDMask = 0;
     sTXCANOpenMsg.ui32Flags = 0;
     sTXCANOpenMsg.ui32MsgLen = MSG_DATA_LENGTH;
+
+
     sTXCANOpenMsg.pucMsgData = PowerSupplyMsgTX.Datos_FIFO;
 
     CANMessageSet(CANB_BASE, 1, &sTXCANOpenMsg, MSG_OBJ_TYPE_TX);

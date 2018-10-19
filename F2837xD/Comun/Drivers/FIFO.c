@@ -51,10 +51,12 @@ void Init_FIFO (FIFO *fifo, uint16_t NumWords, uint16_t NumMsg)
 \fn         void Encolar Trama
 \brief      Funcion que introduce una trama a la cola FIFO
 \param[in]  FIFOEstado -> Estructura de la cola FIFO
-\return     void
+\return     status of the FIFO
 ******************************************************************************/
-void Encolar_FIFO (FIFO *fifo)
+sEstadoFIFO Encolar_FIFO (FIFO *fifo)
 {
+  enum sEstadoFIFO status=PILA_OK;  //Reset value
+
   // Reset todos los punteros temporales
   fifo->Flags.all = 0x00;
 
@@ -132,6 +134,8 @@ void Encolar_FIFO (FIFO *fifo)
 
     else
        fifo->Estado_PILA = PILA_LLENA;
+
+       return(status);
 
 }// FIN Encolar_FIFO
 

@@ -70,7 +70,7 @@ typedef struct  sFIFO
     void (*Desencolar)();
 } FIFO;
 
-void Encolar_FIFO    (FIFO *fifo);
+sEstadoFIFO Encolar_FIFO    (FIFO *fifo);
 void Desencolar_FIFO       (FIFO *fifo);
 void Init_FIFO             (FIFO *fifo, uint16_t NumWords, uint16_t NumMsg);
 
