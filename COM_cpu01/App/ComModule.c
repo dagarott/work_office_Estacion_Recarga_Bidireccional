@@ -96,18 +96,25 @@ uint16_t Set_CANOpenMsg_To_Tx(enum Indice_Diccionario_TPO Idx)
 
 uint16_t Transmit_CANOPenMsg(void)
 {
-    sEstadoFIFO status = PILA_OK;
+    sEstadoFIFO status = PILA_OK; //Variable set to a default value
 
-    while ((status = Desencolar_FIFO(&PowerSupplyMsgTX)) == PILA_OK) //Are there messages to send?
-    {     
-        sTXCANOpenMsg.ui32MsgID = *(PowerSupplyMsgTX.Datos_Recibidos++);    //Node_ID , default 0x630
-        sTXCANOpenMsg.ui32MsgIDMask = 0;
-        sTXCANOpenMsg.ui32Flags = 0;
-        sTXCANOpenMsg.ui32MsgLen = MSG_DATA_LENGTH;
-        memcpy((void *)sTXCANOpenMsg.pucMsgData, (void *)PowerSupplyMsgTX.Datos_Recibidos, MSG_DATA_LENGTH);
-
-        CANMessageSet(CANB_BASE, 1, &sTXCANOpenMsg, MSG_OBJ_TYPE_TX);
-        DELAY_US(1000);
+    if(PowerSupplyMsgTX.Estado_PILA==PILA_OK) //Are there messages to send?
+    {
+        do
+        {     
+            status = Desencolar_FIFO(&PowerSupplyMsgTX);
+            //if((status == PILA_RESET) || (status == PILA_LLENA) || (status == PILA_VACIA)) //TODO Check these conditions
+            if((status == PILA_RESET) || (status == PILA_LLENA)) //TODO Check these conditions
+                return(0x00);
+            sTXCANOpenMsg.ui32MsgID = *(PowerSupplyMsgTX.Datos_Recibidos++);    //Node_ID , default 0x630
+            sTXCANOpenMsg.ui32MsgIDMask = 0;
+            sTXCANOpenMsg.ui32Flags = 0;
+            sTXCANOpenMsg.ui32MsgLen = MSG_DATA_LENGTH;
+            memcpy((void *)sTXCANOpenMsg.pucMsgData, (void *)PowerSupplyMsgTX.Datos_Recibidos, MSG_DATA_LENGTH);
+            CANMessageSet(CANB_BASE, 1, &sTXCANOpenMsg, MSG_OBJ_TYPE_TX);
+            DELAY_US(1000);
+        }while (PowerSupplyMsgTX.Msg_pendientes >= 0);
     }
-     return(status);
+   
+     return(0x01);
 }
