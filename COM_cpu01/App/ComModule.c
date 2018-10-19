@@ -96,7 +96,9 @@ uint16_t Set_CANOpenMsg_To_Tx(enum Indice_Diccionario_TPO Idx)
 
 uint16_t Transmit_CANOPenMsg(void)
 {
-    if (Desencolar_FIFO(&PowerSupplyMsgTX) == PILA_OK) //Are there messages to send?
+    sEstadoFIFO status = PILA_OK;
+
+    if ((status = Desencolar_FIFO(&PowerSupplyMsgTX)) == PILA_OK) //Are there messages to send?
     {     
         sTXCANOpenMsg.ui32MsgID = *(PowerSupplyMsgTX.Datos_Recibidos++);    //Node_ID , default 0x630
         sTXCANOpenMsg.ui32MsgIDMask = 0;
@@ -105,5 +107,7 @@ uint16_t Transmit_CANOPenMsg(void)
         memcpy((void *)sTXCANOpenMsg.pucMsgData, (void *)PowerSupplyMsgTX.Datos_Recibidos, MSG_DATA_LENGTH);
 
         CANMessageSet(CANB_BASE, 1, &sTXCANOpenMsg, MSG_OBJ_TYPE_TX);
+       
     }
+     return(status);
 }
