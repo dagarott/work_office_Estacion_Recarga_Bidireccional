@@ -57,6 +57,7 @@ void main(void)
     OD_Index = TempNeg_Chademo; //CAN command array Index. Commands present in Diccionario_CANOpen.c file
     status = Set_CANOpenMsg_To_Tx(OD_Index, &PowerSupplyMsgTX);
     Transmit_CANOPenMsg(PowerSupplyMsgTX);
+    Set_CANIntHandler();
     for (;;)
     {
         //Chademo ();

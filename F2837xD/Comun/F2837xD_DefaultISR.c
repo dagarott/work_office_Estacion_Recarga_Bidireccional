@@ -1770,7 +1770,6 @@ interrupt void CANB0_ISR(void)
     //
     // Insert ISR Code here
     //
-    CANB_ISR ++;
     //
     // To receive more interrupts from this PIE group,
     // acknowledge this interrupt.
