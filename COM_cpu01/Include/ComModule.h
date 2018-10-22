@@ -31,7 +31,7 @@ extern tCanMsg Diccionario_CanOpen[];
 extern enum Indice_Diccionario_TPO OD_Index;
 
 void Init_CANOpenMsgFIFO(void);
-uint16_t Set_CANOpenMsg_To_Tx(enum Indice_Diccionario_TPO Idx);
-uint16_t Transmit_CANOPenMsg(void);
+uint16_t Set_CANOpenMsg_To_Tx(enum Indice_Diccionario_TPO Idx, FIFO *ptr_MsgToTx);
+uint16_t Transmit_CANOPenMsg(FIFO MsgToTx);
 
 #endif /* COMMODULE_H_ */
