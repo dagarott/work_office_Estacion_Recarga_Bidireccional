@@ -114,7 +114,6 @@ SUBDIRS := \
 . \
 App \
 UFCharger/F2837xD/Comun/Drivers \
-UFCharger/F2837xD/Comun \
 UFCharger/F2837xD/Comun/common \
 UFCharger/F2837xD/Comun/driverlib \
 

@@ -73,7 +73,7 @@ void Init_Chademo ()
 //
 //  Iniciar CAN_B
 //
-    Config_CANB (500, 1);
+    Config_CANB (500);
 
 //
 //  Iniciar Buzones CAN

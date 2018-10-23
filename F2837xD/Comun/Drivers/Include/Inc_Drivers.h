@@ -31,8 +31,6 @@
 #define T_clk 100000000   //10 MHz
 
 
-#define CSS_Protocol true  //Enable/Disable use of COMBO CAN commmands
-
 //
 // Definicion posiciones de memoria
 //

@@ -8,7 +8,8 @@
 		"files.associations": {
 			"inc_drivers.h": "c",
 			"fifo.h": "c",
-			"config_can.h": "c"
+			"config_can.h": "c",
+			"def_global.h": "c"
 		}
 	}
 }

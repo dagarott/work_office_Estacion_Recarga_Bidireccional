@@ -23,7 +23,7 @@
 //
 // Included
 //
-#include "F28x_Project.h"     // Device Headerfile and Examples Include File
+#include "F28x_Project.h" // Device Headerfile and Examples Include File
 #include "Inc_Drivers.h"
 #include <stdint.h>
 #include <stdbool.h>
@@ -35,9 +35,9 @@
 //
 // Defines
 //
-#define MSG_DATA_LENGTH  8
-#define TX_MSG_OBJ_ID    1
-#define RX_MSG_OBJ_ID    2
+#define MSG_DATA_LENGTH 8
+#define TX_MSG_OBJ_ID 1
+#define RX_MSG_OBJ_ID 2
 
 //
 // Estructuras
@@ -68,80 +68,65 @@ tCANMsgObject sRXCANMessage2; */
 \return     void
 
 **************************************************************************/
-void Config_CANB (uint32_t BitRate, uint16_t ID)
+void Config_CANB(uint32_t BitRate)
 {
-//
-// Initialize the CAN controllers
-//
+    // Initialize the CAN controllers
     CANInit(CANB_BASE);
 
-//
-// Setup CAN to be clocked off the PLL output clock
-//
-    CANClkSourceSelect(CANB_BASE, 0);   // 500kHz CAN-Clock
+    // Setup CAN to be clocked off the PLL output clock
+    CANClkSourceSelect(CANB_BASE, 0); // 500kHz CAN-Clock
 
-//
-//               Num CAN | Frec de Reloj en Hz | BitRate en Bit/s
-// CANBitRateSet(ui32Base, ui32SourceClock     , ui32BitRate)
-//
-    CANBitRateSet(CANB_BASE, (uint32_t)T_clk, BitRate*1000);
+    //               Num CAN | Frec de Reloj en Hz | BitRate en Bit/s
+    // CANBitRateSet(ui32Base, ui32SourceClock     , ui32BitRate)
+    CANBitRateSet(CANB_BASE, (uint32_t)T_clk, BitRate * 1000);
 
-//
-// Enable interrupts on the CAN B peripheral.
-//
-    CANIntEnable(CANB_BASE,CAN_INT_MASTER); // | CAN_INT_ERROR | CAN_INT_STATUS);
+    // Enable interrupts on the CAN B peripheral.
+    CANIntEnable(CANB_BASE, CAN_INT_MASTER); // | CAN_INT_ERROR | CAN_INT_STATUS);
+
+    //DEBUG
+    // Step 3. Clear all interrupts and initialize PIE vector table: Disable CPU interrupts
+    // DINT;
+
+    // // Initialize the PIE control registers to their default state.
+    // InitPieCtrl();
+
+    // // Disable CPU interrupts and clear all CPU interrupt flags:
+    // IER = 0x0000;
+    // IFR = 0x0000;
+
+    // // Initialize the PIE vector table with pointers to the shell Interrupt Service Routines (ISR).
+    // InitPieVectTable();
+
+    // // Interrupts that are used in this example are re-mapped toISR functions found within this file.
+    // // Register interrupt handler in RAM vector table
+    // //EALLOW;
+    // //PieVectTable.CANA0_INT = CANIntHandler;
+    // //PieVectTable.CANA1_INT = CANInt1Handler;
+    // //EDIS;
+
+    // // Enable the CAN interrupt on the processor (PIE).
+    // PieCtrlRegs.PIEIER9.bit.INTx7 = 1;
+    // IER |= 0x0100; /* M_INT9 */
+    // EINT;
+    //DEBUG
 
     CANGlobalIntEnable(CANB_BASE, CAN_GLB_INT_CANINT0);
 
-    //
-    // Initialize the transmit message object used for sending CAN messages.
-    // Message Object Parameters:
-    //      Message Identifier: 0x5555
-    //      Message ID Mask: 0x0
-    //      Message Object Flags: None
-    //      Message Data Length: 4 Bytes
-    //      Message Transmit data: txMsgData
-    //
-    // sTXCANMessage.ui32MsgID = 0x5555;
-    // sTXCANMessage.ui32MsgIDMask = 0;
-    // sTXCANMessage.ui32Flags = 0;
-    // sTXCANMessage.ui32MsgLen = MSG_DATA_LENGTH;
-    // sTXCANMessage.pucMsgData = txMsgData;
-
-    //
-    // Initialize the receive message object used for receiving CAN messages.
-    // Message Object Parameters:
-    //      Message Identifier: 0x5555
-    //      Message ID Mask: 0x0
-    //      Message Object Flags: Receive Interrupt
-    //      Message Data Length: 4 Bytes
-    //      Message Receive data: rxMsgData
-    //
-    // sRXCANMessage.ui32MsgID = 0x100;
-    // sRXCANMessage.ui32MsgIDMask = 0xFFFFFFFF;
-    // sRXCANMessage.ui32Flags = MSG_OBJ_RX_INT_ENABLE  | MSG_OBJ_USE_ID_FILTER;
-    // sRXCANMessage.ui32MsgLen = MSG_DATA_LENGTH;
-    // sRXCANMessage.pucMsgData = rxMsgData;
-    // CANMessageSet(CANB_BASE, RX_MSG_OBJ_ID, &sRXCANMessage,
-    //               MSG_OBJ_TYPE_RX);
-//
-// Start CAN module A and B operations
-//
+    // Start CAN module A and B operations
     CANEnable(CANB_BASE);
 }
 // FIN Config_CANB
 
-void Transmitir_CANB ()
-{
-  
-}// FIN Transmitir CAN B
-
-void Recibir_CANB ()
+void Transmitir_CANB()
 {
 
+} // FIN Transmitir CAN B
+
+void Recibir_CANB()
+{
 }
 
-void Init_Buzones (tCANMsgObject CANBuzon, tMsgObjType TipoMsg, uint32_t NumBuzon)
+void Init_Buzones(tCANMsgObject CANBuzon, tMsgObjType TipoMsg, uint32_t NumBuzon)
 {
     CANMessageSet(CANB_BASE, NumBuzon, &CANBuzon, TipoMsg);
 }

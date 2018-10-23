@@ -23,11 +23,15 @@
 #include "inc/hw_can.h"
 #include "can.h"
 
+#include "ComModule.h"
+
 //
 // Variables globales
 //
 // Variable manejada por el Timer 0 para sincronizar los timeout
-uint32_t Tick, CANB_ISR;
+uint32_t Tick;
+extern volatile unsigned long g_bErrFlag; // A flag to indicate that some
+// error occurred.
 
 //
 // CPU Timer 1 Interrupt
@@ -42,9 +46,9 @@ interrupt void TIMER1_ISR(void)
     // Next two lines for debug only to halt the processor here
     // Remove after inserting ISR Code
     //
-    asm ("      ESTOP0");
-    for(;;);
-
+    asm("      ESTOP0");
+    for (;;)
+        ;
 }
 
 //
@@ -60,8 +64,9 @@ interrupt void TIMER2_ISR(void)
     // Next two lines for debug only to halt the processor here
     // Remove after inserting ISR Code
     //
-    asm ("      ESTOP0");
-    for(;;);
+    asm("      ESTOP0");
+    for (;;)
+        ;
 }
 
 //
@@ -77,8 +82,9 @@ interrupt void DATALOG_ISR(void)
     // Next two lines for debug only to halt the processor here
     // Remove after inserting ISR Code
     //
-    asm ("      ESTOP0");
-    for(;;);
+    asm("      ESTOP0");
+    for (;;)
+        ;
 }
 
 //
@@ -94,8 +100,9 @@ interrupt void RTOS_ISR(void)
     // Next two lines for debug only to halt the processor here
     // Remove after inserting ISR Code
     //
-    asm ("      ESTOP0");
-    for(;;);
+    asm("      ESTOP0");
+    for (;;)
+        ;
 }
 
 //
@@ -111,8 +118,9 @@ interrupt void EMU_ISR(void)
     // Next two lines for debug only to halt the processor here
     // Remove after inserting ISR Code
     //
-    asm ("      ESTOP0");
-    for(;;);
+    asm("      ESTOP0");
+    for (;;)
+        ;
 }
 
 //
@@ -128,8 +136,9 @@ interrupt void NMI_ISR(void)
     // Next two lines for debug only to halt the processor here
     // Remove after inserting ISR Code
     //
-    asm ("      ESTOP0");
-    for(;;);
+    asm("      ESTOP0");
+    for (;;)
+        ;
 }
 
 //
@@ -145,8 +154,9 @@ interrupt void ILLEGAL_ISR(void)
     // Next two lines for debug only to halt the processor here
     // Remove after inserting ISR Code
     //
-    asm ("      ESTOP0");
-    for(;;);
+    asm("      ESTOP0");
+    for (;;)
+        ;
 }
 
 //
@@ -162,8 +172,9 @@ interrupt void USER1_ISR(void)
     // Next two lines for debug only to halt the processor here
     // Remove after inserting ISR Code
     //
-    asm ("      ESTOP0");
-    for(;;);
+    asm("      ESTOP0");
+    for (;;)
+        ;
 }
 
 //
@@ -179,8 +190,9 @@ interrupt void USER2_ISR(void)
     // Next two lines for debug only to halt the processor here
     // Remove after inserting ISR Code
     //
-    asm ("      ESTOP0");
-    for(;;);
+    asm("      ESTOP0");
+    for (;;)
+        ;
 }
 
 //
@@ -196,8 +208,9 @@ interrupt void USER3_ISR(void)
     // Next two lines for debug only to halt the processor here
     // Remove after inserting ISR Code
     //
-    asm ("      ESTOP0");
-    for(;;);
+    asm("      ESTOP0");
+    for (;;)
+        ;
 }
 
 //
@@ -213,8 +226,9 @@ interrupt void USER4_ISR(void)
     // Next two lines for debug only to halt the processor here
     // Remove after inserting ISR Code
     //
-    asm ("      ESTOP0");
-    for(;;);
+    asm("      ESTOP0");
+    for (;;)
+        ;
 }
 
 //
@@ -230,8 +244,9 @@ interrupt void USER5_ISR(void)
     // Next two lines for debug only to halt the processor here
     // Remove after inserting ISR Code
     //
-    asm ("      ESTOP0");
-    for(;;);
+    asm("      ESTOP0");
+    for (;;)
+        ;
 }
 
 //
@@ -247,8 +262,9 @@ interrupt void USER6_ISR(void)
     // Next two lines for debug only to halt the processor here
     // Remove after inserting ISR Code
     //
-    asm ("      ESTOP0");
-    for(;;);
+    asm("      ESTOP0");
+    for (;;)
+        ;
 }
 
 //
@@ -264,8 +280,9 @@ interrupt void USER7_ISR(void)
     // Next two lines for debug only to halt the processor here
     // Remove after inserting ISR Code
     //
-    asm ("      ESTOP0");
-    for(;;);
+    asm("      ESTOP0");
+    for (;;)
+        ;
 }
 
 //
@@ -281,8 +298,9 @@ interrupt void USER8_ISR(void)
     // Next two lines for debug only to halt the processor here
     // Remove after inserting ISR Code
     //
-    asm ("      ESTOP0");
-    for(;;);
+    asm("      ESTOP0");
+    for (;;)
+        ;
 }
 
 //
@@ -298,8 +316,9 @@ interrupt void USER9_ISR(void)
     // Next two lines for debug only to halt the processor here
     // Remove after inserting ISR Code
     //
-    asm ("      ESTOP0");
-    for(;;);
+    asm("      ESTOP0");
+    for (;;)
+        ;
 }
 
 //
@@ -315,8 +334,9 @@ interrupt void USER10_ISR(void)
     // Next two lines for debug only to halt the processor here
     // Remove after inserting ISR Code
     //
-    asm ("      ESTOP0");
-    for(;;);
+    asm("      ESTOP0");
+    for (;;)
+        ;
 }
 
 //
@@ -332,8 +352,9 @@ interrupt void USER11_ISR(void)
     // Next two lines for debug only to halt the processor here
     // Remove after inserting ISR Code
     //
-    asm ("      ESTOP0");
-    for(;;);
+    asm("      ESTOP0");
+    for (;;)
+        ;
 }
 
 //
@@ -349,8 +370,9 @@ interrupt void USER12_ISR(void)
     // Next two lines for debug only to halt the processor here
     // Remove after inserting ISR Code
     //
-    asm ("      ESTOP0");
-    for(;;);
+    asm("      ESTOP0");
+    for (;;)
+        ;
 }
 
 //
@@ -372,8 +394,9 @@ interrupt void ADCA1_ISR(void)
     // Next two lines for debug only to halt the processor here
     // Remove after inserting ISR Code
     //
-    asm ("      ESTOP0");
-    for(;;);
+    asm("      ESTOP0");
+    for (;;)
+        ;
 }
 
 //
@@ -395,8 +418,9 @@ interrupt void ADCB1_ISR(void)
     // Next two lines for debug only to halt the processor here
     // Remove after inserting ISR Code
     //
-    asm ("      ESTOP0");
-    for(;;);
+    asm("      ESTOP0");
+    for (;;)
+        ;
 }
 
 //
@@ -418,8 +442,9 @@ interrupt void ADCC1_ISR(void)
     // Next two lines for debug only to halt the processor here
     // Remove after inserting ISR Code
     //
-    asm ("      ESTOP0");
-    for(;;);
+    asm("      ESTOP0");
+    for (;;)
+        ;
 }
 
 //
@@ -441,8 +466,9 @@ interrupt void XINT1_ISR(void)
     // Next two lines for debug only to halt the processor here
     // Remove after inserting ISR Code
     //
-    asm ("      ESTOP0");
-    for(;;);
+    asm("      ESTOP0");
+    for (;;)
+        ;
 }
 
 //
@@ -464,8 +490,9 @@ interrupt void XINT2_ISR(void)
     // Next two lines for debug only to halt the processor here
     // Remove after inserting ISR Code
     //
-    asm ("      ESTOP0");
-    for(;;);
+    asm("      ESTOP0");
+    for (;;)
+        ;
 }
 
 //
@@ -487,8 +514,9 @@ interrupt void ADCD1_ISR(void)
     // Next two lines for debug only to halt the processor here
     // Remove after inserting ISR Code
     //
-    asm ("      ESTOP0");
-    for(;;);
+    asm("      ESTOP0");
+    for (;;)
+        ;
 }
 
 //
@@ -511,8 +539,8 @@ interrupt void TIMER0_ISR(void)
     // Remove after inserting ISR Code
     //
     //asm ("      ESTOP0");
-   // for(;;);
-    Tick ++;
+    // for(;;);
+    Tick++;
 
     //
     // Acknowledge this __interrupt to receive more __interrupts from group 1
@@ -539,8 +567,9 @@ interrupt void WAKE_ISR(void)
     // Next two lines for debug only to halt the processor here
     // Remove after inserting ISR Code
     //
-    asm ("      ESTOP0");
-    for(;;);
+    asm("      ESTOP0");
+    for (;;)
+        ;
 }
 
 //
@@ -562,8 +591,9 @@ interrupt void EPWM1_TZ_ISR(void)
     // Next two lines for debug only to halt the processor here
     // Remove after inserting ISR Code
     //
-    asm ("      ESTOP0");
-    for(;;);
+    asm("      ESTOP0");
+    for (;;)
+        ;
 }
 
 //
@@ -585,8 +615,9 @@ interrupt void EPWM2_TZ_ISR(void)
     // Next two lines for debug only to halt the processor here
     // Remove after inserting ISR Code
     //
-    asm ("      ESTOP0");
-    for(;;);
+    asm("      ESTOP0");
+    for (;;)
+        ;
 }
 
 //
@@ -608,8 +639,9 @@ interrupt void EPWM3_TZ_ISR(void)
     // Next two lines for debug only to halt the processor here
     // Remove after inserting ISR Code
     //
-    asm ("      ESTOP0");
-    for(;;);
+    asm("      ESTOP0");
+    for (;;)
+        ;
 }
 
 //
@@ -631,8 +663,9 @@ interrupt void EPWM4_TZ_ISR(void)
     // Next two lines for debug only to halt the processor here
     // Remove after inserting ISR Code
     //
-    asm ("      ESTOP0");
-    for(;;);
+    asm("      ESTOP0");
+    for (;;)
+        ;
 }
 
 //
@@ -654,8 +687,9 @@ interrupt void EPWM5_TZ_ISR(void)
     // Next two lines for debug only to halt the processor here
     // Remove after inserting ISR Code
     //
-    asm ("      ESTOP0");
-    for(;;);
+    asm("      ESTOP0");
+    for (;;)
+        ;
 }
 
 //
@@ -677,8 +711,9 @@ interrupt void EPWM6_TZ_ISR(void)
     // Next two lines for debug only to halt the processor here
     // Remove after inserting ISR Code
     //
-    asm ("      ESTOP0");
-    for(;;);
+    asm("      ESTOP0");
+    for (;;)
+        ;
 }
 
 //
@@ -700,8 +735,9 @@ interrupt void EPWM7_TZ_ISR(void)
     // Next two lines for debug only to halt the processor here
     // Remove after inserting ISR Code
     //
-    asm ("      ESTOP0");
-    for(;;);
+    asm("      ESTOP0");
+    for (;;)
+        ;
 }
 
 //
@@ -723,8 +759,9 @@ interrupt void EPWM8_TZ_ISR(void)
     // Next two lines for debug only to halt the processor here
     // Remove after inserting ISR Code
     //
-    asm ("      ESTOP0");
-    for(;;);
+    asm("      ESTOP0");
+    for (;;)
+        ;
 }
 
 //
@@ -746,8 +783,9 @@ interrupt void EPWM1_ISR(void)
     // Next two lines for debug only to halt the processor here
     // Remove after inserting ISR Code
     //
-    asm ("      ESTOP0");
-    for(;;);
+    asm("      ESTOP0");
+    for (;;)
+        ;
 }
 
 //
@@ -769,8 +807,9 @@ interrupt void EPWM2_ISR(void)
     // Next two lines for debug only to halt the processor here
     // Remove after inserting ISR Code
     //
-    asm ("      ESTOP0");
-    for(;;);
+    asm("      ESTOP0");
+    for (;;)
+        ;
 }
 
 //
@@ -792,8 +831,9 @@ interrupt void EPWM3_ISR(void)
     // Next two lines for debug only to halt the processor here
     // Remove after inserting ISR Code
     //
-    asm ("      ESTOP0");
-    for(;;);
+    asm("      ESTOP0");
+    for (;;)
+        ;
 }
 
 //
@@ -815,8 +855,9 @@ interrupt void EPWM4_ISR(void)
     // Next two lines for debug only to halt the processor here
     // Remove after inserting ISR Code
     //
-    asm ("      ESTOP0");
-    for(;;);
+    asm("      ESTOP0");
+    for (;;)
+        ;
 }
 
 //
@@ -838,8 +879,9 @@ interrupt void EPWM5_ISR(void)
     // Next two lines for debug only to halt the processor here
     // Remove after inserting ISR Code
     //
-    asm ("      ESTOP0");
-    for(;;);
+    asm("      ESTOP0");
+    for (;;)
+        ;
 }
 
 //
@@ -861,8 +903,9 @@ interrupt void EPWM6_ISR(void)
     // Next two lines for debug only to halt the processor here
     // Remove after inserting ISR Code
     //
-    asm ("      ESTOP0");
-    for(;;);
+    asm("      ESTOP0");
+    for (;;)
+        ;
 }
 
 //
@@ -884,8 +927,9 @@ interrupt void EPWM7_ISR(void)
     // Next two lines for debug only to halt the processor here
     // Remove after inserting ISR Code
     //
-    asm ("      ESTOP0");
-    for(;;);
+    asm("      ESTOP0");
+    for (;;)
+        ;
 }
 
 //
@@ -907,8 +951,9 @@ interrupt void EPWM8_ISR(void)
     // Next two lines for debug only to halt the processor here
     // Remove after inserting ISR Code
     //
-    asm ("      ESTOP0");
-    for(;;);
+    asm("      ESTOP0");
+    for (;;)
+        ;
 }
 
 //
@@ -930,8 +975,9 @@ interrupt void ECAP1_ISR(void)
     // Next two lines for debug only to halt the processor here
     // Remove after inserting ISR Code
     //
-    asm ("      ESTOP0");
-    for(;;);
+    asm("      ESTOP0");
+    for (;;)
+        ;
 }
 
 //
@@ -953,8 +999,9 @@ interrupt void ECAP2_ISR(void)
     // Next two lines for debug only to halt the processor here
     // Remove after inserting ISR Code
     //
-    asm ("      ESTOP0");
-    for(;;);
+    asm("      ESTOP0");
+    for (;;)
+        ;
 }
 
 //
@@ -976,8 +1023,9 @@ interrupt void ECAP3_ISR(void)
     // Next two lines for debug only to halt the processor here
     // Remove after inserting ISR Code
     //
-    asm ("      ESTOP0");
-    for(;;);
+    asm("      ESTOP0");
+    for (;;)
+        ;
 }
 
 //
@@ -999,8 +1047,9 @@ interrupt void ECAP4_ISR(void)
     // Next two lines for debug only to halt the processor here
     // Remove after inserting ISR Code
     //
-    asm ("      ESTOP0");
-    for(;;);
+    asm("      ESTOP0");
+    for (;;)
+        ;
 }
 
 //
@@ -1022,8 +1071,9 @@ interrupt void ECAP5_ISR(void)
     // Next two lines for debug only to halt the processor here
     // Remove after inserting ISR Code
     //
-    asm ("      ESTOP0");
-    for(;;);
+    asm("      ESTOP0");
+    for (;;)
+        ;
 }
 
 //
@@ -1045,8 +1095,9 @@ interrupt void ECAP6_ISR(void)
     // Next two lines for debug only to halt the processor here
     // Remove after inserting ISR Code
     //
-    asm ("      ESTOP0");
-    for(;;);
+    asm("      ESTOP0");
+    for (;;)
+        ;
 }
 
 //
@@ -1068,8 +1119,9 @@ interrupt void EQEP1_ISR(void)
     // Next two lines for debug only to halt the processor here
     // Remove after inserting ISR Code
     //
-    asm ("      ESTOP0");
-    for(;;);
+    asm("      ESTOP0");
+    for (;;)
+        ;
 }
 
 //
@@ -1091,8 +1143,9 @@ interrupt void EQEP2_ISR(void)
     // Next two lines for debug only to halt the processor here
     // Remove after inserting ISR Code
     //
-    asm ("      ESTOP0");
-    for(;;);
+    asm("      ESTOP0");
+    for (;;)
+        ;
 }
 
 //
@@ -1114,8 +1167,9 @@ interrupt void EQEP3_ISR(void)
     // Next two lines for debug only to halt the processor here
     // Remove after inserting ISR Code
     //
-    asm ("      ESTOP0");
-    for(;;);
+    asm("      ESTOP0");
+    for (;;)
+        ;
 }
 
 //
@@ -1137,8 +1191,9 @@ interrupt void SPIA_RX_ISR(void)
     // Next two lines for debug only to halt the processor here
     // Remove after inserting ISR Code
     //
-    asm ("      ESTOP0");
-    for(;;);
+    asm("      ESTOP0");
+    for (;;)
+        ;
 }
 
 //
@@ -1160,8 +1215,9 @@ interrupt void SPIA_TX_ISR(void)
     // Next two lines for debug only to halt the processor here
     // Remove after inserting ISR Code
     //
-    asm ("      ESTOP0");
-    for(;;);
+    asm("      ESTOP0");
+    for (;;)
+        ;
 }
 
 //
@@ -1183,8 +1239,9 @@ interrupt void SPIB_RX_ISR(void)
     // Next two lines for debug only to halt the processor here
     // Remove after inserting ISR Code
     //
-    asm ("      ESTOP0");
-    for(;;);
+    asm("      ESTOP0");
+    for (;;)
+        ;
 }
 
 //
@@ -1206,8 +1263,9 @@ interrupt void SPIB_TX_ISR(void)
     // Next two lines for debug only to halt the processor here
     // Remove after inserting ISR Code
     //
-    asm ("      ESTOP0");
-    for(;;);
+    asm("      ESTOP0");
+    for (;;)
+        ;
 }
 
 //
@@ -1229,8 +1287,9 @@ interrupt void MCBSPA_RX_ISR(void)
     // Next two lines for debug only to halt the processor here
     // Remove after inserting ISR Code
     //
-    asm ("      ESTOP0");
-    for(;;);
+    asm("      ESTOP0");
+    for (;;)
+        ;
 }
 
 //
@@ -1252,8 +1311,9 @@ interrupt void MCBSPA_TX_ISR(void)
     // Next two lines for debug only to halt the processor here
     // Remove after inserting ISR Code
     //
-    asm ("      ESTOP0");
-    for(;;);
+    asm("      ESTOP0");
+    for (;;)
+        ;
 }
 
 //
@@ -1275,8 +1335,9 @@ interrupt void MCBSPB_RX_ISR(void)
     // Next two lines for debug only to halt the processor here
     // Remove after inserting ISR Code
     //
-    asm ("      ESTOP0");
-    for(;;);
+    asm("      ESTOP0");
+    for (;;)
+        ;
 }
 
 //
@@ -1298,8 +1359,9 @@ interrupt void MCBSPB_TX_ISR(void)
     // Next two lines for debug only to halt the processor here
     // Remove after inserting ISR Code
     //
-    asm ("      ESTOP0");
-    for(;;);
+    asm("      ESTOP0");
+    for (;;)
+        ;
 }
 
 //
@@ -1321,8 +1383,9 @@ interrupt void DMA_CH1_ISR(void)
     // Next two lines for debug only to halt the processor here
     // Remove after inserting ISR Code
     //
-    asm ("      ESTOP0");
-    for(;;);
+    asm("      ESTOP0");
+    for (;;)
+        ;
 }
 
 //
@@ -1344,8 +1407,9 @@ interrupt void DMA_CH2_ISR(void)
     // Next two lines for debug only to halt the processor here
     // Remove after inserting ISR Code
     //
-    asm ("      ESTOP0");
-    for(;;);
+    asm("      ESTOP0");
+    for (;;)
+        ;
 }
 
 //
@@ -1367,8 +1431,9 @@ interrupt void DMA_CH3_ISR(void)
     // Next two lines for debug only to halt the processor here
     // Remove after inserting ISR Code
     //
-    asm ("      ESTOP0");
-    for(;;);
+    asm("      ESTOP0");
+    for (;;)
+        ;
 }
 
 //
@@ -1390,8 +1455,9 @@ interrupt void DMA_CH4_ISR(void)
     // Next two lines for debug only to halt the processor here
     // Remove after inserting ISR Code
     //
-    asm ("      ESTOP0");
-    for(;;);
+    asm("      ESTOP0");
+    for (;;)
+        ;
 }
 
 //
@@ -1413,8 +1479,9 @@ interrupt void DMA_CH5_ISR(void)
     // Next two lines for debug only to halt the processor here
     // Remove after inserting ISR Code
     //
-    asm ("      ESTOP0");
-    for(;;);
+    asm("      ESTOP0");
+    for (;;)
+        ;
 }
 
 //
@@ -1436,8 +1503,9 @@ interrupt void DMA_CH6_ISR(void)
     // Next two lines for debug only to halt the processor here
     // Remove after inserting ISR Code
     //
-    asm ("      ESTOP0");
-    for(;;);
+    asm("      ESTOP0");
+    for (;;)
+        ;
 }
 
 //
@@ -1459,8 +1527,9 @@ interrupt void I2CA_ISR(void)
     // Next two lines for debug only to halt the processor here
     // Remove after inserting ISR Code
     //
-    asm ("      ESTOP0");
-    for(;;);
+    asm("      ESTOP0");
+    for (;;)
+        ;
 }
 
 //
@@ -1482,8 +1551,9 @@ interrupt void I2CA_FIFO_ISR(void)
     // Next two lines for debug only to halt the processor here
     // Remove after inserting ISR Code
     //
-    asm ("      ESTOP0");
-    for(;;);
+    asm("      ESTOP0");
+    for (;;)
+        ;
 }
 
 //
@@ -1505,8 +1575,9 @@ interrupt void I2CB_ISR(void)
     // Next two lines for debug only to halt the processor here
     // Remove after inserting ISR Code
     //
-    asm ("      ESTOP0");
-    for(;;);
+    asm("      ESTOP0");
+    for (;;)
+        ;
 }
 
 //
@@ -1528,8 +1599,9 @@ interrupt void I2CB_FIFO_ISR(void)
     // Next two lines for debug only to halt the processor here
     // Remove after inserting ISR Code
     //
-    asm ("      ESTOP0");
-    for(;;);
+    asm("      ESTOP0");
+    for (;;)
+        ;
 }
 
 //
@@ -1551,8 +1623,9 @@ interrupt void SCIC_RX_ISR(void)
     // Next two lines for debug only to halt the processor here
     // Remove after inserting ISR Code
     //
-    asm ("      ESTOP0");
-    for(;;);
+    asm("      ESTOP0");
+    for (;;)
+        ;
 }
 
 //
@@ -1574,8 +1647,9 @@ interrupt void SCIC_TX_ISR(void)
     // Next two lines for debug only to halt the processor here
     // Remove after inserting ISR Code
     //
-    asm ("      ESTOP0");
-    for(;;);
+    asm("      ESTOP0");
+    for (;;)
+        ;
 }
 
 //
@@ -1597,8 +1671,9 @@ interrupt void SCID_RX_ISR(void)
     // Next two lines for debug only to halt the processor here
     // Remove after inserting ISR Code
     //
-    asm ("      ESTOP0");
-    for(;;);
+    asm("      ESTOP0");
+    for (;;)
+        ;
 }
 
 //
@@ -1620,8 +1695,9 @@ interrupt void SCID_TX_ISR(void)
     // Next two lines for debug only to halt the processor here
     // Remove after inserting ISR Code
     //
-    asm ("      ESTOP0");
-    for(;;);
+    asm("      ESTOP0");
+    for (;;)
+        ;
 }
 
 //
@@ -1643,8 +1719,9 @@ interrupt void SCIA_RX_ISR(void)
     // Next two lines for debug only to halt the processor here
     // Remove after inserting ISR Code
     //
-    asm ("      ESTOP0");
-    for(;;);
+    asm("      ESTOP0");
+    for (;;)
+        ;
 }
 
 //
@@ -1666,8 +1743,9 @@ interrupt void SCIA_TX_ISR(void)
     // Next two lines for debug only to halt the processor here
     // Remove after inserting ISR Code
     //
-    asm ("      ESTOP0");
-    for(;;);
+    asm("      ESTOP0");
+    for (;;)
+        ;
 }
 
 //
@@ -1689,8 +1767,9 @@ interrupt void SCIB_RX_ISR(void)
     // Next two lines for debug only to halt the processor here
     // Remove after inserting ISR Code
     //
-    asm ("      ESTOP0");
-    for(;;);
+    asm("      ESTOP0");
+    for (;;)
+        ;
 }
 
 //
@@ -1712,8 +1791,9 @@ interrupt void SCIB_TX_ISR(void)
     // Next two lines for debug only to halt the processor here
     // Remove after inserting ISR Code
     //
-    asm ("      ESTOP0");
-    for(;;);
+    asm("      ESTOP0");
+    for (;;)
+        ;
 }
 
 //
@@ -1735,8 +1815,9 @@ interrupt void CANA0_ISR(void)
     // Next two lines for debug only to halt the processor here
     // Remove after inserting ISR Code
     //
-    asm ("      ESTOP0");
-    for(;;);
+    asm("      ESTOP0");
+    for (;;)
+        ;
 }
 
 //
@@ -1758,8 +1839,9 @@ interrupt void CANA1_ISR(void)
     // Next two lines for debug only to halt the processor here
     // Remove after inserting ISR Code
     //
-    asm ("      ESTOP0");
-    for(;;);
+    asm("      ESTOP0");
+    for (;;)
+        ;
 }
 
 //
@@ -1767,26 +1849,97 @@ interrupt void CANA1_ISR(void)
 //
 interrupt void CANB0_ISR(void)
 {
-    //
-    // Insert ISR Code here
-    //
-    //
-    // To receive more interrupts from this PIE group,
-    // acknowledge this interrupt.
-    CANIntClear(CANB_BASE, CAN_INT_MASTER);
-    CANGlobalIntClear(CANB_BASE, CAN_GLB_INT_CANINT0);
-    PieCtrlRegs.PIEACK.all = PIEACK_GROUP9;
-    // Forzamos a borrar todos los FLGs de CAN dado por otro buzon
-    EALLOW;
-    //CanbRegs.CAN_INT.all = 0x00;
-    CanbRegs.CAN_IPEN_21 = 0x00;
-    EDIS;
-    //
+    unsigned long ulStatus;
+    // Read the CAN interrupt status to find the cause of the interrupt
+    ulStatus = CANIntStatus(CANB_BASE, CAN_INT_STS_CAUSE);
 
+    // If the cause is a controller status interrupt, then get the status
+    if (ulStatus == CAN_INT_INT0ID_STATUS)
+    {
+        // Read the controller status.  This will return a field of status
+        // error bits that can indicate various errors.  Error processing
+        // is not done in this example for simplicity.  Refer to the
+        // API documentation for details about the error status bits.
+        // The act of reading this status will clear the interrupt.  If the
+        // CAN peripheral is not connected to a CAN bus with other CAN devices
+        // present, then errors will occur and will be indicated in the
+        // controller status.
+        ulStatus = CANStatusGet(CANB_BASE, CAN_STS_CONTROL);
+        //Check to see if an error occurred.
+        if (((ulStatus & ~(CAN_ES_TXOK | CAN_ES_RXOK)) != 7)
+                && ((ulStatus & ~(CAN_ES_TXOK | CAN_ES_RXOK)) != 0))
+        {
+            // Set a flag to indicate some errors may have occurred.
+            g_bErrFlag = 1;
+        }
+    }
+    // Check if the cause is message object 2, which what we are using for
+    // receiving messages.
+    else if (ulStatus == 2)
+    {
+        // Get the received message
+        CANMessageGet(CANB_BASE, CAN_OBJ_ID_PS, &sRXPowerSupply_CANOpenMsg,
+                      true);
+        // Getting to this point means that the RX interrupt occurred on
+        // message object 2, and the message RX is complete.  Clear the
+        // message object interrupt.
+        CANIntClear(CANB_BASE, CAN_OBJ_ID_PS);
+        // Since the message was sent, clear any error flags.
+        g_bErrFlag = 0;
+    }
+    else if (ulStatus == 3)
+    {
+        // Get the received message
+        CANMessageGet(CANB_BASE, CAN_OBJ_ID_ADC, &sRXADC_CANOpenMsg, true);
+        // Getting to this point means that the RX interrupt occurred on
+        // message object 2, and the message RX is complete.  Clear the
+        // message object interrupt.
+        CANIntClear(CANB_BASE, CAN_OBJ_ID_ADC);
+        // Since the message was sent, clear any error flags.
+        g_bErrFlag = 0;
+    }
+    // Otherwise, something unexpected caused the interrupt.  This should
+    // never happen.
+    else
+    {
+        // Spurious interrupt handling can go here.
+    }
+    // CAN_INT_MASTER == CAN_INT_IE0
     //
+    //The CANINT0/1 interrupt line remains active until INT0ID
+    //reaches value 0 (the cause of the interrupt is reset)
+    //or until IE0 is cleared.
+    CANIntClear(CANB_BASE, CAN_INT_MASTER);
+
+    //CAN_GLB_INT_EN == This register is used to enable the
+    //interrupt lines to the PIE
+    //
+    //Global Interrupt Enable for CANINT0
+    //0 CANINT0 does not generate interrupt to PIE
+    //1 CANINT0 generates interrupt to PIE if interrupt condition occurs
+    //Reset type: SYSRSn
+    CANGlobalIntClear(CANB_BASE, CAN_GLB_INT_CANINT0);
+
+    //PIEACK == Acknowledge Register
+    //
+    //When an interrupt propagates from the ePIE to a CPU interrupt
+    //line, the interrupt group's PIEACK bit is set.This prevents other
+    //interrupts in that group from propagating to the CPU while the first
+    //interrupt is handled. Writing a 1 to a PIEACK bit clears it and allows
+    //another interrupt from the corresponding group to propagate. ISRs for
+    //PIE interrupts should clear the group's PIEACK bit before returning
+    //from the interrupt.
+    PieCtrlRegs.PIEACK.all = PIEACK_GROUP9;
+
+    //EALLOW;
+    ////CanbRegs.CAN_INT.all = 0x00;
+    //The bits in this register indicate if an interrupt is pending
+    //for the corresponsding mailbox
+    //CanbRegs.CAN_IPEN_21 = 0x00;
+    //EDIS;
+
     // Next two lines for debug only to halt the processor here
     // Remove after inserting ISR Code
-    //
     //asm ("      ESTOP0");
     //for(;;);
 }
@@ -1810,8 +1963,9 @@ interrupt void CANB1_ISR(void)
     // Next two lines for debug only to halt the processor here
     // Remove after inserting ISR Code
     //
-    asm ("      ESTOP0");
-    for(;;);
+    asm("      ESTOP0");
+    for (;;)
+        ;
 }
 
 //
@@ -1833,8 +1987,9 @@ interrupt void ADCA_EVT_ISR(void)
     // Next two lines for debug only to halt the processor here
     // Remove after inserting ISR Code
     //
-    asm ("      ESTOP0");
-    for(;;);
+    asm("      ESTOP0");
+    for (;;)
+        ;
 }
 
 //
@@ -1856,8 +2011,9 @@ interrupt void ADCA2_ISR(void)
     // Next two lines for debug only to halt the processor here
     // Remove after inserting ISR Code
     //
-    asm ("      ESTOP0");
-    for(;;);
+    asm("      ESTOP0");
+    for (;;)
+        ;
 }
 
 //
@@ -1879,8 +2035,9 @@ interrupt void ADCA3_ISR(void)
     // Next two lines for debug only to halt the processor here
     // Remove after inserting ISR Code
     //
-    asm ("      ESTOP0");
-    for(;;);
+    asm("      ESTOP0");
+    for (;;)
+        ;
 }
 
 //
@@ -1902,8 +2059,9 @@ interrupt void ADCA4_ISR(void)
     // Next two lines for debug only to halt the processor here
     // Remove after inserting ISR Code
     //
-    asm ("      ESTOP0");
-    for(;;);
+    asm("      ESTOP0");
+    for (;;)
+        ;
 }
 
 //
@@ -1925,8 +2083,9 @@ interrupt void ADCB_EVT_ISR(void)
     // Next two lines for debug only to halt the processor here
     // Remove after inserting ISR Code
     //
-    asm ("      ESTOP0");
-    for(;;);
+    asm("      ESTOP0");
+    for (;;)
+        ;
 }
 
 //
@@ -1948,8 +2107,9 @@ interrupt void ADCB2_ISR(void)
     // Next two lines for debug only to halt the processor here
     // Remove after inserting ISR Code
     //
-    asm ("      ESTOP0");
-    for(;;);
+    asm("      ESTOP0");
+    for (;;)
+        ;
 }
 
 //
@@ -1971,8 +2131,9 @@ interrupt void ADCB3_ISR(void)
     // Next two lines for debug only to halt the processor here
     // Remove after inserting ISR Code
     //
-    asm ("      ESTOP0");
-    for(;;);
+    asm("      ESTOP0");
+    for (;;)
+        ;
 }
 
 //
@@ -1994,8 +2155,9 @@ interrupt void ADCB4_ISR(void)
     // Next two lines for debug only to halt the processor here
     // Remove after inserting ISR Code
     //
-    asm ("      ESTOP0");
-    for(;;);
+    asm("      ESTOP0");
+    for (;;)
+        ;
 }
 
 //
@@ -2017,8 +2179,9 @@ interrupt void CLA1_1_ISR(void)
     // Next two lines for debug only to halt the processor here
     // Remove after inserting ISR Code
     //
-    asm ("      ESTOP0");
-    for(;;);
+    asm("      ESTOP0");
+    for (;;)
+        ;
 }
 
 //
@@ -2040,8 +2203,9 @@ interrupt void CLA1_2_ISR(void)
     // Next two lines for debug only to halt the processor here
     // Remove after inserting ISR Code
     //
-    asm ("      ESTOP0");
-    for(;;);
+    asm("      ESTOP0");
+    for (;;)
+        ;
 }
 
 //
@@ -2063,8 +2227,9 @@ interrupt void CLA1_3_ISR(void)
     // Next two lines for debug only to halt the processor here
     // Remove after inserting ISR Code
     //
-    asm ("      ESTOP0");
-    for(;;);
+    asm("      ESTOP0");
+    for (;;)
+        ;
 }
 
 //
@@ -2086,8 +2251,9 @@ interrupt void CLA1_4_ISR(void)
     // Next two lines for debug only to halt the processor here
     // Remove after inserting ISR Code
     //
-    asm ("      ESTOP0");
-    for(;;);
+    asm("      ESTOP0");
+    for (;;)
+        ;
 }
 
 //
@@ -2109,8 +2275,9 @@ interrupt void CLA1_5_ISR(void)
     // Next two lines for debug only to halt the processor here
     // Remove after inserting ISR Code
     //
-    asm ("      ESTOP0");
-    for(;;);
+    asm("      ESTOP0");
+    for (;;)
+        ;
 }
 
 //
@@ -2132,8 +2299,9 @@ interrupt void CLA1_6_ISR(void)
     // Next two lines for debug only to halt the processor here
     // Remove after inserting ISR Code
     //
-    asm ("      ESTOP0");
-    for(;;);
+    asm("      ESTOP0");
+    for (;;)
+        ;
 }
 
 //
@@ -2155,8 +2323,9 @@ interrupt void CLA1_7_ISR(void)
     // Next two lines for debug only to halt the processor here
     // Remove after inserting ISR Code
     //
-    asm ("      ESTOP0");
-    for(;;);
+    asm("      ESTOP0");
+    for (;;)
+        ;
 }
 
 //
@@ -2178,8 +2347,9 @@ interrupt void CLA1_8_ISR(void)
     // Next two lines for debug only to halt the processor here
     // Remove after inserting ISR Code
     //
-    asm ("      ESTOP0");
-    for(;;);
+    asm("      ESTOP0");
+    for (;;)
+        ;
 }
 
 //
@@ -2201,8 +2371,9 @@ interrupt void XINT3_ISR(void)
     // Next two lines for debug only to halt the processor here
     // Remove after inserting ISR Code
     //
-    asm ("      ESTOP0");
-    for(;;);
+    asm("      ESTOP0");
+    for (;;)
+        ;
 }
 
 //
@@ -2224,8 +2395,9 @@ interrupt void XINT4_ISR(void)
     // Next two lines for debug only to halt the processor here
     // Remove after inserting ISR Code
     //
-    asm ("      ESTOP0");
-    for(;;);
+    asm("      ESTOP0");
+    for (;;)
+        ;
 }
 
 //
@@ -2247,8 +2419,9 @@ interrupt void XINT5_ISR(void)
     // Next two lines for debug only to halt the processor here
     // Remove after inserting ISR Code
     //
-    asm ("      ESTOP0");
-    for(;;);
+    asm("      ESTOP0");
+    for (;;)
+        ;
 }
 
 //
@@ -2270,8 +2443,9 @@ interrupt void VCU_ISR(void)
     // Next two lines for debug only to halt the processor here
     // Remove after inserting ISR Code
     //
-    asm ("      ESTOP0");
-    for(;;);
+    asm("      ESTOP0");
+    for (;;)
+        ;
 }
 
 //
@@ -2293,8 +2467,9 @@ interrupt void FPU_OVERFLOW_ISR(void)
     // Next two lines for debug only to halt the processor here
     // Remove after inserting ISR Code
     //
-    asm ("      ESTOP0");
-    for(;;);
+    asm("      ESTOP0");
+    for (;;)
+        ;
 }
 
 //
@@ -2316,8 +2491,9 @@ interrupt void FPU_UNDERFLOW_ISR(void)
     // Next two lines for debug only to halt the processor here
     // Remove after inserting ISR Code
     //
-    asm ("      ESTOP0");
-    for(;;);
+    asm("      ESTOP0");
+    for (;;)
+        ;
 }
 
 //
@@ -2339,8 +2515,9 @@ interrupt void IPC0_ISR(void)
     // Next two lines for debug only to halt the processor here
     // Remove after inserting ISR Code
     //
-    asm ("      ESTOP0");
-    for(;;);
+    asm("      ESTOP0");
+    for (;;)
+        ;
 }
 
 //
@@ -2362,8 +2539,9 @@ interrupt void IPC1_ISR(void)
     // Next two lines for debug only to halt the processor here
     // Remove after inserting ISR Code
     //
-    asm ("      ESTOP0");
-    for(;;);
+    asm("      ESTOP0");
+    for (;;)
+        ;
 }
 
 //
@@ -2385,8 +2563,9 @@ interrupt void IPC2_ISR(void)
     // Next two lines for debug only to halt the processor here
     // Remove after inserting ISR Code
     //
-    asm ("      ESTOP0");
-    for(;;);
+    asm("      ESTOP0");
+    for (;;)
+        ;
 }
 
 //
@@ -2408,8 +2587,9 @@ interrupt void IPC3_ISR(void)
     // Next two lines for debug only to halt the processor here
     // Remove after inserting ISR Code
     //
-    asm ("      ESTOP0");
-    for(;;);
+    asm("      ESTOP0");
+    for (;;)
+        ;
 }
 
 //
@@ -2431,8 +2611,9 @@ interrupt void EPWM9_TZ_ISR(void)
     // Next two lines for debug only to halt the processor here
     // Remove after inserting ISR Code
     //
-    asm ("      ESTOP0");
-    for(;;);
+    asm("      ESTOP0");
+    for (;;)
+        ;
 }
 
 //
@@ -2454,8 +2635,9 @@ interrupt void EPWM10_TZ_ISR(void)
     // Next two lines for debug only to halt the processor here
     // Remove after inserting ISR Code
     //
-    asm ("      ESTOP0");
-    for(;;);
+    asm("      ESTOP0");
+    for (;;)
+        ;
 }
 
 //
@@ -2477,8 +2659,9 @@ interrupt void EPWM11_TZ_ISR(void)
     // Next two lines for debug only to halt the processor here
     // Remove after inserting ISR Code
     //
-    asm ("      ESTOP0");
-    for(;;);
+    asm("      ESTOP0");
+    for (;;)
+        ;
 }
 
 //
@@ -2500,8 +2683,9 @@ interrupt void EPWM12_TZ_ISR(void)
     // Next two lines for debug only to halt the processor here
     // Remove after inserting ISR Code
     //
-    asm ("      ESTOP0");
-    for(;;);
+    asm("      ESTOP0");
+    for (;;)
+        ;
 }
 
 //
@@ -2523,8 +2707,9 @@ interrupt void EPWM9_ISR(void)
     // Next two lines for debug only to halt the processor here
     // Remove after inserting ISR Code
     //
-    asm ("      ESTOP0");
-    for(;;);
+    asm("      ESTOP0");
+    for (;;)
+        ;
 }
 
 //
@@ -2546,8 +2731,9 @@ interrupt void EPWM10_ISR(void)
     // Next two lines for debug only to halt the processor here
     // Remove after inserting ISR Code
     //
-    asm ("      ESTOP0");
-    for(;;);
+    asm("      ESTOP0");
+    for (;;)
+        ;
 }
 
 //
@@ -2569,8 +2755,9 @@ interrupt void EPWM11_ISR(void)
     // Next two lines for debug only to halt the processor here
     // Remove after inserting ISR Code
     //
-    asm ("      ESTOP0");
-    for(;;);
+    asm("      ESTOP0");
+    for (;;)
+        ;
 }
 
 //
@@ -2592,8 +2779,9 @@ interrupt void EPWM12_ISR(void)
     // Next two lines for debug only to halt the processor here
     // Remove after inserting ISR Code
     //
-    asm ("      ESTOP0");
-    for(;;);
+    asm("      ESTOP0");
+    for (;;)
+        ;
 }
 
 //
@@ -2615,8 +2803,9 @@ interrupt void SD1_ISR(void)
     // Next two lines for debug only to halt the processor here
     // Remove after inserting ISR Code
     //
-    asm ("      ESTOP0");
-    for(;;);
+    asm("      ESTOP0");
+    for (;;)
+        ;
 }
 
 //
@@ -2638,8 +2827,9 @@ interrupt void SD2_ISR(void)
     // Next two lines for debug only to halt the processor here
     // Remove after inserting ISR Code
     //
-    asm ("      ESTOP0");
-    for(;;);
+    asm("      ESTOP0");
+    for (;;)
+        ;
 }
 
 //
@@ -2661,8 +2851,9 @@ interrupt void SPIC_RX_ISR(void)
     // Next two lines for debug only to halt the processor here
     // Remove after inserting ISR Code
     //
-    asm ("      ESTOP0");
-    for(;;);
+    asm("      ESTOP0");
+    for (;;)
+        ;
 }
 
 //
@@ -2684,8 +2875,9 @@ interrupt void SPIC_TX_ISR(void)
     // Next two lines for debug only to halt the processor here
     // Remove after inserting ISR Code
     //
-    asm ("      ESTOP0");
-    for(;;);
+    asm("      ESTOP0");
+    for (;;)
+        ;
 }
 
 //
@@ -2707,8 +2899,9 @@ interrupt void UPPA_ISR(void)
     // Next two lines for debug only to halt the processor here
     // Remove after inserting ISR Code
     //
-    asm ("      ESTOP0");
-    for(;;);
+    asm("      ESTOP0");
+    for (;;)
+        ;
 }
 
 //
@@ -2730,8 +2923,9 @@ interrupt void USBA_ISR(void)
     // Next two lines for debug only to halt the processor here
     // Remove after inserting ISR Code
     //
-    asm ("      ESTOP0");
-    for(;;);
+    asm("      ESTOP0");
+    for (;;)
+        ;
 }
 
 //
@@ -2753,8 +2947,9 @@ interrupt void ADCC_EVT_ISR(void)
     // Next two lines for debug only to halt the processor here
     // Remove after inserting ISR Code
     //
-    asm ("      ESTOP0");
-    for(;;);
+    asm("      ESTOP0");
+    for (;;)
+        ;
 }
 
 //
@@ -2776,8 +2971,9 @@ interrupt void ADCC2_ISR(void)
     // Next two lines for debug only to halt the processor here
     // Remove after inserting ISR Code
     //
-    asm ("      ESTOP0");
-    for(;;);
+    asm("      ESTOP0");
+    for (;;)
+        ;
 }
 
 //
@@ -2799,8 +2995,9 @@ interrupt void ADCC3_ISR(void)
     // Next two lines for debug only to halt the processor here
     // Remove after inserting ISR Code
     //
-    asm ("      ESTOP0");
-    for(;;);
+    asm("      ESTOP0");
+    for (;;)
+        ;
 }
 
 //
@@ -2822,8 +3019,9 @@ interrupt void ADCC4_ISR(void)
     // Next two lines for debug only to halt the processor here
     // Remove after inserting ISR Code
     //
-    asm ("      ESTOP0");
-    for(;;);
+    asm("      ESTOP0");
+    for (;;)
+        ;
 }
 
 //
@@ -2845,8 +3043,9 @@ interrupt void ADCD_EVT_ISR(void)
     // Next two lines for debug only to halt the processor here
     // Remove after inserting ISR Code
     //
-    asm ("      ESTOP0");
-    for(;;);
+    asm("      ESTOP0");
+    for (;;)
+        ;
 }
 
 //
@@ -2868,8 +3067,9 @@ interrupt void ADCD2_ISR(void)
     // Next two lines for debug only to halt the processor here
     // Remove after inserting ISR Code
     //
-    asm ("      ESTOP0");
-    for(;;);
+    asm("      ESTOP0");
+    for (;;)
+        ;
 }
 
 //
@@ -2891,8 +3091,9 @@ interrupt void ADCD3_ISR(void)
     // Next two lines for debug only to halt the processor here
     // Remove after inserting ISR Code
     //
-    asm ("      ESTOP0");
-    for(;;);
+    asm("      ESTOP0");
+    for (;;)
+        ;
 }
 
 //
@@ -2914,8 +3115,9 @@ interrupt void ADCD4_ISR(void)
     // Next two lines for debug only to halt the processor here
     // Remove after inserting ISR Code
     //
-    asm ("      ESTOP0");
-    for(;;);
+    asm("      ESTOP0");
+    for (;;)
+        ;
 }
 
 //
@@ -2937,8 +3139,9 @@ interrupt void EMIF_ERROR_ISR(void)
     // Next two lines for debug only to halt the processor here
     // Remove after inserting ISR Code
     //
-    asm ("      ESTOP0");
-    for(;;);
+    asm("      ESTOP0");
+    for (;;)
+        ;
 }
 
 //
@@ -2960,8 +3163,9 @@ interrupt void RAM_CORRECTABLE_ERROR_ISR(void)
     // Next two lines for debug only to halt the processor here
     // Remove after inserting ISR Code
     //
-    asm ("      ESTOP0");
-    for(;;);
+    asm("      ESTOP0");
+    for (;;)
+        ;
 }
 
 //
@@ -2983,8 +3187,9 @@ interrupt void FLASH_CORRECTABLE_ERROR_ISR(void)
     // Next two lines for debug only to halt the processor here
     // Remove after inserting ISR Code
     //
-    asm ("      ESTOP0");
-    for(;;);
+    asm("      ESTOP0");
+    for (;;)
+        ;
 }
 
 //
@@ -3006,8 +3211,9 @@ interrupt void RAM_ACCESS_VIOLATION_ISR(void)
     // Next two lines for debug only to halt the processor here
     // Remove after inserting ISR Code
     //
-    asm ("      ESTOP0");
-    for(;;);
+    asm("      ESTOP0");
+    for (;;)
+        ;
 }
 
 //
@@ -3029,8 +3235,9 @@ interrupt void SYS_PLL_SLIP_ISR(void)
     // Next two lines for debug only to halt the processor here
     // Remove after inserting ISR Code
     //
-    asm ("      ESTOP0");
-    for(;;);
+    asm("      ESTOP0");
+    for (;;)
+        ;
 }
 
 //
@@ -3052,8 +3259,9 @@ interrupt void AUX_PLL_SLIP_ISR(void)
     // Next two lines for debug only to halt the processor here
     // Remove after inserting ISR Code
     //
-    asm ("      ESTOP0");
-    for(;;);
+    asm("      ESTOP0");
+    for (;;)
+        ;
 }
 
 //
@@ -3075,8 +3283,9 @@ interrupt void CLA_OVERFLOW_ISR(void)
     // Next two lines for debug only to halt the processor here
     // Remove after inserting ISR Code
     //
-    asm ("      ESTOP0");
-    for(;;);
+    asm("      ESTOP0");
+    for (;;)
+        ;
 }
 
 //
@@ -3098,8 +3307,9 @@ interrupt void CLA_UNDERFLOW_ISR(void)
     // Next two lines for debug only to halt the processor here
     // Remove after inserting ISR Code
     //
-    asm ("      ESTOP0");
-    for(;;);
+    asm("      ESTOP0");
+    for (;;)
+        ;
 }
 
 //
@@ -3111,8 +3321,9 @@ interrupt void CLA_UNDERFLOW_ISR(void)
 //
 interrupt void PIE_RESERVED_ISR(void)
 {
-    asm ("      ESTOP0");
-    for(;;);
+    asm("      ESTOP0");
+    for (;;)
+        ;
 }
 
 //
@@ -3120,7 +3331,6 @@ interrupt void PIE_RESERVED_ISR(void)
 //
 interrupt void EMPTY_ISR(void)
 {
-
 }
 
 //
@@ -3128,7 +3338,7 @@ interrupt void EMPTY_ISR(void)
 //
 interrupt void NOTUSED_ISR(void)
 {
-    asm ("      ESTOP0");
-    for(;;);
+    asm("      ESTOP0");
+    for (;;)
+        ;
 }
-

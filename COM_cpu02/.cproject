@@ -108,7 +108,7 @@
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>
-						<entry excluding="Comun/Drivers/MEM.c|Comun/Drivers/Config_ADC.c|Comun/driverlib/usb.c|Comun/driverlib/usb_hal.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+						<entry excluding="Comun/Drivers/Config_PWM.c|Comun/Drivers/MEM.c|Comun/Drivers/Config_ADC.c|Comun/driverlib/usb.c|Comun/driverlib/usb_hal.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>
