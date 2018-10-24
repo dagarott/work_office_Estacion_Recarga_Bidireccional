@@ -13,11 +13,13 @@ C:/Users/dagaro/workspace/Firmware_Test/UFCharger/F2837xD/Comun/common/F2837xD_u
 C_SRCS += \
 C:/Users/dagaro/workspace/Firmware_Test/UFCharger/F2837xD/Comun/common/F2837xD_Adc.c \
 C:/Users/dagaro/workspace/Firmware_Test/UFCharger/F2837xD/Comun/common/F2837xD_CpuTimers.c \
+C:/Users/dagaro/workspace/Firmware_Test/UFCharger/F2837xD/Comun/common/F2837xD_DefaultISR.c \
 C:/Users/dagaro/workspace/Firmware_Test/UFCharger/F2837xD/Comun/common/F2837xD_Dma.c \
 C:/Users/dagaro/workspace/Firmware_Test/UFCharger/F2837xD/Comun/common/F2837xD_ECap.c \
 C:/Users/dagaro/workspace/Firmware_Test/UFCharger/F2837xD/Comun/common/F2837xD_EPwm.c \
 C:/Users/dagaro/workspace/Firmware_Test/UFCharger/F2837xD/Comun/common/F2837xD_EQep.c \
 C:/Users/dagaro/workspace/Firmware_Test/UFCharger/F2837xD/Comun/common/F2837xD_Emif.c \
+C:/Users/dagaro/workspace/Firmware_Test/UFCharger/F2837xD/Comun/common/F2837xD_GlobalVariableDefs.c \
 C:/Users/dagaro/workspace/Firmware_Test/UFCharger/F2837xD/Comun/common/F2837xD_Gpio.c \
 C:/Users/dagaro/workspace/Firmware_Test/UFCharger/F2837xD/Comun/common/F2837xD_I2C.c \
 C:/Users/dagaro/workspace/Firmware_Test/UFCharger/F2837xD/Comun/common/F2837xD_Ipc.c \
@@ -40,11 +42,13 @@ C:/Users/dagaro/workspace/Firmware_Test/UFCharger/F2837xD/Comun/common/F2837xD_s
 C_DEPS += \
 ./Comun/common/F2837xD_Adc.d \
 ./Comun/common/F2837xD_CpuTimers.d \
+./Comun/common/F2837xD_DefaultISR.d \
 ./Comun/common/F2837xD_Dma.d \
 ./Comun/common/F2837xD_ECap.d \
 ./Comun/common/F2837xD_EPwm.d \
 ./Comun/common/F2837xD_EQep.d \
 ./Comun/common/F2837xD_Emif.d \
+./Comun/common/F2837xD_GlobalVariableDefs.d \
 ./Comun/common/F2837xD_Gpio.d \
 ./Comun/common/F2837xD_I2C.d \
 ./Comun/common/F2837xD_Ipc.d \
@@ -69,11 +73,13 @@ OBJS += \
 ./Comun/common/F2837xD_CodeStartBranch.obj \
 ./Comun/common/F2837xD_CpuTimers.obj \
 ./Comun/common/F2837xD_DBGIER.obj \
+./Comun/common/F2837xD_DefaultISR.obj \
 ./Comun/common/F2837xD_Dma.obj \
 ./Comun/common/F2837xD_ECap.obj \
 ./Comun/common/F2837xD_EPwm.obj \
 ./Comun/common/F2837xD_EQep.obj \
 ./Comun/common/F2837xD_Emif.obj \
+./Comun/common/F2837xD_GlobalVariableDefs.obj \
 ./Comun/common/F2837xD_Gpio.obj \
 ./Comun/common/F2837xD_I2C.obj \
 ./Comun/common/F2837xD_Ipc.obj \
@@ -104,11 +110,13 @@ OBJS__QUOTED += \
 "Comun\common\F2837xD_CodeStartBranch.obj" \
 "Comun\common\F2837xD_CpuTimers.obj" \
 "Comun\common\F2837xD_DBGIER.obj" \
+"Comun\common\F2837xD_DefaultISR.obj" \
 "Comun\common\F2837xD_Dma.obj" \
 "Comun\common\F2837xD_ECap.obj" \
 "Comun\common\F2837xD_EPwm.obj" \
 "Comun\common\F2837xD_EQep.obj" \
 "Comun\common\F2837xD_Emif.obj" \
+"Comun\common\F2837xD_GlobalVariableDefs.obj" \
 "Comun\common\F2837xD_Gpio.obj" \
 "Comun\common\F2837xD_I2C.obj" \
 "Comun\common\F2837xD_Ipc.obj" \
@@ -132,11 +140,13 @@ OBJS__QUOTED += \
 C_DEPS__QUOTED += \
 "Comun\common\F2837xD_Adc.d" \
 "Comun\common\F2837xD_CpuTimers.d" \
+"Comun\common\F2837xD_DefaultISR.d" \
 "Comun\common\F2837xD_Dma.d" \
 "Comun\common\F2837xD_ECap.d" \
 "Comun\common\F2837xD_EPwm.d" \
 "Comun\common\F2837xD_EQep.d" \
 "Comun\common\F2837xD_Emif.d" \
+"Comun\common\F2837xD_GlobalVariableDefs.d" \
 "Comun\common\F2837xD_Gpio.d" \
 "Comun\common\F2837xD_I2C.d" \
 "Comun\common\F2837xD_Ipc.d" \
@@ -164,11 +174,13 @@ ASM_DEPS__QUOTED += \
 C_SRCS__QUOTED += \
 "C:/Users/dagaro/workspace/Firmware_Test/UFCharger/F2837xD/Comun/common/F2837xD_Adc.c" \
 "C:/Users/dagaro/workspace/Firmware_Test/UFCharger/F2837xD/Comun/common/F2837xD_CpuTimers.c" \
+"C:/Users/dagaro/workspace/Firmware_Test/UFCharger/F2837xD/Comun/common/F2837xD_DefaultISR.c" \
 "C:/Users/dagaro/workspace/Firmware_Test/UFCharger/F2837xD/Comun/common/F2837xD_Dma.c" \
 "C:/Users/dagaro/workspace/Firmware_Test/UFCharger/F2837xD/Comun/common/F2837xD_ECap.c" \
 "C:/Users/dagaro/workspace/Firmware_Test/UFCharger/F2837xD/Comun/common/F2837xD_EPwm.c" \
 "C:/Users/dagaro/workspace/Firmware_Test/UFCharger/F2837xD/Comun/common/F2837xD_EQep.c" \
 "C:/Users/dagaro/workspace/Firmware_Test/UFCharger/F2837xD/Comun/common/F2837xD_Emif.c" \
+"C:/Users/dagaro/workspace/Firmware_Test/UFCharger/F2837xD/Comun/common/F2837xD_GlobalVariableDefs.c" \
 "C:/Users/dagaro/workspace/Firmware_Test/UFCharger/F2837xD/Comun/common/F2837xD_Gpio.c" \
 "C:/Users/dagaro/workspace/Firmware_Test/UFCharger/F2837xD/Comun/common/F2837xD_I2C.c" \
 "C:/Users/dagaro/workspace/Firmware_Test/UFCharger/F2837xD/Comun/common/F2837xD_Ipc.c" \

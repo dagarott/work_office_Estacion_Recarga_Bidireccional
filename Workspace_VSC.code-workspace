@@ -9,7 +9,9 @@
 			"inc_drivers.h": "c",
 			"fifo.h": "c",
 			"config_can.h": "c",
-			"def_global.h": "c"
+			"def_global.h": "c",
+			"diccionario_canopen.h": "c",
+			"chademo.h": "c"
 		}
 	}
 }

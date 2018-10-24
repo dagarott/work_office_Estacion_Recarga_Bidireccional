@@ -68,8 +68,8 @@ void Init_HW ()
     Config_GPIO ();
 
 // Step 2.2 Inicializar GPIO para CPU2:
-    GPIO_SetupPinMux(LED9, GPIO_MUX_CPU2, 0);
-    GPIO_SetupPinOptions(LED9, GPIO_OUTPUT, GPIO_PUSHPULL);
+//    GPIO_SetupPinMux(LED9, GPIO_MUX_CPU2, 0);
+//    GPIO_SetupPinOptions(LED9, GPIO_OUTPUT, GPIO_PUSHPULL);
 
 // Sincronización de arranque CPU1
 // Indicamos que se ha configurado la cpu1

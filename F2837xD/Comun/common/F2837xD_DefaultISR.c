@@ -1875,27 +1875,26 @@ interrupt void CANB0_ISR(void)
     }
     // Check if the cause is message object 2, which what we are using for
     // receiving messages.
-    else if (ulStatus == 2)
+    else if (ulStatus == CAN_OBJ_ID_PS)
     {
         // Get the received message
         CANMessageGet(CANB_BASE, CAN_OBJ_ID_PS, &sRXPowerSupply_CANOpenMsg,
                       true);
+        Encolar_FIFO(&FIFO_PowerSupplyRX);
         // Getting to this point means that the RX interrupt occurred on
         // message object 2, and the message RX is complete.  Clear the
         // message object interrupt.
         CANIntClear(CANB_BASE, CAN_OBJ_ID_PS);
         // Since the message was sent, clear any error flags.
         g_bErrFlag = 0;
+        StatusCom.AdcDataAvailabl=1;
     }
-    else if (ulStatus == 3)
+    else if (ulStatus == CAN_OBJ_ID_ADC)
     {
         // Get the received message
         CANMessageGet(CANB_BASE, CAN_OBJ_ID_ADC, &sRXADC_CANOpenMsg, true);
-        // Getting to this point means that the RX interrupt occurred on
-        // message object 2, and the message RX is complete.  Clear the
-        // message object interrupt.
+        Encolar_FIFO(&FIFO_AdcRX);
         CANIntClear(CANB_BASE, CAN_OBJ_ID_ADC);
-        // Since the message was sent, clear any error flags.
         g_bErrFlag = 0;
     }
     // Otherwise, something unexpected caused the interrupt.  This should

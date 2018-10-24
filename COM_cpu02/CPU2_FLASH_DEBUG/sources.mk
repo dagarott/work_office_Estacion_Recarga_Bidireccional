@@ -113,7 +113,6 @@ PDE_DEPS__QUOTED :=
 SUBDIRS := \
 . \
 Comun/Drivers \
-Comun \
 Comun/common \
 Comun/driverlib \
 

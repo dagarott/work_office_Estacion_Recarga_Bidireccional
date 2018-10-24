@@ -49,14 +49,14 @@
 //
 // Variables Globals
 //
-/* volatile unsigned long i;
+volatile unsigned long i;
 volatile uint32_t errorFlag = 0;
 unsigned char txMsgData[8];
 unsigned char rxMsgData[8];
 unsigned char rxMsgData2[8];
 extern tCANMsgObject sTXCANMessage;
 tCANMsgObject sRXCANMessage;
-tCANMsgObject sRXCANMessage2; */
+tCANMsgObject sRXCANMessage2;
 
 /**
 ***************************************************************************
@@ -81,39 +81,15 @@ void Config_CANB(uint32_t BitRate)
     CANBitRateSet(CANB_BASE, (uint32_t)T_clk, BitRate * 1000);
 
     // Enable interrupts on the CAN B peripheral.
-    CANIntEnable(CANB_BASE, CAN_INT_MASTER); // | CAN_INT_ERROR | CAN_INT_STATUS);
+    CANIntEnable(CANB_BASE, CAN_INT_MASTER);
 
-    //DEBUG
-    // Step 3. Clear all interrupts and initialize PIE vector table: Disable CPU interrupts
-    // DINT;
-
-    // // Initialize the PIE control registers to their default state.
-    // InitPieCtrl();
-
-    // // Disable CPU interrupts and clear all CPU interrupt flags:
-    // IER = 0x0000;
-    // IFR = 0x0000;
-
-    // // Initialize the PIE vector table with pointers to the shell Interrupt Service Routines (ISR).
-    // InitPieVectTable();
-
-    // // Interrupts that are used in this example are re-mapped toISR functions found within this file.
-    // // Register interrupt handler in RAM vector table
-    // //EALLOW;
-    // //PieVectTable.CANA0_INT = CANIntHandler;
-    // //PieVectTable.CANA1_INT = CANInt1Handler;
-    // //EDIS;
-
-    // // Enable the CAN interrupt on the processor (PIE).
-    // PieCtrlRegs.PIEIER9.bit.INTx7 = 1;
-    // IER |= 0x0100; /* M_INT9 */
-    // EINT;
-    //DEBUG
-
+    // Enable CAN Global Interrupt line0
+    //
     CANGlobalIntEnable(CANB_BASE, CAN_GLB_INT_CANINT0);
 
     // Start CAN module A and B operations
     CANEnable(CANB_BASE);
+
 }
 // FIN Config_CANB
 
