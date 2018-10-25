@@ -63,13 +63,10 @@ main_cpu1.obj: C:/Users/dagaro/workspace/Firmware_Test/UFCharger/COM_cpu01/Inclu
 main_cpu1.obj: C:/Users/dagaro/workspace/Firmware_Test/UFCharger/F2837xD/ti-cgt-c2000_16.9.6.LTS/include/string.h
 main_cpu1.obj: C:/Users/dagaro/workspace/Firmware_Test/UFCharger/F2837xD/Comun/Drivers/Include/Init_HW.h
 main_cpu1.obj: C:/Users/dagaro/workspace/Firmware_Test/UFCharger/F2837xD/Comun/Drivers/Include/Config_GPIO.h
-main_cpu1.obj: C:/Users/dagaro/workspace/Firmware_Test/UFCharger/F2837xD/Comun/Drivers/Include/Config_PWM.h
-main_cpu1.obj: C:/Users/dagaro/workspace/Firmware_Test/UFCharger/F2837xD/Comun/Drivers/Include/Inc_drivers.h
 main_cpu1.obj: C:/Users/dagaro/workspace/Firmware_Test/UFCharger/F2837xD/Comun/Drivers/Include/Config_CAN.h
 main_cpu1.obj: C:/Users/dagaro/workspace/Firmware_Test/UFCharger/F2837xD/Comun/driverlib/can.h
 main_cpu1.obj: C:/Users/dagaro/workspace/Firmware_Test/UFCharger/F2837xD/Comun/Drivers/Include/FIFO.h
 main_cpu1.obj: C:/Users/dagaro/workspace/Firmware_Test/UFCharger/F2837xD/ti-cgt-c2000_16.9.6.LTS/include/string.h
-main_cpu1.obj: C:/Users/dagaro/workspace/Firmware_Test/UFCharger/COM_cpu01/Include/Chademo.h
 main_cpu1.obj: C:/Users/dagaro/workspace/Firmware_Test/UFCharger/COM_cpu01/Include/ComModule.h
 main_cpu1.obj: C:/Users/dagaro/workspace/Firmware_Test/UFCharger/F2837xD/F2837xD_common/include/inc/hw_types.h
 main_cpu1.obj: C:/Users/dagaro/workspace/Firmware_Test/UFCharger/F2837xD/F2837xD_common/include/inc/hw_memmap.h
@@ -140,13 +137,10 @@ C:/Users/dagaro/workspace/Firmware_Test/UFCharger/COM_cpu01/Include/DEF_Global.h
 C:/Users/dagaro/workspace/Firmware_Test/UFCharger/F2837xD/ti-cgt-c2000_16.9.6.LTS/include/string.h: 
 C:/Users/dagaro/workspace/Firmware_Test/UFCharger/F2837xD/Comun/Drivers/Include/Init_HW.h: 
 C:/Users/dagaro/workspace/Firmware_Test/UFCharger/F2837xD/Comun/Drivers/Include/Config_GPIO.h: 
-C:/Users/dagaro/workspace/Firmware_Test/UFCharger/F2837xD/Comun/Drivers/Include/Config_PWM.h: 
-C:/Users/dagaro/workspace/Firmware_Test/UFCharger/F2837xD/Comun/Drivers/Include/Inc_drivers.h: 
 C:/Users/dagaro/workspace/Firmware_Test/UFCharger/F2837xD/Comun/Drivers/Include/Config_CAN.h: 
 C:/Users/dagaro/workspace/Firmware_Test/UFCharger/F2837xD/Comun/driverlib/can.h: 
 C:/Users/dagaro/workspace/Firmware_Test/UFCharger/F2837xD/Comun/Drivers/Include/FIFO.h: 
 C:/Users/dagaro/workspace/Firmware_Test/UFCharger/F2837xD/ti-cgt-c2000_16.9.6.LTS/include/string.h: 
-C:/Users/dagaro/workspace/Firmware_Test/UFCharger/COM_cpu01/Include/Chademo.h: 
 C:/Users/dagaro/workspace/Firmware_Test/UFCharger/COM_cpu01/Include/ComModule.h: 
 C:/Users/dagaro/workspace/Firmware_Test/UFCharger/F2837xD/F2837xD_common/include/inc/hw_types.h: 
 C:/Users/dagaro/workspace/Firmware_Test/UFCharger/F2837xD/F2837xD_common/include/inc/hw_memmap.h: 

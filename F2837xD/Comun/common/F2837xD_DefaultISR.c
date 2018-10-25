@@ -1886,8 +1886,7 @@ interrupt void CANB0_ISR(void)
         // message object interrupt.
         CANIntClear(CANB_BASE, CAN_OBJ_ID_PS);
         // Since the message was sent, clear any error flags.
-        g_bErrFlag = 0;
-        StatusCom.AdcDataAvailabl=1;
+        StatusCom.StatusFlags.Flags.AdcDataAvailable=1;
     }
     else if (ulStatus == CAN_OBJ_ID_ADC)
     {

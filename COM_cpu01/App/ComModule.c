@@ -1,9 +1,15 @@
-/*
- * ComModule.c
- *
- *  Created on: 11 oct. 2018
- *      Author: dagaro
- */
+/**
+* \file ComModule.c
+* \brief
+* \details
+* \author dagaro
+* \version 1.0
+* \date 2018
+* \pre
+* \bug
+* \warning
+* \copyright ITE
+*/
 
 /* USER CODE BEGIN Includes */
 #include "ComModule.h"
@@ -14,14 +20,7 @@
 #define BitRate 500
 #define MSG_DATA_LENGTH 8
 #define NumMsg 10
-#define PS_NODE_ID 0x630  //Power Supply Module 0
-#define ADC_NODE_ID 0x603 //PC 1
 
-#define ENABLE_ADC Set_CANOpenMsg_To_Tx()
-
-
-FlagCom *ptr_StatusCom;
-*ptr_StatusCom=0; //Clear all bits
 
 /* USER CODE END PD */
 
@@ -33,8 +32,8 @@ FlagCom *ptr_StatusCom;
 /* Private variables ---------------------------------------------------------*/
 FIFO FIFO_PowerSupplyTX;                 //FIFO Tx defined for Power Supply
 FIFO FIFO_PowerSupplyRX;                 //FIFO Rx defined for Power Supply
-FIFO FIFO_AdcTX;                         //FIFO Tx defined for Power Supply
-FIFO FIFO_AdcRX;                         //FIFO Rx defined for Power Supply
+FIFO FIFO_AdcTX;                         //FIFO Tx defined for Adc
+FIFO FIFO_AdcRX;                         //FIFO Rx defined for ADC
 FIFO FIFO_PcRX;                          //FIFO Tx defined for Industrial PC
 FIFO FIFO_PcTX;                          //FIFO Rx defined for Industrial PC
 tCANMsgObject sTX_CANOpenMsg;            //Can message objet for tx
@@ -42,7 +41,7 @@ tCANMsgObject sTXADC_CANOpenMsg;         //Can message objet for tx
 tCANMsgObject sRXPowerSupply_CANOpenMsg; //Can message object for rx from PS module
 tCANMsgObject sRXADC_CANOpenMsg;         //Can message object for rx from ADC module
 volatile unsigned long g_bErrFlag = 0;   // A flag to indicate that some
-// transmission error occurred.
+                                         // transmission error occurred.
 
 typedef struct ObjectTx
 {
@@ -51,12 +50,17 @@ typedef struct ObjectTx
 } LastObjectTx;
 
 LastObjectTx PowerSupply_LastObjectTx = {0x00, 0x00};
+
+
 /* USER CODE END PV */
 
 /* USER CODE BEGIN NPV */
 /* Non Private variables ---------------------------------------------------------*/
 enum Indice_Diccionario_TPO OD_Index = FIN_Diccionario;
+FlagsCom_t StatusCom = {0x00} ;
+
 /* USER CODE END NPV */
+
 
 /**
  * @brief Makes a new CANOpen FIFO with known values such as length and depth
@@ -73,17 +77,26 @@ void Init_CANOpenMsgFIFO(void)
                                                                  // ID = 1 byte
                                                                  // MSG_DATA_LENGTH= 8 bytes
                                                                  // NumMsg = Depth of the stack
+
+    Init_FIFO(&FIFO_AdcTX, MSG_DATA_LENGTH + 1, NumMsg); // NumWords = ID + MSG_DATA_LENGTH = 9  bytes
+                                                                    // ID = 1 byte
+                                                                    // MSG_DATA_LENGTH= 8 bytes
+                                                                    // NumMsg = Depth of the stack
+    Init_FIFO(&FIFO_AdcRX, MSG_DATA_LENGTH + 1, NumMsg); // NumWords = ID + MSG_DATA_LENGTH = 9  bytes
+                                                                    // ID = 1 byte
+                                                                    // MSG_DATA_LENGTH= 8 bytes
+                                                                    // NumMsg = Depth of the stack
 }
 /**
  * @brief  Build a message in the correct CANOpen Protocol way and stack it in FIFO,
  *         waiting to be transmitted by CAN peripheral
+ * 
  * @param Indice_Diccionario_TPO 
- * @param ptrMsg 
- * @param ptrFIFO 
- * @return unsigned char 
+ * @param ptr_MsgToTx 
+ * @param DataToTx 
+ * @return uint16_t 
  */
-uint16_t Set_CANOpenMsg_To_Tx(enum Indice_Diccionario_TPO Idx,
-                              FIFO *ptr_MsgToTx, uint32_t DataToTx)
+uint16_t Set_CANOpenMsg_To_Tx(enum Indice_Diccionario_TPO Idx,FIFO *ptr_MsgToTx, uint32_t DataToTx, uint16_t Idx_Node)
 {
 
     uint32_t tmp = 0;
@@ -98,7 +111,7 @@ uint16_t Set_CANOpenMsg_To_Tx(enum Indice_Diccionario_TPO Idx,
     if (ptrMsg == NULL) //For sanity, checking pointer
         return (0x00);  //NULL pointer. Error
 
-    *(ptrMsg++) = PS_NODE_ID;                                         //0x630(default from manufacturer)
+    *(ptrMsg++) = Idx_Node;                                         //0x630(default from manufacturer)
     *(ptrMsg++) = Diccionario_CanOpen[Idx].Modo_Acceso;               //Command Byte, Read or Write operation
     *(ptrMsg++) = (uint16_t)((Diccionario_CanOpen[Idx].ID) & 0x00FF); //Object Dictionary Index
     *(ptrMsg++) = (uint16_t)((Diccionario_CanOpen[Idx].ID) >> 8);     //Stored as little endian
@@ -121,7 +134,7 @@ uint16_t Set_CANOpenMsg_To_Tx(enum Indice_Diccionario_TPO Idx,
     status = Encolar_FIFO(ptr_MsgToTx);
 
     if (status == PILA_LLENA)
-        return (status);
+        return (0x01);
 
     memset(CANMsg, 0x00, 10); //Reset array to zero for next time
 
@@ -166,7 +179,7 @@ sEstadoFIFO Transmit_CANOPenMsg(FIFO MsgToTx)
             memcpy((void *)sTX_CANOpenMsg.pucMsgData,
                    (void *)ptr_MsgToTx->Datos_Recibidos, MSG_DATA_LENGTH);
             CANMessageSet(CANB_BASE, 1, &sTX_CANOpenMsg, MSG_OBJ_TYPE_TX);
-            DELAY_US(1000); // TODO: It may not be necessary, analyze. Maybe put here a TimeOut routine that wait
+            DELAY_US(1000); // TODO: Maybe put here a TimeOut routine that wait
                             // for a pending response from Power Supply or ADC module, otherwise set an Error
 
         } while (MsgToTx.Msg_pendientes != 0);
@@ -175,11 +188,11 @@ sEstadoFIFO Transmit_CANOPenMsg(FIFO MsgToTx)
         return (status);
 }
 /**
- * @brief 
  * 
  */
 void Set_PowerSupplyMailbox(void)
 {
+    
     sRXPowerSupply_CANOpenMsg.ui32MsgID = PS_NODE_ID;
     sRXPowerSupply_CANOpenMsg.ui32MsgIDMask = 0x1FFFFFFF;
     sRXPowerSupply_CANOpenMsg.ui32Flags = MSG_OBJ_RX_INT_ENABLE | MSG_OBJ_USE_ID_FILTER;
@@ -187,17 +200,22 @@ void Set_PowerSupplyMailbox(void)
     sRXPowerSupply_CANOpenMsg.pucMsgData = &FIFO_PowerSupplyRX.New_Datos;
     CANMessageSet(CANB_BASE, CAN_OBJ_ID_PS, &sRXPowerSupply_CANOpenMsg, MSG_OBJ_TYPE_RX);
 }
-/**
- * @brief 
- * 
- */
+
 void Set_ADCMailbox(void)
 {
-    sRXADC_CANOpenMsg.ui32MsgID = ADC_NODE_ID;
+    sRXADC_CANOpenMsg.ui32MsgID = 0x601;
     sRXADC_CANOpenMsg.ui32MsgIDMask = 0x1FFFFFFF;
     sRXADC_CANOpenMsg.ui32Flags = MSG_OBJ_RX_INT_ENABLE | MSG_OBJ_USE_ID_FILTER;
     sRXADC_CANOpenMsg.ui32MsgLen = MSG_DATA_LENGTH;
     sRXADC_CANOpenMsg.pucMsgData = &FIFO_AdcRX.New_Datos;
     CANMessageSet(CANB_BASE, CAN_OBJ_ID_ADC, &sRXADC_CANOpenMsg, MSG_OBJ_TYPE_RX);
 }
+
+/*
+uint16_t Get_ADCValues(AdcValues_t ptr_*ADCValues)
+{
+    
+
+}
+*/
 
