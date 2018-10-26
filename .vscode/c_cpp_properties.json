@@ -4,16 +4,27 @@
             "name": "Win32",
             "includePath": [
                 "${workspaceFolder}/**",
+                "${workspaceFolder}/COM_cpu01",
                 "${workspaceFolder}/COM_cpu01/App",
+                "${workspaceFolder}/COM_cpu01/Include",
+                "${workspaceFolder}/COM_cpu02",
                 "${workspaceFolder}/COM_cpu02/App",
-                "${workspaceFolder}/Can_EV",
-                "${workspaceFolder}/Can_Potencia",
-                "${workspaceFolder}/Aplicacion",
-                "${workspaceFolder}/Drivers",
-                "${workspaceFolder}/Libraries",
-                "${workspaceFolder}/Setup"
+                "${workspaceFolder}/COM_cpu02/Include",
+                "${workspaceFolder}/F2837xD",
+                "${workspaceFolder}/F2837xD/Comun",
+                "${workspaceFolder}/F2837xD/Comun/common",
+                "${workspaceFolder}/F2837xD/Comun/F2837xD_common/include",
+                "${workspaceFolder}/F2837xD/Comun/F2837xD_common/include/inc",
+                "${workspaceFolder}/F2837xD/Comun/F2837xD_common/source",
+                "${workspaceFolder}/F2837xD/F2837xD_headers",
+                "${workspaceFolder}/F2837xD/F2837xD_headers/include",
+                "${workspaceFolder}/F2837xD/F2837xD_headers/source",
+                "${workspaceFolder}/F2837xD/Comun/driverlib",
+                "${workspaceFolder}/F2837xD/Comun/Drivers",
+                "${workspaceFolder}/F2837xD/Comun/Drivers/Include",
+                "${workspaceFolder}/F2837xD/ti-cgt-c2000_16.9.6.LTS/include",
+                "${workspaceFolder}/F2837xD/ti-cgt-c2000_16.9.6.LTS/lib/src"
             ],
-
             "compilerPath": "C:\\Program Files\\LLVM\\bin\\clang.exe",
             "cStandard": "c11",
             "cppStandard": "c++17",
@@ -21,16 +32,29 @@
             "browse": {
                 "path": [
                     "${workspaceFolder}/**",
-            "${workspaceFolder}/App",
-            "${workspaceFolder}/Can_EV",
-            "${workspaceFolder}/Can_Potencia",
-            "${workspaceFolder}/Aplicacion",
-            "${workspaceFolder}/Drivers",
-            "${workspaceFolder}/Libraries",
-            "${workspaceFolder}/Setup"
+                    "${workspaceFolder}/COM_cpu01",
+                    "${workspaceFolder}/COM_cpu01/App",
+                    "${workspaceFolder}/COM_cpu01/Include",
+                    "${workspaceFolder}/COM_cpu02",
+                    "${workspaceFolder}/COM_cpu02/App",
+                    "${workspaceFolder}/COM_cpu02/Include",
+                    "${workspaceFolder}/F2837xD",
+                    "${workspaceFolder}/F2837xD/Comun",
+                    "${workspaceFolder}/F2837xD/Comun/common",
+                    "${workspaceFolder}/F2837xD/Comun/F2837xD_common/include",
+                    "${workspaceFolder}/F2837xD/Comun/F2837xD_common/include/inc",
+                    "${workspaceFolder}/F2837xD/Comun/F2837xD_common/source",
+                    "${workspaceFolder}/F2837xD/F2837xD_headers",
+                    "${workspaceFolder}/F2837xD/F2837xD_headers/include",
+                    "${workspaceFolder}/F2837xD/F2837xD_headers/source",
+                    "${workspaceFolder}/F2837xD/Comun/driverlib",
+                    "${workspaceFolder}/F2837xD/Comun/Drivers",
+                    "${workspaceFolder}/F2837xD/Comun/Drivers/Include",
+                    "${workspaceFolder}/F2837xD/ti-cgt-c2000_16.9.6.LTS/include",
+                    "${workspaceFolder}/F2837xD/ti-cgt-c2000_16.9.6.LTS/lib/src"
                 ]
             }
         }
-],
-"version": 4
+    ],
+    "version": 4
 }

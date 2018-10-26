@@ -81,7 +81,7 @@
                 - GRUPO F = GPIO160 a GPIO168
 
             NOTA IMPORTANTE : Se han implementado los modulos necesarios
-            y los más importantes de configuracion. para más resigtros
+            y los mï¿½s importantes de configuracion. para mï¿½s resigtros
             consular el PDF de TI "spruhx5e.pdf".
 
 \param[in]  void
@@ -142,6 +142,12 @@ void Config_GPIO ()
      // CANB_TX
      GPIO_SetupPinMux(12, GPIO_MUX_CPU1, 2);
      GPIO_SetupPinOptions(12, GPIO_OUTPUT, GPIO_PUSHPULL);
+     // CANA_RX
+     GPIO_SetupPinMux(9, GPIO_MUX_CPU1, 2);
+     GPIO_SetupPinOptions(9, GPIO_INPUT, GPIO_ASYNC);
+     // CANa_TX
+     GPIO_SetupPinMux(11, GPIO_MUX_CPU1, 2);
+     GPIO_SetupPinOptions(11, GPIO_OUTPUT, GPIO_PUSHPULL);
 /*
     // ePWM 2A
     GPIO_SetupPinMux(2, GPIO_MUX_CPU1, 1);

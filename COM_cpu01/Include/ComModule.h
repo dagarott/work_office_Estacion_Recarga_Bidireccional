@@ -31,6 +31,7 @@
 #define COM_NODE_ID 0x601
 #define ADC_NODE_ID 0x603
 #define PS_NODE_ID 0x630
+#define TIMEOUT_CAN_RX 2 //SysTick == 10. TIMEOUT_RX_CAN= SysTick*2=20ms
 
 
 extern FIFO FIFO_PowerSupplyTX; //FIFO Tx defined for Power Supply
@@ -45,6 +46,7 @@ extern enum Indice_Diccionario_TPO OD_Index;
 extern tCANMsgObject sRXPowerSupply_CANOpenMsg;
 extern tCANMsgObject sRXADC_CANOpenMsg;
 
+
 /**
  * @brief Flag used during transmission between Adc, Power Suplpy
  *and Comunication PCB .These flags declare status for 
@@ -58,16 +60,20 @@ typedef struct sFlagsCom
         uint16_t AllFlags;
         struct
         {
+            uint16_t TransmittedCANAdcMsg:1;
+            uint16_t TransmittedCANPsMsg:1;
             uint16_t AdcDataAvailable:1;
             uint16_t PsDataAvailable:1;
             uint16_t ErrorAdcCom:1;
             uint16_t ErrorPsCom:1;
+            uint16_t ErrorCom:1;
         }Flags;
    }StatusFlags;
 }FlagsCom_t;
 
 extern FlagsCom_t StatusCom;
-
+extern volatile uint32_t ui32TimeOutCANRx;
+extern volatile uint32_t ui32SysTickFlag;
 /**
  * @brief Struct used for save Voltage, Current and Temperature values
  * from ADC PCB
@@ -88,6 +94,7 @@ void Set_PowerSupplyMailbox(void);
 void Set_ADCMailbox(void);
 uint16_t Set_CANOpenMsg_To_Tx(enum Indice_Diccionario_TPO Idx, FIFO *ptr_MsgToTx, uint32_t DataToTx, uint16_t Node_ID);
 sEstadoFIFO Transmit_CANOPenMsg(FIFO MsgToTx);
+void Scheduler(void);
 //void Set_CANIntHandler(void);
 //interrupt void CANIntHandler(void);
 

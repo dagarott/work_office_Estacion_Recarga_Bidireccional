@@ -25,7 +25,7 @@ void Init_HW ()
     InitSysCtrl();
 
 #ifdef CPU2
-// Sincronización de arranque CPU1
+// Sincronizaciï¿½n de arranque CPU1
 // Esperamos a que se configure la cpu1
     //IPCLtoRFlagSet (IPC17);
     while (IpcRegs.IPCSTS.bit.IPC17 == 0) ;
@@ -71,7 +71,7 @@ void Init_HW ()
 //    GPIO_SetupPinMux(LED9, GPIO_MUX_CPU2, 0);
 //    GPIO_SetupPinOptions(LED9, GPIO_OUTPUT, GPIO_PUSHPULL);
 
-// Sincronización de arranque CPU1
+// Sincronizaciï¿½n de arranque CPU1
 // Indicamos que se ha configurado la cpu1
     IPCLtoRFlagSet (IPC_FLAG17);
 #endif
@@ -116,11 +116,12 @@ void Hablitar_ISR ()
 //  Memoria Compartida
 #ifdef CPU1
 
-    IER |= M_INT1;                         // CPU1 Timer1 Interrupt INT1.y
+    IER |= M_INT1;                         // CPU1 Timer0 Interrupt INT1.y
     IER |= M_INT9;                         // CPU1 CANB_0 Interrupt INT9.y
 
-    PieCtrlRegs.PIEIER1.bit.INTx7 = 1;     // CPU1 Timer1 Interrupt INTx.7
-    PieCtrlRegs.PIEIER9.bit.INTx7 = 1;     // CPU1 CANB_0 Interrupt INTx.7
+    PieCtrlRegs.PIEIER1.bit.INTx7 = 1;     // CPU1 Timer0 Interrupt INTx.7
+    //PieCtrlRegs.PIEIER9.bit.INTx7 = 1;   // CPU1 CANB_0 Interrupt INTx.7
+    PieCtrlRegs.PIEIER9.bit.INTx5 = 1;     // CPU1 CANA_0 Interrupt INTx.5
 
 #endif
 

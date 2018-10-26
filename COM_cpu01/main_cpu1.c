@@ -29,6 +29,8 @@
 #include "ComModule.h"
 /* USER CODE END Includes */
 
+#define DEBUG
+
 uint32_t tmp = 0;
 
 /**
@@ -41,7 +43,7 @@ void main(void)
 
     Init_HW(); /* Initialize all the HW*/
     Hablitar_ISR();
-    Config_CANB (500); //500kbit/s
+    Config_CANA(500); //500kbit/s
 
 /* USER CODE BEGIN */
     Set_PowerSupplyMailbox();
@@ -65,7 +67,7 @@ void main(void)
 #endif
     DELAY_US(5000);
     OD_Index = Config_ADC; //CAN command array Index. Commands present in Diccionario_CANOpen.c file
-    Set_CANOpenMsg_To_Tx(OD_Index, &FIFO_AdcTX,ENABLE_ADC,ADC_NODE_ID);
+    status = Set_CANOpenMsg_To_Tx(OD_Index, &FIFO_AdcTX,ENABLE_ADC,ADC_NODE_ID);
     Transmit_CANOPenMsg(FIFO_AdcTX);
 
 
@@ -73,6 +75,12 @@ void main(void)
     
     for (;;)
     {
+        if(ui32SysTickFlag)
+        {
+            ui32SysTickFlag=false;
+            Scheduler();
+        }
+            
     }
 }
 

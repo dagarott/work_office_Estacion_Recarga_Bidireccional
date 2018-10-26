@@ -16,7 +16,7 @@
 //
 // Variables publicas
 //
-//#define CPU1
+#define CPU1
 #define ISR_ENABLE
 
 typedef enum { FALSE = 0, TRUE } BOOL;

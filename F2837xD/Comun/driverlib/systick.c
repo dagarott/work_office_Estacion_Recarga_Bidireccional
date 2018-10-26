@@ -215,7 +215,7 @@ SysTickIntDisable(void)
 //
 //*****************************************************************************
 void
-SysTickPeriodSet(uint32_t ui32Period)
+    SysTickPeriodSet(uint32_t ui32Period)
 {
     //
     // Check the arguments.
@@ -227,7 +227,7 @@ SysTickPeriodSet(uint32_t ui32Period)
     //
     CpuTimer0Regs.PRD.all = ui32Period;
 }
-
+ 
 //*****************************************************************************
 //
 //! Gets the period of the SysTick counter.

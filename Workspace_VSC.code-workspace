@@ -11,7 +11,9 @@
 			"config_can.h": "c",
 			"def_global.h": "c",
 			"diccionario_canopen.h": "c",
-			"chademo.h": "c"
+			"chademo.h": "c",
+			"commodule.h": "c",
+			"systick.h": "c"
 		}
 	}
 }

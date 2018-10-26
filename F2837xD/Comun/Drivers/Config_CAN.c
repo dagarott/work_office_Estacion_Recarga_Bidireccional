@@ -68,6 +68,41 @@ tCANMsgObject sRXCANMessage2;
 \return     void
 
 **************************************************************************/
+void Config_CANA(uint32_t BitRate)
+{
+    // Initialize the CAN controllers
+    CANInit(CANA_BASE);
+
+    // Setup CAN to be clocked off the PLL output clock
+    CANClkSourceSelect(CANA_BASE, 0); // 500kHz CAN-Clock
+
+    //               Num CAN | Frec de Reloj en Hz | BitRate en Bit/s
+    // CANBitRateSet(ui32Base, ui32SourceClock     , ui32BitRate)
+    CANBitRateSet(CANA_BASE, (uint32_t)T_clk, BitRate * 1000);
+
+    // Enable interrupts on the CAN B peripheral.
+    CANIntEnable(CANA_BASE, CAN_INT_MASTER);
+
+    // Enable CAN Global Interrupt line0
+    //
+    CANGlobalIntEnable(CANA_BASE, CAN_GLB_INT_CANINT0);
+
+    // Start CAN module A and B operations
+    CANEnable(CANA_BASE);
+
+}
+// FIN Config_CANA
+
+/**
+***************************************************************************
+\fn         Config_CAN
+\brief      Funcion principal de configuracion del CAN_A. Esta funcion
+            es llamada desde el "main".
+
+\param[in]  void
+\return     void
+
+**************************************************************************/
 void Config_CANB(uint32_t BitRate)
 {
     // Initialize the CAN controllers
@@ -91,8 +126,6 @@ void Config_CANB(uint32_t BitRate)
     CANEnable(CANB_BASE);
 
 }
-// FIN Config_CANB
-
 void Transmitir_CANB()
 {
 
