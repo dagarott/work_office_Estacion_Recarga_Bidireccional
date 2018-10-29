@@ -56,11 +56,19 @@ App/Diccionario_CANOpen.obj: C:/Users/dagaro/workspace/Firmware_Test/UFCharger/F
 App/Diccionario_CANOpen.obj: C:/Users/dagaro/workspace/Firmware_Test/UFCharger/F2837xD/F2837xD_common/include/F2837xD_Dma_defines.h
 App/Diccionario_CANOpen.obj: C:/Users/dagaro/workspace/Firmware_Test/UFCharger/F2837xD/F2837xD_common/include/F2837xD_SysCtrl_defines.h
 App/Diccionario_CANOpen.obj: C:/Users/dagaro/workspace/Firmware_Test/UFCharger/F2837xD/F2837xD_common/include/F2837xD_Upp_defines.h
+App/Diccionario_CANOpen.obj: C:/Users/dagaro/workspace/Firmware_Test/UFCharger/F2837xD/Comun/Drivers/Include/Inc_Drivers.h
+App/Diccionario_CANOpen.obj: C:/Users/dagaro/workspace/Firmware_Test/UFCharger/F2837xD/F2837xD_common/include/F28x_Project.h
+App/Diccionario_CANOpen.obj: C:/Users/dagaro/workspace/Firmware_Test/UFCharger/COM_cpu01/Include/DEF_Global.h
+App/Diccionario_CANOpen.obj: C:/Users/dagaro/workspace/Firmware_Test/UFCharger/F2837xD/ti-cgt-c2000_16.9.6.LTS/include/string.h
+App/Diccionario_CANOpen.obj: C:/Users/dagaro/workspace/Firmware_Test/UFCharger/F2837xD/Comun/Drivers/Include/Init_HW.h
+App/Diccionario_CANOpen.obj: C:/Users/dagaro/workspace/Firmware_Test/UFCharger/F2837xD/Comun/Drivers/Include/Config_GPIO.h
+App/Diccionario_CANOpen.obj: C:/Users/dagaro/workspace/Firmware_Test/UFCharger/F2837xD/Comun/Drivers/Include/Config_CAN.h
+App/Diccionario_CANOpen.obj: C:/Users/dagaro/workspace/Firmware_Test/UFCharger/F2837xD/Comun/driverlib/can.h
+App/Diccionario_CANOpen.obj: C:/Users/dagaro/workspace/Firmware_Test/UFCharger/F2837xD/Comun/Drivers/Include/FIFO.h
+App/Diccionario_CANOpen.obj: C:/Users/dagaro/workspace/Firmware_Test/UFCharger/F2837xD/ti-cgt-c2000_16.9.6.LTS/include/string.h
 App/Diccionario_CANOpen.obj: C:/Users/dagaro/workspace/Firmware_Test/UFCharger/F2837xD/F2837xD_common/include/F2837xD_defaultisr.h
 App/Diccionario_CANOpen.obj: C:/Users/dagaro/workspace/Firmware_Test/UFCharger/F2837xD/F2837xD_common/include/F2837xD_Ipc_drivers.h
 App/Diccionario_CANOpen.obj: C:/Users/dagaro/workspace/Firmware_Test/UFCharger/COM_cpu01/Include/Diccionario_CANOpen.h
-App/Diccionario_CANOpen.obj: C:/Users/dagaro/workspace/Firmware_Test/UFCharger/F2837xD/Comun/Drivers/Include/Config_CAN.h
-App/Diccionario_CANOpen.obj: C:/Users/dagaro/workspace/Firmware_Test/UFCharger/F2837xD/Comun/driverlib/can.h
 
 ../App/Diccionario_CANOpen.c: 
 C:/Users/dagaro/workspace/Firmware_Test/UFCharger/F2837xD/F2837xD_common/include/F28x_Project.h: 
@@ -118,8 +126,16 @@ C:/Users/dagaro/workspace/Firmware_Test/UFCharger/F2837xD/F2837xD_common/include
 C:/Users/dagaro/workspace/Firmware_Test/UFCharger/F2837xD/F2837xD_common/include/F2837xD_Dma_defines.h: 
 C:/Users/dagaro/workspace/Firmware_Test/UFCharger/F2837xD/F2837xD_common/include/F2837xD_SysCtrl_defines.h: 
 C:/Users/dagaro/workspace/Firmware_Test/UFCharger/F2837xD/F2837xD_common/include/F2837xD_Upp_defines.h: 
+C:/Users/dagaro/workspace/Firmware_Test/UFCharger/F2837xD/Comun/Drivers/Include/Inc_Drivers.h: 
+C:/Users/dagaro/workspace/Firmware_Test/UFCharger/F2837xD/F2837xD_common/include/F28x_Project.h: 
+C:/Users/dagaro/workspace/Firmware_Test/UFCharger/COM_cpu01/Include/DEF_Global.h: 
+C:/Users/dagaro/workspace/Firmware_Test/UFCharger/F2837xD/ti-cgt-c2000_16.9.6.LTS/include/string.h: 
+C:/Users/dagaro/workspace/Firmware_Test/UFCharger/F2837xD/Comun/Drivers/Include/Init_HW.h: 
+C:/Users/dagaro/workspace/Firmware_Test/UFCharger/F2837xD/Comun/Drivers/Include/Config_GPIO.h: 
+C:/Users/dagaro/workspace/Firmware_Test/UFCharger/F2837xD/Comun/Drivers/Include/Config_CAN.h: 
+C:/Users/dagaro/workspace/Firmware_Test/UFCharger/F2837xD/Comun/driverlib/can.h: 
+C:/Users/dagaro/workspace/Firmware_Test/UFCharger/F2837xD/Comun/Drivers/Include/FIFO.h: 
+C:/Users/dagaro/workspace/Firmware_Test/UFCharger/F2837xD/ti-cgt-c2000_16.9.6.LTS/include/string.h: 
 C:/Users/dagaro/workspace/Firmware_Test/UFCharger/F2837xD/F2837xD_common/include/F2837xD_defaultisr.h: 
 C:/Users/dagaro/workspace/Firmware_Test/UFCharger/F2837xD/F2837xD_common/include/F2837xD_Ipc_drivers.h: 
 C:/Users/dagaro/workspace/Firmware_Test/UFCharger/COM_cpu01/Include/Diccionario_CANOpen.h: 
-C:/Users/dagaro/workspace/Firmware_Test/UFCharger/F2837xD/Comun/Drivers/Include/Config_CAN.h: 
-C:/Users/dagaro/workspace/Firmware_Test/UFCharger/F2837xD/Comun/driverlib/can.h: 

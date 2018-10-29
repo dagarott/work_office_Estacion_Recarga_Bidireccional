@@ -24,6 +24,7 @@
 #define STATUS_FAIL          0
 #define STATUS_SUCCESS       1
 
+
 //
 // Functions that will be run from RAM need to be assigned to a different
 // section.  This section will then be mapped to a load and run address using
@@ -36,15 +37,15 @@
 //  THROWING AN EXCEPTION WHEN A CALL TO DELAY_US() IS MADE.
 //
 #ifndef __cplusplus
-    #ifdef __TI_COMPILER_VERSION__
-        #if __TI_COMPILER_VERSION__ >= 15009000
-            #pragma CODE_SECTION(InitFlash, ".TI.ramfunc");
-            #pragma CODE_SECTION(FlashOff, ".TI.ramfunc");        
-        #else
-            #pragma CODE_SECTION(InitFlash, "ramfuncs");
-            #pragma CODE_SECTION(FlashOff, "ramfuncs");        
-        #endif
-    #endif
+#ifdef __TI_COMPILER_VERSION__
+#if __TI_COMPILER_VERSION__ >= 15009000
+#pragma CODE_SECTION(InitFlash, ".TI.ramfunc");
+#pragma CODE_SECTION(FlashOff, ".TI.ramfunc");
+#else
+#pragma CODE_SECTION(InitFlash, "ramfuncs");
+#pragma CODE_SECTION(FlashOff, "ramfuncs");
+#endif
+#endif
 #endif
 
 //
@@ -52,6 +53,10 @@
 //
 void InitSysCtrl(void)
 {
+
+    //Variable used to do temporal calculus in "Initialize the PLL control function
+    //Added by ITE team"
+    float IMULT_temp = 0;
     //
     // Disable the watchdog
     //
@@ -65,7 +70,7 @@ void InitSysCtrl(void)
     // The  RamfuncsLoadStart, RamfuncsLoadSize, and RamfuncsRunStart
     // symbols are created by the linker. Refer to the device .cmd file.
     //
-    memcpy(&RamfuncsRunStart, &RamfuncsLoadStart, (size_t)&RamfuncsLoadSize);
+    memcpy(&RamfuncsRunStart, &RamfuncsLoadStart, (size_t) &RamfuncsLoadSize);
 
     //
     // Call Flash Initialization to setup flash waitstates. This function must
@@ -104,7 +109,8 @@ void InitSysCtrl(void)
     //
     // Check if device is trimmed
     //
-    if(*((Uint16 *)0x5D1B6) == 0x0000){
+    if (*((Uint16 *) 0x5D1B6) == 0x0000)
+    {
         //
         // Device is not trimmed--apply static calibration values
         //
@@ -132,13 +138,14 @@ void InitSysCtrl(void)
     //  PLLSYSCLK = (XTAL_OSC) * (IMULT + FMULT) / (PLLSYSCLKDIV)
     //
     /*
-#ifdef _LAUNCHXL_F28379D
-    InitSysPll(XTAL_OSC,IMULT_40,FMULT_0,PLLCLK_BY_2);
-#else
-    //InitSysPll(XTAL_OSC, IMULT_20, FMULT_0, PLLCLK_BY_2);
-#endif // _LAUNCHXL_F28379D
-    */
-    InitSysPll(XTAL_OSC,IMULT_20,FMULT_0,PLLCLK_BY_2);
+     #ifdef _LAUNCHXL_F28379D
+     InitSysPll(XTAL_OSC,IMULT_40,FMULT_0,PLLCLK_BY_2);
+     #else
+     InitSysPll(XTAL_OSC, IMULT_20, FMULT_0, PLLCLK_BY_2);
+     #endif // _LAUNCHXL_F28379D
+     */
+    IMULT_temp = ((T_clk*2/* T_clk==200MHz * PLLCLK_BY_2==2 */) / XTAL);
+    InitSysPll(XTAL_OSC, IMULT_temp, FMULT_0, PLLCLK_BY_2);
 #endif // CPU1
 
     //
@@ -281,13 +288,13 @@ void DisablePeripheralClocks(void)
 // will yield unpredictable results.
 //
 #ifdef __cplusplus
-    #ifdef __TI_COMPILER_VERSION__
-        #if __TI_COMPILER_VERSION__ >= 15009000
-            #pragma CODE_SECTION(".TI.ramfunc");
-        #else
-            #pragma CODE_SECTION("ramfuncs");
-        #endif
-    #endif
+#ifdef __TI_COMPILER_VERSION__
+#if __TI_COMPILER_VERSION__ >= 15009000
+#pragma CODE_SECTION(".TI.ramfunc");
+#else
+#pragma CODE_SECTION("ramfuncs");
+#endif
+#endif
 #endif
 void InitFlash(void)
 {
@@ -326,17 +333,17 @@ void InitFlash(void)
     // must be characterized by TI. Refer to the datasheet for the latest
     // information.
     //
-    #if CPU_FRQ_200MHZ
+#if CPU_FRQ_200MHZ
     Flash0CtrlRegs.FRDCNTL.bit.RWAIT = 0x3;
-    #endif
+#endif
 
-    #if CPU_FRQ_150MHZ
+#if CPU_FRQ_150MHZ
     Flash0CtrlRegs.FRDCNTL.bit.RWAIT = 0x2;
-    #endif
+#endif
 
-    #if CPU_FRQ_120MHZ
+#if CPU_FRQ_120MHZ
     Flash0CtrlRegs.FRDCNTL.bit.RWAIT = 0x2;
-    #endif
+#endif
 
     //
     // Enable Cache and prefetch mechanism to improve performance of code
@@ -369,13 +376,13 @@ void InitFlash(void)
 // order to power it down.
 //
 #ifdef __cplusplus
-    #ifdef __TI_COMPILER_VERSION__
-        #if __TI_COMPILER_VERSION__ >= 15009000
-            #pragma CODE_SECTION(".TI.ramfunc");
-        #else
-            #pragma CODE_SECTION("ramfuncs");
-        #endif
-    #endif
+#ifdef __TI_COMPILER_VERSION__
+#if __TI_COMPILER_VERSION__ >= 15009000
+#pragma CODE_SECTION(".TI.ramfunc");
+#else
+#pragma CODE_SECTION("ramfuncs");
+#endif
+#endif
 #endif
 void FlashOff(void)
 {
@@ -406,17 +413,17 @@ void FlashOff(void)
 void SeizeFlashPump(void)
 {
     EALLOW;
-    #ifdef CPU1
-        while (FlashPumpSemaphoreRegs.PUMPREQUEST.bit.PUMP_OWNERSHIP != 0x2)
-        {
-            FlashPumpSemaphoreRegs.PUMPREQUEST.all = IPC_PUMP_KEY | 0x2;
-        }
-    #elif defined(CPU2)
-        while (FlashPumpSemaphoreRegs.PUMPREQUEST.bit.PUMP_OWNERSHIP != 0x1)
-        {
-            FlashPumpSemaphoreRegs.PUMPREQUEST.all = IPC_PUMP_KEY | 0x1;
-        }
-    #endif
+#ifdef CPU1
+    while (FlashPumpSemaphoreRegs.PUMPREQUEST.bit.PUMP_OWNERSHIP != 0x2)
+    {
+        FlashPumpSemaphoreRegs.PUMPREQUEST.all = IPC_PUMP_KEY | 0x2;
+    }
+#elif defined(CPU2)
+    while (FlashPumpSemaphoreRegs.PUMPREQUEST.bit.PUMP_OWNERSHIP != 0x1)
+    {
+        FlashPumpSemaphoreRegs.PUMPREQUEST.all = IPC_PUMP_KEY | 0x1;
+    }
+#endif
     EDIS;
 }
 
@@ -473,10 +480,10 @@ void DisableDog(void)
 void InitSysPll(Uint16 clock_source, Uint16 imult, Uint16 fmult, Uint16 divsel)
 {
     Uint16 SCSR, WDCR, WDWCR, intStatus;
-    if((clock_source == ClkCfgRegs.CLKSRCCTL1.bit.OSCCLKSRCSEL)    &&
-       (imult        == ClkCfgRegs.SYSPLLMULT.bit.IMULT)           &&
-       (fmult        == ClkCfgRegs.SYSPLLMULT.bit.FMULT)           &&
-       (divsel       == ClkCfgRegs.SYSCLKDIVSEL.bit.PLLSYSCLKDIV))
+    if ((clock_source == ClkCfgRegs.CLKSRCCTL1.bit.OSCCLKSRCSEL)
+            && (imult == ClkCfgRegs.SYSPLLMULT.bit.IMULT)
+            && (fmult == ClkCfgRegs.SYSPLLMULT.bit.FMULT)
+            && (divsel == ClkCfgRegs.SYSCLKDIVSEL.bit.PLLSYSCLKDIV))
     {
         //
         // Everything is set as required, so just return
@@ -484,34 +491,34 @@ void InitSysPll(Uint16 clock_source, Uint16 imult, Uint16 fmult, Uint16 divsel)
         return;
     }
 
-    if(clock_source != ClkCfgRegs.CLKSRCCTL1.bit.OSCCLKSRCSEL)
+    if (clock_source != ClkCfgRegs.CLKSRCCTL1.bit.OSCCLKSRCSEL)
     {
         switch (clock_source)
         {
-            case INT_OSC1:
-                SysIntOsc1Sel();
-                break;
+        case INT_OSC1:
+            SysIntOsc1Sel();
+            break;
 
-            case INT_OSC2:
-                SysIntOsc2Sel();
-                break;
+        case INT_OSC2:
+            SysIntOsc2Sel();
+            break;
 
-            case XTAL_OSC:
-                SysXtalOscSel();
-                break;
+        case XTAL_OSC:
+            SysXtalOscSel();
+            break;
         }
     }
 
     EALLOW;
-    if(imult != ClkCfgRegs.SYSPLLMULT.bit.IMULT ||
-       fmult != ClkCfgRegs.SYSPLLMULT.bit.FMULT)
+    if (imult != ClkCfgRegs.SYSPLLMULT.bit.IMULT
+            || fmult != ClkCfgRegs.SYSPLLMULT.bit.FMULT)
     {
         Uint16 i;
 
         //
         // This bit is reset only by POR
         //
-        if(DevCfgRegs.SYSDBGCTL.bit.BIT_0 == 1)
+        if (DevCfgRegs.SYSDBGCTL.bit.BIT_0 == 1)
         {
             //
             // The user can optionally insert handler code here. This will only
@@ -539,7 +546,7 @@ void InitSysPll(Uint16 clock_source, Uint16 imult, Uint16 fmult, Uint16 divsel)
         // Five is the minimum recommended number. The user can increase this
         // number according to allotted system initialization time.
         //
-        for(i = 0; i < 5; i++)
+        for (i = 0; i < 5; i++)
         {
             //
             // Turn off PLL
@@ -555,7 +562,7 @@ void InitSysPll(Uint16 clock_source, Uint16 imult, Uint16 fmult, Uint16 divsel)
             //
             // Wait for the SYSPLL lock counter
             //
-            while(ClkCfgRegs.SYSPLLSTS.bit.LOCKS != 1)
+            while (ClkCfgRegs.SYSPLLSTS.bit.LOCKS != 1)
             {
                 //
                 // Uncomment to service the watchdog
@@ -568,12 +575,13 @@ void InitSysPll(Uint16 clock_source, Uint16 imult, Uint16 fmult, Uint16 divsel)
     //
     // Set divider to produce slower output frequency to limit current increase
     //
-    if(divsel != PLLCLK_BY_126)
+    if (divsel != PLLCLK_BY_126)
     {
-         ClkCfgRegs.SYSCLKDIVSEL.bit.PLLSYSCLKDIV = divsel + 1;
-    }else
+        ClkCfgRegs.SYSCLKDIVSEL.bit.PLLSYSCLKDIV = divsel + 1;
+    }
+    else
     {
-         ClkCfgRegs.SYSCLKDIVSEL.bit.PLLSYSCLKDIV = divsel;
+        ClkCfgRegs.SYSCLKDIVSEL.bit.PLLSYSCLKDIV = divsel;
     }
 
     //
@@ -646,7 +654,7 @@ void InitSysPll(Uint16 clock_source, Uint16 imult, Uint16 fmult, Uint16 divsel)
     // Restore state of ST1[INTM]. This was set by the __disable_interrupts()
     // intrinsic previously.
     //
-    if(!(intStatus & 0x1))
+    if (!(intStatus & 0x1))
     {
         EINT;
     }
@@ -655,7 +663,7 @@ void InitSysPll(Uint16 clock_source, Uint16 imult, Uint16 fmult, Uint16 divsel)
     // Restore state of ST1[DBGM]. This was set by the __disable_interrupts()
     // intrinsic previously.
     //
-    if(!(intStatus & 0x2))
+    if (!(intStatus & 0x2))
     {
         asm(" CLRC DBGM");
     }
@@ -691,10 +699,10 @@ void InitAuxPll(Uint16 clock_source, Uint16 imult, Uint16 fmult, Uint16 divsel)
     Uint16 t2_tcr, t2_tpr, t2_tprh, t2_src, t2_prescale;
     Uint32 t2_prd;
 
-    if((clock_source == ClkCfgRegs.CLKSRCCTL2.bit.AUXOSCCLKSRCSEL) &&
-       (imult        == ClkCfgRegs.AUXPLLMULT.bit.IMULT)           &&
-       (fmult        == ClkCfgRegs.AUXPLLMULT.bit.FMULT)           &&
-       (divsel       == ClkCfgRegs.AUXCLKDIVSEL.bit.AUXPLLDIV))
+    if ((clock_source == ClkCfgRegs.CLKSRCCTL2.bit.AUXOSCCLKSRCSEL)
+            && (imult == ClkCfgRegs.AUXPLLMULT.bit.IMULT)
+            && (fmult == ClkCfgRegs.AUXPLLMULT.bit.FMULT)
+            && (divsel == ClkCfgRegs.AUXCLKDIVSEL.bit.AUXPLLDIV))
     {
         //
         // Everything is set as required, so just return
@@ -704,17 +712,17 @@ void InitAuxPll(Uint16 clock_source, Uint16 imult, Uint16 fmult, Uint16 divsel)
 
     switch (clock_source)
     {
-        case INT_OSC2:
-            AuxIntOsc2Sel();
-            break;
+    case INT_OSC2:
+        AuxIntOsc2Sel();
+        break;
 
-        case XTAL_OSC:
-            AuxXtalOscSel();
-            break;
+    case XTAL_OSC:
+        AuxXtalOscSel();
+        break;
 
-        case AUXCLKIN:
-            AuxAuxClkSel();
-            break;
+    case AUXCLKIN:
+        AuxAuxClkSel();
+        break;
     }
 
     //
@@ -747,11 +755,12 @@ void InitAuxPll(Uint16 clock_source, Uint16 imult, Uint16 fmult, Uint16 divsel)
     ClkCfgRegs.AUXCLKDIVSEL.bit.AUXPLLDIV = 0x3;
     EDIS;
 
-    while((counter < 5) && (started == 0))
+    while ((counter < 5) && (started == 0))
     {
         EALLOW;
         ClkCfgRegs.AUXPLLCTL1.bit.PLLEN = 0;    // Turn off AUXPLL
-        asm(" RPT #20 || NOP");                 // Small delay for power down
+        asm(" RPT #20 || NOP");
+        // Small delay for power down
 
         //
         // Set integer and fractional multiplier, which automatically turns on
@@ -768,7 +777,7 @@ void InitAuxPll(Uint16 clock_source, Uint16 imult, Uint16 fmult, Uint16 divsel)
         //
         // Wait for the AUXPLL lock counter
         //
-        while(ClkCfgRegs.AUXPLLSTS.bit.LOCKS != 1)
+        while (ClkCfgRegs.AUXPLLSTS.bit.LOCKS != 1)
         {
             //
             // Uncomment to service the watchdog
@@ -793,12 +802,12 @@ void InitAuxPll(Uint16 clock_source, Uint16 imult, Uint16 fmult, Uint16 divsel)
         //
         // Check to see timer is counting properly
         //
-        for(i = 0; i < 1000; i++)
+        for (i = 0; i < 1000; i++)
         {
             //
             // Check overflow flag
             //
-            if(CpuTimer2Regs.TCR.bit.TIF)
+            if (CpuTimer2Regs.TCR.bit.TIF)
             {
                 //
                 // Clear overflow flag
@@ -821,7 +830,7 @@ void InitAuxPll(Uint16 clock_source, Uint16 imult, Uint16 fmult, Uint16 divsel)
         EDIS;
     }
 
-    if(started == 0)
+    if (started == 0)
     {
         //
         // AUX PLL may not have started. Reset multiplier to 0 (bypass PLL).
@@ -885,7 +894,7 @@ Uint16 CsmUnlock(void)
     DcsmZ2Regs.Z2_CSMKEY3 = 0xFFFFFFFF;
     EDIS;
 
-    return(0);
+    return (0);
 }
 
 //
@@ -904,7 +913,7 @@ void SysIntOsc1Sel(void)
 void SysIntOsc2Sel(void)
 {
     EALLOW;
-    ClkCfgRegs.CLKSRCCTL1.bit.INTOSC2OFF=0;         // Turn on INTOSC2
+    ClkCfgRegs.CLKSRCCTL1.bit.INTOSC2OFF = 0;         // Turn on INTOSC2
     ClkCfgRegs.CLKSRCCTL1.bit.OSCCLKSRCSEL = 0;     // Clk Src = INTOSC2
     EDIS;
 }
@@ -915,7 +924,7 @@ void SysIntOsc2Sel(void)
 void SysXtalOscSel(void)
 {
     EALLOW;
-    ClkCfgRegs.CLKSRCCTL1.bit.XTALOFF=0;            // Turn on XTALOSC
+    ClkCfgRegs.CLKSRCCTL1.bit.XTALOFF = 0;            // Turn on XTALOSC
     ClkCfgRegs.CLKSRCCTL1.bit.OSCCLKSRCSEL = 1;     // Clk Src = XTAL
     EDIS;
 }
@@ -926,7 +935,7 @@ void SysXtalOscSel(void)
 void AuxIntOsc2Sel(void)
 {
     EALLOW;
-    ClkCfgRegs.CLKSRCCTL1.bit.INTOSC2OFF=0;         // Turn on INTOSC2
+    ClkCfgRegs.CLKSRCCTL1.bit.INTOSC2OFF = 0;         // Turn on INTOSC2
     ClkCfgRegs.CLKSRCCTL2.bit.AUXOSCCLKSRCSEL = 0;  // Clk Src = INTOSC2
     EDIS;
 }
@@ -937,7 +946,7 @@ void AuxIntOsc2Sel(void)
 void AuxXtalOscSel(void)
 {
     EALLOW;
-    ClkCfgRegs.CLKSRCCTL1.bit.XTALOFF=0;            // Turn on XTALOSC
+    ClkCfgRegs.CLKSRCCTL1.bit.XTALOFF = 0;            // Turn on XTALOSC
     ClkCfgRegs.CLKSRCCTL2.bit.AUXOSCCLKSRCSEL = 1;  // Clk Src = XTAL
     EDIS;
 }
@@ -986,7 +995,8 @@ void HALT(void)
     CpuSysRegs.LPMCR.bit.LPM = LPM_HALT;
     EDIS;
 
-    while(DevCfgRegs.LPMSTAT.bit.CPU2LPMSTAT != 0x1);
+    while (DevCfgRegs.LPMSTAT.bit.CPU2LPMSTAT != 0x1)
+        ;
 
     EALLOW;
     ClkCfgRegs.SYSPLLCTL1.bit.PLLCLKEN = 0;
@@ -1008,8 +1018,9 @@ void HIB(void)
     CpuSysRegs.LPMCR.bit.LPM = LPM_HIB;
     EDIS;
 
-    while((DevCfgRegs.LPMSTAT.bit.CPU2LPMSTAT == 0x0) &&
-          (DevCfgRegs.RSTSTAT.bit.CPU2RES == 1));
+    while ((DevCfgRegs.LPMSTAT.bit.CPU2LPMSTAT == 0x0)
+            && (DevCfgRegs.RSTSTAT.bit.CPU2RES == 1))
+        ;
 
     DisablePeripheralClocks();
     EALLOW;

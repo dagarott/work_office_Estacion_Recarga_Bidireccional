@@ -23,28 +23,30 @@
 #include "Diccionario_CANOpen.h"
 #include "FIFO.h"
 
-#define CAN_OBJ_ID_PS 2  //Power Suply
-#define CAN_OBJ_ID_ADC 3 //ADC
+#define MAILBOX_ONE 2    // Two different mailbox CAN for receive data from ADC
+#define MAILBOX_TWO 3    // and Power Supply
 //#define ENABLE_ADC  0x01010001
 #define ENABLE_ADC  0x01000101
 #define DISABLE_ADC 0x01000000
-#define COM_NODE_ID 0x601
-#define ADC_NODE_ID 0x603
-#define PS_NODE_ID 0x630
+#define COM_NODE_ID 0x01
+#define ADC_NODE_ID 0x03
+#define PS_NODE_ID 0x30
 #define TIMEOUT_CAN_RX 2 //SysTick == 10. TIMEOUT_RX_CAN= SysTick*2=20ms
 
 
-extern FIFO FIFO_PowerSupplyTX; //FIFO Tx defined for Power Supply
-extern FIFO FIFO_PowerSupplyRX; //FIFO Tx defined for Power Supply
-extern FIFO FIFO_AdcTX;         //FIFO Tx defined for ADC
-extern FIFO FIFO_AdcRX;         //FIFO Rx defined for ADC
-extern FIFO FIFO_PcRX;          //FIFO Tx defined for Industrial PC
-extern FIFO FIFO_PcTX;          //FIFO Rx defined for Industrial PC
+extern FIFO FIFO_PowerSupplyTx;     //FIFO Tx defined for Power Supply
+//extern FIFO FIFO_PowerSupplyRX;   //FIFO Tx defined for Power Supply
+extern FIFO FIFO_AdcTx;             //FIFO Tx defined for ADC
+//extern FIFO FIFO_AdcRX;           //FIFO Rx defined for ADC
+extern FIFO FIFO_CanRx;                //Unique CAN FIFO defined for store CAN
+                                    //messages from Power Supply and ADC
+extern FIFO FIFO_PcRx;              //FIFO Tx defined for Industrial PC
+extern FIFO FIFO_PcTx;              //FIFO Rx defined for Industrial PC
 
 extern tCanMsg Diccionario_CanOpen[];
 extern enum Indice_Diccionario_TPO OD_Index;
-extern tCANMsgObject sRXPowerSupply_CANOpenMsg;
-extern tCANMsgObject sRXADC_CANOpenMsg;
+extern tCANMsgObject sMailboxOneCANOpenMsg;
+extern tCANMsgObject sMailboxTwoCANOpenMsg;
 
 
 /**
@@ -60,10 +62,8 @@ typedef struct sFlagsCom
         uint16_t AllFlags;
         struct
         {
-            uint16_t TransmittedCANAdcMsg:1;
-            uint16_t TransmittedCANPsMsg:1;
-            uint16_t AdcDataAvailable:1;
-            uint16_t PsDataAvailable:1;
+            uint16_t TransmittedCanMsg:1;
+            uint16_t DataAvailable:1;
             uint16_t ErrorAdcCom:1;
             uint16_t ErrorPsCom:1;
             uint16_t ErrorCom:1;
@@ -75,7 +75,7 @@ extern FlagsCom_t StatusCom;
 extern volatile uint32_t ui32TimeOutCANRx;
 extern volatile uint32_t ui32SysTickFlag;
 /**
- * @brief Struct used for save Voltage, Current and Temperature values
+ * @brief Variable used for save Voltage, Current and Temperature values
  * from ADC PCB
  * 
  */
@@ -89,13 +89,11 @@ typedef struct sAdcValues
 
 extern AdcValues_t AdcValuesSaved;
 
-void Init_CANOpenMsgFIFO(void);
-void Set_PowerSupplyMailbox(void);
-void Set_ADCMailbox(void);
+void Init_CANOpenMsgFIFOs(void);
+void Set_MailboxOne(void);
+void Set_MailboxTwo(void);
 uint16_t Set_CANOpenMsg_To_Tx(enum Indice_Diccionario_TPO Idx, FIFO *ptr_MsgToTx, uint32_t DataToTx, uint16_t Node_ID);
 sEstadoFIFO Transmit_CANOPenMsg(FIFO MsgToTx);
 void Scheduler(void);
-//void Set_CANIntHandler(void);
-//interrupt void CANIntHandler(void);
 
 #endif /* COMMODULE_H_ */

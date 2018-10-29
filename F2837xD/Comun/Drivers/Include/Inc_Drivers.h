@@ -28,8 +28,11 @@
 // Definimos el modelo del Microcontrolador
 //#define TMS320F28377s
 //#define TMS320F2837xD
-#define T_clk 100000000   //10 MHz
-
+// Defines for specific ITE HW
+//TODO: check these defines. 
+#define T_clk 200000000  //200 MHz
+//#define TCLK 100000000  //Frequency desired, 100 MHz
+#define XTAL 12000000   //External crystal, 12MHz
 
 //
 // Definicion posiciones de memoria

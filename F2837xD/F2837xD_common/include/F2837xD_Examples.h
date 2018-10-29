@@ -329,6 +329,14 @@ extern "C" {
 #include "F2837xD_SysCtrl_defines.h"        // Macros used for LPM support code
 #include "F2837xD_Upp_defines.h"            // Macros used for UPP examples.
 
+//
+//  BEGIN INCLUDE
+//
+#include "Inc_Drivers.h"   //This include added by ITE team
+//
+//  END INCLUDE
+//
+
 #define   PARTNO_2837xPACKAGEHERE 0x00
 
 #define CPU_FRQ_200MHZ 1

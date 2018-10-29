@@ -11,7 +11,9 @@
 #include "Config_CAN.h"
 
 // Esctructura para sacar la inforamcion del diccionario del CANopen
-tCanMsg *D2;
+//
+//TODO: Check why it gives me an error this declaration during compilation
+//tCanMsg *D2;
 
 /*******************************************************************************
  Definimos los datos para lel diccionario del CANOpen

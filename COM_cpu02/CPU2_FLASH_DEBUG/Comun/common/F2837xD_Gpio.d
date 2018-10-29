@@ -54,6 +54,18 @@ Comun/common/F2837xD_Gpio.obj: C:/Users/dagaro/workspace/Firmware_Test/UFCharger
 Comun/common/F2837xD_Gpio.obj: C:/Users/dagaro/workspace/Firmware_Test/UFCharger/F2837xD/F2837xD_common/include/F2837xD_Dma_defines.h
 Comun/common/F2837xD_Gpio.obj: C:/Users/dagaro/workspace/Firmware_Test/UFCharger/F2837xD/F2837xD_common/include/F2837xD_SysCtrl_defines.h
 Comun/common/F2837xD_Gpio.obj: C:/Users/dagaro/workspace/Firmware_Test/UFCharger/F2837xD/F2837xD_common/include/F2837xD_Upp_defines.h
+Comun/common/F2837xD_Gpio.obj: C:/Users/dagaro/workspace/Firmware_Test/UFCharger/F2837xD/Comun/Drivers/Include/Inc_Drivers.h
+Comun/common/F2837xD_Gpio.obj: C:/Users/dagaro/workspace/Firmware_Test/UFCharger/F2837xD/F2837xD_common/include/F28x_Project.h
+Comun/common/F2837xD_Gpio.obj: C:/Users/dagaro/workspace/Firmware_Test/UFCharger/F2837xD/F2837xD_common/include/F2837xD_Cla_typedefs.h
+Comun/common/F2837xD_Gpio.obj: C:/Users/dagaro/workspace/Firmware_Test/UFCharger/F2837xD/F2837xD_common/include/F2837xD_Examples.h
+Comun/common/F2837xD_Gpio.obj: C:/Users/dagaro/workspace/Firmware_Test/UFCharger/COM_cpu01/Include/DEF_Global.h
+Comun/common/F2837xD_Gpio.obj: C:/Users/dagaro/workspace/Firmware_Test/UFCharger/F2837xD/ti-cgt-c2000_16.9.6.LTS/include/string.h
+Comun/common/F2837xD_Gpio.obj: C:/Users/dagaro/workspace/Firmware_Test/UFCharger/F2837xD/Comun/Drivers/Include/Init_HW.h
+Comun/common/F2837xD_Gpio.obj: C:/Users/dagaro/workspace/Firmware_Test/UFCharger/F2837xD/Comun/Drivers/Include/Config_GPIO.h
+Comun/common/F2837xD_Gpio.obj: C:/Users/dagaro/workspace/Firmware_Test/UFCharger/F2837xD/Comun/Drivers/Include/Config_CAN.h
+Comun/common/F2837xD_Gpio.obj: C:/Users/dagaro/workspace/Firmware_Test/UFCharger/F2837xD/Comun/driverlib/can.h
+Comun/common/F2837xD_Gpio.obj: C:/Users/dagaro/workspace/Firmware_Test/UFCharger/F2837xD/Comun/Drivers/Include/FIFO.h
+Comun/common/F2837xD_Gpio.obj: C:/Users/dagaro/workspace/Firmware_Test/UFCharger/F2837xD/ti-cgt-c2000_16.9.6.LTS/include/string.h
 Comun/common/F2837xD_Gpio.obj: C:/Users/dagaro/workspace/Firmware_Test/UFCharger/F2837xD/F2837xD_common/include/F2837xD_defaultisr.h
 
 C:/Users/dagaro/workspace/Firmware_Test/UFCharger/F2837xD/Comun/common/F2837xD_Gpio.c: 
@@ -110,4 +122,16 @@ C:/Users/dagaro/workspace/Firmware_Test/UFCharger/F2837xD/F2837xD_common/include
 C:/Users/dagaro/workspace/Firmware_Test/UFCharger/F2837xD/F2837xD_common/include/F2837xD_Dma_defines.h: 
 C:/Users/dagaro/workspace/Firmware_Test/UFCharger/F2837xD/F2837xD_common/include/F2837xD_SysCtrl_defines.h: 
 C:/Users/dagaro/workspace/Firmware_Test/UFCharger/F2837xD/F2837xD_common/include/F2837xD_Upp_defines.h: 
+C:/Users/dagaro/workspace/Firmware_Test/UFCharger/F2837xD/Comun/Drivers/Include/Inc_Drivers.h: 
+C:/Users/dagaro/workspace/Firmware_Test/UFCharger/F2837xD/F2837xD_common/include/F28x_Project.h: 
+C:/Users/dagaro/workspace/Firmware_Test/UFCharger/F2837xD/F2837xD_common/include/F2837xD_Cla_typedefs.h: 
+C:/Users/dagaro/workspace/Firmware_Test/UFCharger/F2837xD/F2837xD_common/include/F2837xD_Examples.h: 
+C:/Users/dagaro/workspace/Firmware_Test/UFCharger/COM_cpu01/Include/DEF_Global.h: 
+C:/Users/dagaro/workspace/Firmware_Test/UFCharger/F2837xD/ti-cgt-c2000_16.9.6.LTS/include/string.h: 
+C:/Users/dagaro/workspace/Firmware_Test/UFCharger/F2837xD/Comun/Drivers/Include/Init_HW.h: 
+C:/Users/dagaro/workspace/Firmware_Test/UFCharger/F2837xD/Comun/Drivers/Include/Config_GPIO.h: 
+C:/Users/dagaro/workspace/Firmware_Test/UFCharger/F2837xD/Comun/Drivers/Include/Config_CAN.h: 
+C:/Users/dagaro/workspace/Firmware_Test/UFCharger/F2837xD/Comun/driverlib/can.h: 
+C:/Users/dagaro/workspace/Firmware_Test/UFCharger/F2837xD/Comun/Drivers/Include/FIFO.h: 
+C:/Users/dagaro/workspace/Firmware_Test/UFCharger/F2837xD/ti-cgt-c2000_16.9.6.LTS/include/string.h: 
 C:/Users/dagaro/workspace/Firmware_Test/UFCharger/F2837xD/F2837xD_common/include/F2837xD_defaultisr.h: 

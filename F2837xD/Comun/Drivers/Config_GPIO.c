@@ -143,11 +143,11 @@ void Config_GPIO ()
      GPIO_SetupPinMux(12, GPIO_MUX_CPU1, 2);
      GPIO_SetupPinOptions(12, GPIO_OUTPUT, GPIO_PUSHPULL);
      // CANA_RX
-     GPIO_SetupPinMux(9, GPIO_MUX_CPU1, 2);
-     GPIO_SetupPinOptions(9, GPIO_INPUT, GPIO_ASYNC);
+     GPIO_SetupPinMux(18, GPIO_MUX_CPU1, 3);
+     GPIO_SetupPinOptions(18, GPIO_INPUT, GPIO_ASYNC);
      // CANa_TX
-     GPIO_SetupPinMux(11, GPIO_MUX_CPU1, 2);
-     GPIO_SetupPinOptions(11, GPIO_OUTPUT, GPIO_PUSHPULL);
+     GPIO_SetupPinMux(19, GPIO_MUX_CPU1, 3);
+     GPIO_SetupPinOptions(19, GPIO_OUTPUT, GPIO_PUSHPULL);
 /*
     // ePWM 2A
     GPIO_SetupPinMux(2, GPIO_MUX_CPU1, 1);

@@ -108,7 +108,7 @@
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>
-						<entry excluding="Comun/Drivers/MEM.c|Comun/Drivers/Config_ADC.c|Comun/driverlib/usb.c|Comun/driverlib/usb_hal.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+						<entry excluding="Comun/common/F2837xD_DefaultISR.c|Comun/Drivers/MEM.c|Comun/Drivers/Config_ADC.c|Comun/driverlib/usb.c|Comun/driverlib/usb_hal.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>
@@ -132,4 +132,5 @@
 	<storageModule moduleId="null.endianPreference"/>
 	<storageModule moduleId="cpuFamily"/>
 	<storageModule moduleId="org.eclipse.cdt.make.core.buildtargets"/>
+	<storageModule moduleId="refreshScope"/>
 </cproject>
