@@ -29,7 +29,7 @@
 // Variables globales
 //
 // Variable manejada por el Timer 0 para sincronizar los timeou
-volatile uint32_t ui32SysTickFlag = false; //Variable used by scheduler function
+volatile uint32_t ulSysTickFlag = false; //Variable used by scheduler function
 
 //
 // CPU Timer 1 Interrupt
@@ -522,7 +522,7 @@ interrupt void ADCD1_ISR(void)
 //
 interrupt void TIMER0_ISR(void)
 {
-    ui32SysTickFlag = true;   //Time base used by Scheduler
+    ulSysTickFlag = true;   //Time base used by Scheduler
     // Acknowledge this __interrupt to receive more __interrupts from group 1
     PieCtrlRegs.PIEACK.all = PIEACK_GROUP1;
 }
@@ -1808,6 +1808,8 @@ interrupt void CANA0_ISR(void)
     // receiving messages.
     if (ulStatus == MAILBOX_ONE)
     {
+        FIFO *ptr_FIFORx;
+        ptr_FIFORx=&FIFO_CanRx;
         // Get the received message
         CANMessageGet(CANA_BASE, MAILBOX_ONE, &sMailboxOneCANOpenMsg,
         true);
@@ -1815,26 +1817,32 @@ interrupt void CANA0_ISR(void)
         // message object 2, and the message RX is complete.  Clear the
         // message object interrupt.
         CANIntClear(CANA_BASE, MAILBOX_ONE);
-        memcpy (&FIFO_CanRx.New_Datos, &sMailboxOneCANOpenMsg.pucMsgData[0], sizeof(FIFO_CanRx.New_Datos));
+        CANGlobalIntClear(CANA_BASE, CAN_GLB_INT_CANINT0);
+        memcpy ((void *)ptr_FIFORx->New_Datos,(void *)sMailboxOneCANOpenMsg.pucMsgData, 8);
+        //memcpy (&FIFO_CanRx.New_Datos, &sMailboxOneCANOpenMsg.pucMsgData[0], sizeof(FIFO_CanRx.New_Datos));
         Encolar_FIFO(&FIFO_CanRx);
-        StatusCom.StatusFlags.Flags.DataAvailable = true;
+        StatusCom.StatusFlags.Flags.PSDataAvailable = true;
         //TODO: Delete this line after test correct reception
         //StatusCom.StatusFlags.Flags.TransmittedCANAdcMsg = false; //Received previously message sent, then reset flag
-        ui32TimeOutCANRx = 0;   //Reset TimeOut for next iteration
+        ulTimeOutCANRx = 0;   //Reset TimeOut for next iteration
 
     }
     if (ulStatus == MAILBOX_TWO)
     {
+       
+        FIFO *ptr_FIFORx;
+        ptr_FIFORx=&FIFO_CanRx;
         // Get the received message
         CANMessageGet(CANA_BASE, MAILBOX_TWO, &sMailboxTwoCANOpenMsg,
         true);
         CANIntClear(CANB_BASE, MAILBOX_TWO);
-        memcpy (&FIFO_CanRx.New_Datos, &sMailboxTwoCANOpenMsg.pucMsgData[0], sizeof(FIFO_CanRx.New_Datos));
+        CANGlobalIntClear(CANA_BASE, CAN_GLB_INT_CANINT0);
+        memcpy ((void *)ptr_FIFORx->New_Datos,(void *)sMailboxTwoCANOpenMsg.pucMsgData, 8);
         Encolar_FIFO(&FIFO_CanRx);
-        StatusCom.StatusFlags.Flags.DataAvailable = true;
+        StatusCom.StatusFlags.Flags.AdcDataAvailable = true;
         //TODO: Delete this line after test correct reception
         //StatusCom.StatusFlags.Flags.TransmittedCANAdcMsg = false; //Received previously message sent, then reset flag
-        ui32TimeOutCANRx = 0;   //Reset TimeOut for next iteration
+        ulTimeOutCANRx = 0;   //Reset TimeOut for next iteration
     }
     // Otherwise, something unexpected caused the interrupt.  This should
     // never happen.
@@ -1856,7 +1864,7 @@ interrupt void CANA0_ISR(void)
     //0 CANINT0 does not generate interrupt to PIE
     //1 CANINT0 generates interrupt to PIE if interrupt condition occurs
     //Reset type: SYSRSn
-    CANGlobalIntClear(CANA_BASE, CAN_GLB_INT_CANINT0);
+
 
     //PIEACK == Acknowledge Register
     //
@@ -1899,97 +1907,17 @@ interrupt void CANA1_ISR(void)
 //
 interrupt void CANB0_ISR(void)
 {
-    /*  unsigned long ulStatus;
-     // Read the CAN interrupt status to find the cause of the interrupt
-     ulStatus = CANIntStatus(CANB_BASE, CAN_INT_STS_CAUSE);
-
-     // If the cause is a controller status interrupt, then get the status
-     if (ulStatus == CAN_INT_INT0ID_STATUS)
-     {
-     // Read the controller status.  This will return a field of status
-     // error bits that can indicate various errors.  Error processing
-     // is not done in this example for simplicity.  Refer to the
-     // API documentation for details about the error status bits.
-     // The act of reading this status will clear the interrupt.  If the
-     // CAN peripheral is not connected to a CAN bus with other CAN devices
-     // present, then errors will occur and will be indicated in the
-     // controller status.
-     ulStatus = CANStatusGet(CANB_BASE, CAN_STS_CONTROL);
-     //Check to see if an error occurred.
-     if (((ulStatus & ~(CAN_ES_TXOK | CAN_ES_RXOK)) != 7)
-     && ((ulStatus & ~(CAN_ES_TXOK | CAN_ES_RXOK)) != 0))
-     {
-     // Set a flag to indicate some errors may have occurred.
-     StatusCom.StatusFlags.Flags.ErrorCom=1;
-     }
-     }
-     // Check if the cause is message object 2, which what we are using for
-     // receiving messages.
-     else if (ulStatus == CAN_OBJ_ID_PS)
-     {
-     // Get the received message
-     CANMessageGet(CANB_BASE, CAN_OBJ_ID_PS, &sRXPowerSupply_CANOpenMsg,
-     true);
-     Encolar_FIFO(&FIFO_PowerSupplyRX);
-     // Getting to this point means that the RX interrupt occurred on
-     // message object 2, and the message RX is complete.  Clear the
-     // message object interrupt.
-     CANIntClear(CANB_BASE, CAN_OBJ_ID_PS);
-     // Since the message was sent, clear any error flags.
-
-
-     }
-     else if (ulStatus == CAN_OBJ_ID_ADC)
-     {
-     // Get the received message
-     CANMessageGet(CANB_BASE, CAN_OBJ_ID_ADC, &sRXADC_CANOpenMsg, true);
-     Encolar_FIFO(&FIFO_AdcRX);
-     CANIntClear(CANB_BASE, CAN_OBJ_ID_ADC);
-     StatusCom.StatusFlags.Flags.AdcDataAvailable=true;
-     StatusCom.StatusFlags.Flags.TransmittedCANAdcMsg=false; //Received previously message sent, then reset flag
-     ui32TimeOutCANRx = 0;   //Reset TimeOut for next iteration
-     //g_bErrFlag = 0;
-     }
-     // Otherwise, something unexpected caused the interrupt.  This should
-     // never happen.
-     else
-     {
-     // Spurious interrupt handling can go here.
-     }
-     // CAN_INT_MASTER == CAN_INT_IE0
-     //
-     //The CANINT0/1 interrupt line remains active until INT0ID
-     //reaches value 0 (the cause of the interrupt is reset)
-     //or until IE0 is cleared.
-     CANIntClear(CANB_BASE, CAN_INT_MASTER);
-
-     //CAN_GLB_INT_EN == This register is used to enable the
-     //interrupt lines to the PIE
-     //
-     //Global Interrupt Enable for CANINT0
-     //0 CANINT0 does not generate interrupt to PIE
-     //1 CANINT0 generates interrupt to PIE if interrupt condition occurs
-     //Reset type: SYSRSn
-     CANGlobalIntClear(CANB_BASE, CAN_GLB_INT_CANINT0);
-     */
-    //PIEACK == Acknowledge Register
     //
-    //When an interrupt propagates from the ePIE to a CPU interrupt
-    //line, the interrupt group's PIEACK bit is set.This prevents other
-    //interrupts in that group from propagating to the CPU while the first
-    //interrupt is handled. Writing a 1 to a PIEACK bit clears it and allows
-    //another interrupt from the corresponding group to propagate. ISRs for
-    //PIE interrupts should clear the group's PIEACK bit before returning
-    //from the interrupt.
-    PieCtrlRegs.PIEACK.all = PIEACK_GROUP9;
+    // Insert ISR Code here
+    //
 
-    //EALLOW;
-    ////CanbRegs.CAN_INT.all = 0x00;
-    //The bits in this register indicate if an interrupt is pending
-    //for the corresponsding mailbox
-    //CanbRegs.CAN_IPEN_21 = 0x00;
-    //EDIS;
+    //
+    // To receive more interrupts from this PIE group,
+    // acknowledge this interrupt.
+    // PieCtrlRegs.PIEACK.all = PIEACK_GROUP9;
+    //
 
+    //
     // Next two lines for debug only to halt the processor here
     // Remove after inserting ISR Code
     //asm ("      ESTOP0");

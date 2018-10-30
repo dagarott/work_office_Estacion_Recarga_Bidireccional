@@ -75,9 +75,9 @@ void main(void)
     
     for (;;)
     {
-        if(ui32SysTickFlag)
+        if(ulSysTickFlag)
         {
-            ui32SysTickFlag=false;
+            ulSysTickFlag=false;
             Scheduler();
         }
             

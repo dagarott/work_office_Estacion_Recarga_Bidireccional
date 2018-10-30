@@ -98,4 +98,8 @@ enum Indice_Diccionario_TPO
 //  0xFFFF
     FIN_Diccionario,
 };
+
+tCanMsg  Consulta_Diccionario        (uint16_t indice);
+uint16_t Econtrar_Indice_Diccionario (uint16_t ID, char subID);
+uint32_t datos_char_to_int           (uint16_t Datos_Convertir[8]);
 #endif /* INCLUDE_DICCIONARIO_CANOPEN_H_ */

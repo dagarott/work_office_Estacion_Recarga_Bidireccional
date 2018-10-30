@@ -117,7 +117,7 @@ tCanMsg Diccionario_CanOpen[] = {
     //------------------------------------------------------------------------------
     //  0x9002  Enable/Disable ADC sensor PCB.
     //------------------------------------------------------------------------------
-     {OD_WRITE, 0x9002, 0x00},  //Enable/disable ADC measure and select protocol 
+     {OD_WRITE, 0x9002, 0x00},  //Enable/disable ADC measurement and select protocol 
                                 //CHADEMO or CCS
     //------------------------------------------------------------------------------
     //  0xFFFF
@@ -125,3 +125,121 @@ tCanMsg Diccionario_CanOpen[] = {
     {0xFF, 0xFFFF, 0xFF}, //FIN_Diccionario
 };
 /* FIN Diccionario  */
+// Esctructura para sacar la inforamcion del diccionario del CANopen
+tCanMsg *D2;
+
+/**
+*******************************************************************************
+\fn                     Consulta_Diccionario
+\brief                  Funcion que indicamos el indice de la taabla, este indice
+ esta definido en el *.h, y devolvemos la estructura del del protocolo
+  comunicacion del bus CANOpen consultada.
+
+ \param[in]         indice: El indice de la tabla de las estructuras del protocolo
+  comunicacion del bus CANOpen
+ \return                    tCanMsg: La estructura del CANOpen solicitado
+
+******************************************************************************/
+tCanMsg Consulta_Diccionario (uint16_t indice){
+     *D2 = Diccionario_CanOpen[indice];
+     return *D2;
+ }//FIN Consulta_Diccionario
+
+//uint16_t Modificar_Mem_Diccionario (uint16_t indice, uint32_t NuevoDato){
+//
+//     //Obtenemos la direccion de memoria SRAM
+//     D2 = &Diccionario_CanOpen[indice];
+//
+//     if (D2->Modo_Acceso > OD_READ){
+//         D2->Buf = NuevoDato;
+//
+//         return 1;
+//     }
+//     else{
+//         return 0;
+//     }
+// }
+//
+//uint32_t Consulta_Mem_Diccionario (uint16_t indice){
+//
+//     D2 = &Diccionario_CanOpen[indice];
+//
+//     //Si la direccion de memoria es solo lectura en el BUF tiene la informacion, pero si
+//// permite escritura en el BUF esta la direccion SRAM donde esta la direccion
+//     if (D2->Modo_Acceso >= OD_READ){
+//         return  D2->Buf;
+//     }
+// }
+
+uint16_t Econtrar_Indice_Diccionario (uint16_t ID, char subID){
+    uint16_t indice = 0x00;
+
+    do {
+        //Obtenemos la direccion de memoria SRAM
+        D2 = &Diccionario_CanOpen[indice];
+
+       if (ID == D2->ID && subID == D2->SubIndice)
+           break;
+       else
+       indice ++;
+    } while (0xFFFF != D2->ID);
+
+   if (0xFFFF == D2->ID){
+       return 0xFFFF; //Si ha llegado al final del diccionario
+   }
+
+   //return (indice - 0x01);
+   return indice;
+}//Econtrar_Indice_Diccionario
+
+/**
+*******************************************************************************
+\fn                         datos_char_to_int
+
+\brief                  Funcion que transforma el array recibido por CAN en enteros.
+ Depediendo de cuantos datos se reciba, segun "Command Byte", se trata mas bytes
+o menos
+
+\param[in]          Datos_Convertir -> Array de char que se recibe por el bus CAN
+\return                 uintt32_t -> datos convertidos en enteros de 32 bits
+******************************************************************************/
+uint32_t datos_char_to_int (uint16_t Datos_Convertir[8])
+{
+     uint32_t itemp_32=0;
+
+    switch (Datos_Convertir[0])
+        {
+        case OD_READ:
+        case OD_WRITE:
+        case OD_READ_4BYTES:
+            {
+                itemp_32 = 0x000000FF & (uint32_t)(Datos_Convertir[4]) ;
+                itemp_32 = 0x0000FFFF & (((uint32_t)(Datos_Convertir[5]) << 8) + itemp_32);
+                itemp_32 = 0x00FFFFFF & (((uint32_t)(Datos_Convertir[6]) << 16) + itemp_32);
+                itemp_32 = 0xFFFFFFFF & (((uint32_t)(Datos_Convertir[7]) << 24) + itemp_32);
+                break;
+            }// FIN case 4 Bytes
+
+        case OD_READ_2BYTES:
+        case OD_WRITE_2BYTES:
+            {
+                itemp_32 = 0x000000FF & (uint32_t)(Datos_Convertir[4]) ;
+                itemp_32 = 0x0000FFFF & (((uint32_t)(Datos_Convertir[5]) << 8) + itemp_32);
+                break;
+            }// FIN case 2 Bytes
+
+        case OD_READ_1BYTES:
+        case OD_WRITE_1BYTES:
+            {
+            itemp_32 = 0x000000FF & (uint32_t)(Datos_Convertir[4]) ;
+            break;
+            }// FIN case 1 Bytes
+
+        default :
+            itemp_32 =  0xFFFFFFFF ;
+
+        }//FIN switch
+
+        return itemp_32;
+} //FIN datos char a int
+/***** FIN ARCHIVO *****/
