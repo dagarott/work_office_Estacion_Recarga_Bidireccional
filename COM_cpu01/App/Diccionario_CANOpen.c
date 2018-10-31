@@ -12,8 +12,6 @@
 
 // Esctructura para sacar la inforamcion del diccionario del CANopen
 //
-//TODO: Check why it gives me an error this declaration during compilation
-//tCanMsg *D2;
 
 /*******************************************************************************
  Definimos los datos para lel diccionario del CANOpen

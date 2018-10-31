@@ -1,24 +1,24 @@
 /**
-***************************************************************************
-\defgroup       DRIVERS
+ ***************************************************************************
+ \defgroup       DRIVERS
 
-\brief          Modulo de inicializacion de los perifericos del
-                TMS320F2877s
+ \brief          Modulo de inicializacion de los perifericos del
+ TMS320F2877s
 
-                Microcontroladores en los que se ha probado:
-                TMS320F2877s
+ Microcontroladores en los que se ha probado:
+ TMS320F2877s
 
-**************************************************************************/
+ **************************************************************************/
 /**
-***************************************************************************
-\file           CONFIG_GPIO.c
-\brief          Modulo de configuracion de los GPIO del microcontrolador
-                TMS320F2877s.
+ ***************************************************************************
+ \file           CONFIG_GPIO.c
+ \brief          Modulo de configuracion de los GPIO del microcontrolador
+ TMS320F2877s.
 
-\author         Jesus Nieto Hervas
-\version        V0.0
-\date           15/05/2018
-**************************************************************************/
+ \author         Jesus Nieto Hervas
+ \version        V0.0
+ \date           15/05/2018
+ **************************************************************************/
 
 //
 // Included
@@ -27,7 +27,7 @@
 #include "Inc_Drivers.h"
 
 /**
-********************************************************************************
+ ********************************************************************************
  *  CPU01 :
  *  | GPIO | I/O|   Nombre    |  Descripcion
  *  ----------------------------------------------------------------------------
@@ -65,30 +65,29 @@
  *  ----------------------------------------------------------------------------
  */
 //
-
 /**
-***************************************************************************
-\fn         INIT_GPIO
-\brief      Funcion principal de configuracion de los GPIOSs. Esta funcion
-            es llamada desde el "main".
-            Los GPIOS estan divididos en 6 Grupos (A,B,C,D,E,F) donde esta
-            repartidos e la siguiente manera :
-                - GRUPO A = GPIO00  a GPIO31
-                - GRUPO B = GPIO32  a GPIO63
-                - GRUPO C = GPIO64  a GPIO95
-                - GRUPO D = GPIO96  a GPIO127
-                - GRUPO E = GPIO128 a GPIO159
-                - GRUPO F = GPIO160 a GPIO168
+ ***************************************************************************
+ \fn         INIT_GPIO
+ \brief      Funcion principal de configuracion de los GPIOSs. Esta funcion
+ es llamada desde el "main".
+ Los GPIOS estan divididos en 6 Grupos (A,B,C,D,E,F) donde esta
+ repartidos e la siguiente manera :
+ - GRUPO A = GPIO00  a GPIO31
+ - GRUPO B = GPIO32  a GPIO63
+ - GRUPO C = GPIO64  a GPIO95
+ - GRUPO D = GPIO96  a GPIO127
+ - GRUPO E = GPIO128 a GPIO159
+ - GRUPO F = GPIO160 a GPIO168
 
-            NOTA IMPORTANTE : Se han implementado los modulos necesarios
-            y los m�s importantes de configuracion. para m�s resigtros
-            consular el PDF de TI "spruhx5e.pdf".
+ NOTA IMPORTANTE : Se han implementado los modulos necesarios
+ y los m�s importantes de configuracion. para m�s resigtros
+ consular el PDF de TI "spruhx5e.pdf".
 
-\param[in]  void
-\return     void
+ \param[in]  void
+ \return     void
 
-**************************************************************************/
-void Config_GPIO ()
+ **************************************************************************/
+void Config_GPIO()
 {
     //
     //  pin = Num GPIO
@@ -106,74 +105,65 @@ void Config_GPIO ()
 
     InitGpio();
 
- // Step 2.1 Inicializar GPIO para CPU1:
-     GPIO_SetupPinMux(CL, GPIO_MUX_CPU1, 0);
-     GPIO_SetupPinOptions(CL, GPIO_OUTPUT, GPIO_PUSHPULL);
-     GPIO_SetupPinMux(D2, GPIO_MUX_CPU1, 0);
-     GPIO_SetupPinOptions(D2, GPIO_OUTPUT, GPIO_PUSHPULL);
-     GPIO_SetupPinMux(D1, GPIO_MUX_CPU1, 0);
-     GPIO_SetupPinOptions(D1, GPIO_OUTPUT, GPIO_PUSHPULL);
-     GPIO_SetupPinMux(Ventilador, GPIO_MUX_CPU1, 0);
-     GPIO_SetupPinOptions(Ventilador, GPIO_OUTPUT, GPIO_PUSHPULL);
-     GPIO_SetupPinMux(S_Diodo, GPIO_MUX_CPU1, 0);
-     GPIO_SetupPinOptions(S_Diodo, GPIO_OUTPUT, GPIO_PUSHPULL);
-     GPIO_SetupPinMux(S_V2G, GPIO_MUX_CPU1, 0);
-     GPIO_SetupPinOptions(S_V2G, GPIO_OUTPUT, GPIO_PUSHPULL);
-     GPIO_SetupPinMux(S_Precarga, GPIO_MUX_CPU1, 0);
-     GPIO_SetupPinOptions(S_Precarga, GPIO_OUTPUT, GPIO_PUSHPULL);
-     GPIO_SetupPinMux(S_Masa, GPIO_MUX_CPU1, 0);
-     GPIO_SetupPinOptions(S_Masa, GPIO_OUTPUT, GPIO_PUSHPULL);
-     GPIO_SetupPinMux(S_Tierra1, GPIO_MUX_CPU1, 0);
-     GPIO_SetupPinOptions(S_Tierra2, GPIO_OUTPUT, GPIO_PUSHPULL);
-     GPIO_SetupPinMux(LED10, GPIO_MUX_CPU1, 0);
-     GPIO_SetupPinOptions(LED10, GPIO_OUTPUT, GPIO_PUSHPULL);
-     GPIO_SetupPinMux(E_Tierra2, GPIO_MUX_CPU1, 0);
-     GPIO_SetupPinOptions(E_Tierra2, GPIO_INPUT, GPIO_ASYNC);
-     GPIO_SetupPinMux(E_Tierra1, GPIO_MUX_CPU1, 0);
-     GPIO_SetupPinOptions(E_Tierra1, GPIO_INPUT, GPIO_ASYNC);
-     GPIO_SetupPinMux(VerifCL, GPIO_MUX_CPU1, 0);
-     GPIO_SetupPinOptions(VerifCL, GPIO_INPUT, GPIO_ASYNC);
-     GPIO_SetupPinMux(j, GPIO_MUX_CPU1, 0);
-     GPIO_SetupPinOptions(j, GPIO_INPUT, GPIO_ASYNC);
+    /*-------------INIT CONFIGURATION FOR CPU2-------------------*/
+    //GPIOs OUTPUTs
+    GPIO_SetupPinMux(P9_8, GPIO_MUX_CPU2, 0);
+    GPIO_SetupPinOptions(P9_8, GPIO_OUTPUT, GPIO_PUSHPULL);
+    GPIO_SetupPinMux(P9_7, GPIO_MUX_CPU2, 0);
+    GPIO_SetupPinOptions(P9_7, GPIO_OUTPUT, GPIO_PUSHPULL);
+    GPIO_SetupPinMux(P9_6, GPIO_MUX_CPU2, 0);
+    GPIO_SetupPinOptions(P9_6, GPIO_OUTPUT, GPIO_PUSHPULL);
+    GPIO_SetupPinMux(P9_5, GPIO_MUX_CPU2, 0);
+    GPIO_SetupPinOptions(P9_5, GPIO_OUTPUT, GPIO_PUSHPULL);
+    GPIO_SetupPinMux(P9_5, GPIO_MUX_CPU2, 0);
+    GPIO_SetupPinOptions(P9_5, GPIO_OUTPUT, GPIO_PUSHPULL);
+    GPIO_SetupPinMux(P9_4, GPIO_MUX_CPU2, 0);
+    GPIO_SetupPinOptions(P9_4, GPIO_OUTPUT, GPIO_PUSHPULL);
+    GPIO_SetupPinMux(P9_3, GPIO_MUX_CPU2, 0);
+    GPIO_SetupPinOptions(P9_3, GPIO_OUTPUT, GPIO_PUSHPULL);
+    GPIO_SetupPinMux(P9_2, GPIO_MUX_CPU2, 0);
+    GPIO_SetupPinOptions(P9_2, GPIO_OUTPUT, GPIO_PUSHPULL);
+    GPIO_SetupPinMux(P9_1, GPIO_MUX_CPU2, 0);
+    GPIO_SetupPinOptions(P9_1, GPIO_OUTPUT, GPIO_PUSHPULL);
 
-     // CANB_RX
-     GPIO_SetupPinMux(17, GPIO_MUX_CPU1, 2);
-     GPIO_SetupPinOptions(17, GPIO_INPUT, GPIO_ASYNC);
-     // CANB_TX
-     GPIO_SetupPinMux(12, GPIO_MUX_CPU1, 2);
-     GPIO_SetupPinOptions(12, GPIO_OUTPUT, GPIO_PUSHPULL);
-     // CANA_RX
-     GPIO_SetupPinMux(18, GPIO_MUX_CPU1, 3);
-     GPIO_SetupPinOptions(18, GPIO_INPUT, GPIO_ASYNC);
-     // CANa_TX
-     GPIO_SetupPinMux(19, GPIO_MUX_CPU1, 3);
-     GPIO_SetupPinOptions(19, GPIO_OUTPUT, GPIO_PUSHPULL);
-/*
-    // ePWM 2A
-    GPIO_SetupPinMux(2, GPIO_MUX_CPU1, 1);
-    GPIO_SetupPinOptions(2, GPIO_OUTPUT, GPIO_PUSHPULL);
-    // ePWM 2B
-    GPIO_SetupPinMux(3, GPIO_MUX_CPU1, 1);
-    GPIO_SetupPinOptions(3, GPIO_OUTPUT, GPIO_PUSHPULL);
-    // ePWM 6A
-    GPIO_SetupPinMux(10, GPIO_MUX_CPU1, 1);
-    GPIO_SetupPinOptions(10, GPIO_OUTPUT, GPIO_PUSHPULL);
-    // ePWM 6B
-    GPIO_SetupPinMux(11, GPIO_MUX_CPU1, 1);
-    GPIO_SetupPinOptions(11, GPIO_OUTPUT, GPIO_PUSHPULL);
-    // ePWM 10A
-    GPIO_SetupPinMux(18, GPIO_MUX_CPU1, 5);
-    GPIO_SetupPinOptions(18, GPIO_OUTPUT, GPIO_PUSHPULL);
-    // ePWM 10B
-    GPIO_SetupPinMux(19, GPIO_MUX_CPU1, 5);
-    GPIO_SetupPinOptions(19, GPIO_OUTPUT, GPIO_PUSHPULL);
-    // CANRXA
-    GPIO_SetupPinMux(70, GPIO_MUX_CPU1, 5);
-    GPIO_SetupPinOptions(70, GPIO_INPUT, GPIO_ASYNC);
-    // CANTXA
-    GPIO_SetupPinMux(71, GPIO_MUX_CPU1, 5);
-    GPIO_SetupPinOptions(71, GPIO_OUTPUT, GPIO_PUSHPULL);
-    */
+    //GPIOs INPUTs
+    GPIO_SetupPinMux(P4_1, GPIO_MUX_CPU2, 0);
+    GPIO_SetupPinOptions(P4_1, GPIO_INPUT, GPIO_ASYNC);
+    GPIO_SetupPinMux(P4_2, GPIO_MUX_CPU2, 0);
+    GPIO_SetupPinOptions(P4_2, GPIO_INPUT, GPIO_ASYNC);
+
+    //CANB_RX
+    GPIO_SetupPinMux(P6_2_RX, GPIO_MUX_CPU2, 3);
+    GPIO_SetupPinOptions(P6_2_RX, GPIO_INPUT, GPIO_ASYNC);
+
+    //CANB_TX
+    GPIO_SetupPinMux(P6_2_TX, GPIO_MUX_CPU2, 3);
+    GPIO_SetupPinOptions(P6_2_TX, GPIO_OUTPUT, GPIO_PUSHPULL);
+    /*-------------END CONFIGURATION FOR CPU2-------------------*/
+
+    /*-------------INIT CONFIGURATION FOR CPU1-------------------*/
+    //GPIOs OUTPUTs
+    GPIO_SetupPinMux(P9_9, GPIO_MUX_CPU1,0);
+    GPIO_SetupPinOptions(P9_9, GPIO_OUTPUT, GPIO_PUSHPULL);
+    GPIO_SetupPinMux(P9_10, GPIO_MUX_CPU1, 0);
+    GPIO_SetupPinOptions(P9_10, GPIO_OUTPUT, GPIO_PUSHPULL);
+
+    //GPIOs INPUTs
+    GPIO_SetupPinMux(P4_4, GPIO_MUX_CPU1, 0);
+    GPIO_SetupPinOptions(P4_4, GPIO_INPUT, GPIO_ASYNC);
+    GPIO_SetupPinMux(P4_5, GPIO_MUX_CPU1, 0);
+    GPIO_SetupPinOptions(P4_5, GPIO_INPUT, GPIO_ASYNC);
+    GPIO_SetupPinMux(P4_3, GPIO_MUX_CPU1, 0);
+    GPIO_SetupPinOptions(P4_3, GPIO_INPUT, GPIO_ASYNC);
+
+    // CANA_RX
+    GPIO_SetupPinMux(P6_1_RX, GPIO_MUX_CPU1, 3);
+    GPIO_SetupPinOptions(P6_1_RX, GPIO_INPUT, GPIO_ASYNC);
+
+    // CANA_TX
+    GPIO_SetupPinMux(P6_1_TX, GPIO_MUX_CPU1, 3);
+    GPIO_SetupPinOptions(P6_1_TX, GPIO_OUTPUT, GPIO_PUSHPULL);
+    /*-------------END CONFIGURATION FOR CPU1-------------------*/
 }
 
 //

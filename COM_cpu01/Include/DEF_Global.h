@@ -56,44 +56,11 @@ typedef union
 #define ON_LED10()          GPIO_WritePin(31,0)
 #define OFF_LED10()         GPIO_WritePin(31,1)
 
-#define E_Tierra2           2
-#define Estado_E_Tierra2()  GPIO_ReadPin(E_Tierra2)
-#define E_Tierra1           3
-#define Estado_E_Tierra1()  GPIO_ReadPin(E_Tierra1)
-#define VerifCL             17
-#define Estado_VerifCL()    GPIO_ReadPin(Verif_CL)
-#define CL                  41
-#define ON_CL()             GPIO_WritePin(CL,1)
-#define OFF_CL()            GPIO_WritePin(CL,0)
-#define D2                  58
-#define ON_D2()             GPIO_WritePin(D2,1)
-#define OFF_D2()            GPIO_WritePin(D2,0)
-#define D1                  59
-#define ON_D1()             GPIO_WritePin(D1,1)
-#define OFF_D1()            GPIO_WritePin(D1,0)
-#define Ventilador          61
-#define ON_Ventilador()     GPIO_WritePin(Ventilador,1)
-#define OFF_ventilador()    GPIO_WritePin(Ventilador,0)
-#define S_Diodo             62
-#define ON_S_Diodo()        GPIO_WritePin(S_Diodo,1)
-#define OFF_S_Diodo()       GPIO_WritePin(S_Diodo,0)
-#define S_V2G               63
-#define ON_S_V2G()          GPIO_WritePin(S_V2G,1)
-#define OFF_S_V2G()         GPIO_WritePin(S_V2G,0)
-#define S_Precarga          64
-#define ON_S_Precarga()     GPIO_WritePin(S_Precarga,1)
-#define OFF_S_Precarga()    GPIO_WritePin(S_Precarga,0)
-#define S_Masa              65
-#define ON_S_Masa()         GPIO_WritePin(S_Masa,1)
-#define OFF_S_Masa()        GPIO_WritePin(S_Masa,0)
-#define S_Tierra2           89
-#define ON_S_Tierra2()      GPIO_WritePin(S_Tierra2,1)
-#define OFF_S_Tierra2()     GPIO_WritePin(S_Tierra2,0)
-#define S_Tierra1           91
-#define ON_S_Tierra1()      GPIO_WritePin(S_Tierra1,1)
-#define OFF_S_Tirra1()      GPIO_WritePin(S_Tierra1,0)
-#define j                   99
-#define ON_j()              GPIO_WritePin(j,1)
-#define OFF_j()             GPIO_WritePin(j,0)
 
-#endif /* DEF_GLOBAL_H_ */
+#define Stop                P4_3
+#define StatusStop()        GPIO_ReadPin(Stop)
+#define RLY1_9              P9_9
+#define RLY1_9_ON()         GPIO_WritePin(P9_9,1)
+#define RLY1_9_OFF()        GPIO_WritePin(P9_9,0)
+
+    #endif /* DEF_GLOBAL_H_ */

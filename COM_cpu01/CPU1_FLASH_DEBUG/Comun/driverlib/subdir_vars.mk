@@ -6,11 +6,11 @@ SHELL = cmd.exe
 
 # Add inputs and outputs from these tool invocations to the build variables 
 C_SRCS += \
-C:/Users/jeniher/PROYECTOS/Workspace_CCS7/UFCharger/F2837xD/Comun/driverlib/can.c \
-C:/Users/jeniher/PROYECTOS/Workspace_CCS7/UFCharger/F2837xD/Comun/driverlib/interrupt.c \
-C:/Users/jeniher/PROYECTOS/Workspace_CCS7/UFCharger/F2837xD/Comun/driverlib/sysctl.c \
-C:/Users/jeniher/PROYECTOS/Workspace_CCS7/UFCharger/F2837xD/Comun/driverlib/systick.c \
-C:/Users/jeniher/PROYECTOS/Workspace_CCS7/UFCharger/F2837xD/Comun/driverlib/uart.c 
+C:/Users/dagaro/workspace/Firmware_Test/UFCharger/F2837xD/Comun/driverlib/can.c \
+C:/Users/dagaro/workspace/Firmware_Test/UFCharger/F2837xD/Comun/driverlib/interrupt.c \
+C:/Users/dagaro/workspace/Firmware_Test/UFCharger/F2837xD/Comun/driverlib/sysctl.c \
+C:/Users/dagaro/workspace/Firmware_Test/UFCharger/F2837xD/Comun/driverlib/systick.c \
+C:/Users/dagaro/workspace/Firmware_Test/UFCharger/F2837xD/Comun/driverlib/uart.c 
 
 C_DEPS += \
 ./Comun/driverlib/can.d \
@@ -41,10 +41,10 @@ C_DEPS__QUOTED += \
 "Comun\driverlib\uart.d" 
 
 C_SRCS__QUOTED += \
-"C:/Users/jeniher/PROYECTOS/Workspace_CCS7/UFCharger/F2837xD/Comun/driverlib/can.c" \
-"C:/Users/jeniher/PROYECTOS/Workspace_CCS7/UFCharger/F2837xD/Comun/driverlib/interrupt.c" \
-"C:/Users/jeniher/PROYECTOS/Workspace_CCS7/UFCharger/F2837xD/Comun/driverlib/sysctl.c" \
-"C:/Users/jeniher/PROYECTOS/Workspace_CCS7/UFCharger/F2837xD/Comun/driverlib/systick.c" \
-"C:/Users/jeniher/PROYECTOS/Workspace_CCS7/UFCharger/F2837xD/Comun/driverlib/uart.c" 
+"C:/Users/dagaro/workspace/Firmware_Test/UFCharger/F2837xD/Comun/driverlib/can.c" \
+"C:/Users/dagaro/workspace/Firmware_Test/UFCharger/F2837xD/Comun/driverlib/interrupt.c" \
+"C:/Users/dagaro/workspace/Firmware_Test/UFCharger/F2837xD/Comun/driverlib/sysctl.c" \
+"C:/Users/dagaro/workspace/Firmware_Test/UFCharger/F2837xD/Comun/driverlib/systick.c" \
+"C:/Users/dagaro/workspace/Firmware_Test/UFCharger/F2837xD/Comun/driverlib/uart.c" 
 
 

@@ -185,7 +185,7 @@
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>
-						<entry excluding="UFCharger/F2837xD/Comun/driverlib/usb_hal.c|Comun/driverlib/usb.c|Comun/driverlib/usb_hal.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+						<entry excluding="Comun|UFCharger/F2837xD/Comun/driverlib/usb_hal.c|Comun/driverlib/usb.c|Comun/driverlib/usb_hal.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>
@@ -298,4 +298,5 @@
 	<storageModule moduleId="null.endianPreference"/>
 	<storageModule moduleId="cpuFamily"/>
 	<storageModule moduleId="org.eclipse.cdt.make.core.buildtargets"/>
+	<storageModule moduleId="refreshScope"/>
 </cproject>

@@ -67,8 +67,8 @@ void main(void)
 #endif
     DELAY_US(5000);
     OD_Index = Config_ADC; //CAN command array Index. Commands present in Diccionario_CANOpen.c file
-    status = Set_CANOpenMsg_To_Tx(OD_Index, &FIFO_AdcTx,ENABLE_ADC,RSDO+ADC_NODE_ID);
-    Transmit_CANOPenMsg(FIFO_AdcTx);
+    status = Set_CANOpenMsg_To_Tx(OD_Index, &FIFO_CanTx,ENABLE_ADC,RSDO+ADC_NODE_ID);
+    Transmit_CANOPenMsg(FIFO_CanTx);
 
 
 /* USER CODE END */
@@ -78,7 +78,7 @@ void main(void)
         if(ulSysTickFlag)
         {
             ulSysTickFlag=false;
-            Scheduler();
+            AnalyzeCanMsg();
         }
             
     }

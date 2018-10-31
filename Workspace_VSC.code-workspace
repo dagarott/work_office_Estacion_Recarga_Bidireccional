@@ -13,7 +13,8 @@
 			"diccionario_canopen.h": "c",
 			"chademo.h": "c",
 			"commodule.h": "c",
-			"systick.h": "c"
+			"systick.h": "c",
+			"can.h": "c"
 		}
 	}
 }
