@@ -24,7 +24,6 @@
 
 #define MAILBOX_ONE 2 // Two different mailbox CAN for receive data from ADC
 #define MAILBOX_TWO 3 // and Power Supply
-//#define ENABLE_ADC  0x01010001
 #define ENABLE_ADC 0x01000101
 #define DISABLE_ADC 0x01000000
 #define COM_NODE_ID 0x01

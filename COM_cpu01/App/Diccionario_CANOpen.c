@@ -98,19 +98,19 @@ tCanMsg Diccionario_CanOpen[] = {
     //------------------------------------------------------------------------------
     //  0x9000  Used by ADC sensor PCB. Chademo Protocol
     //------------------------------------------------------------------------------
-    {OD_WRITE, 0x9000, 0x00}, //Vo_Chademo. Voltage value read by ADC from Power Supply
-    {OD_WRITE, 0x9000, 0x01}, //Io_Chademo. Current value read by ADC from Power Supply
-    {OD_WRITE, 0x9000, 0x02}, //TempPos_Chademo. Positive Temperature value read by ADC
-    {OD_WRITE, 0x9000, 0x03}, //TempNeg_Chademo. Negative Temperature value read by ADC
+    {OD_WRITE_4BYTES, 0x9000, 0x00}, //Vo_Chademo. Voltage value read by ADC from Power Supply
+    {OD_WRITE_4BYTES, 0x9000, 0x01}, //Io_Chademo. Current value read by ADC from Power Supply
+    {OD_WRITE_4BYTES, 0x9000, 0x02}, //TempPos_Chademo. Positive Temperature value read by ADC
+    {OD_WRITE_4BYTES, 0x9000, 0x03}, //TempNeg_Chademo. Negative Temperature value read by ADC
 
 #ifdef CCS_Protocol
     //------------------------------------------------------------------------------
     //  0x9001  Used by ADC sensor PCB. CCS Protocol
     //------------------------------------------------------------------------------
-    {OD_WRITE, 0x9001, 0x00}, //Vo_CCS. Voltage value read by ADC from Power Supply
-    {OD_WRITE, 0x9001, 0x01}, //Io_CCS. Current value read by ADC from Power Supply
-    {OD_WRITE, 0x9001, 0x02}, //TempPos_CCS. Positive Temperature value read by ADC
-    {OD_WRITE, 0x9001, 0x03}, //TempNeg_CCS. Negative Temperature value read by ADC
+    {OD_WRITE_4BYTES, 0x9001, 0x00}, //Vo_CCS. Voltage value read by ADC from Power Supply
+    {OD_WRITE_4BYTES, 0x9001, 0x01}, //Io_CCS. Current value read by ADC from Power Supply
+    {OD_WRITE_4BYTES, 0x9001, 0x02}, //TempPos_CCS. Positive Temperature value read by ADC
+    {OD_WRITE_4BYTES, 0x9001, 0x03}, //TempNeg_CCS. Negative Temperature value read by ADC
 #endif
     //------------------------------------------------------------------------------
     //  0x9002  Enable/Disable ADC sensor PCB.

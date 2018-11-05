@@ -19,7 +19,7 @@
 /* Private defines -----------------------------------------------------------*/
 #define BitRate 500
 #define MSG_DATA_LENGTH 8
-#define NumMsg 10
+#define NumMsg 20
 
 /* USER CODE END PD */
 
@@ -281,7 +281,7 @@ void Set_MailboxTwo(void)
 
 /*----------------------------------BEGIN CONTROL LOGIC FUNCTIONS------------------------------------*/
 /**
- * @brief Simple task scheduler
+ * @brief
  * 
  */
 void AnalyzeCanMsg(void)
@@ -294,9 +294,9 @@ void AnalyzeCanMsg(void)
     uint16_t DictionaryIndex = 0; //Temporal variable used for check ObjectIndex
                                   //and AccesCmd
     uint16_t NodeIdRx = 0;        //Temporal variable to store Id from node transmitter
-
+/*
     if ((StatusCom.StatusFlags.Flags.TransmittedCanMsg == true) &&
-        (StatusCom.StatusFlags.Flags.DataAvailable != true)) 
+        (StatusCom.StatusFlags.Flags.DataAvailable != true))
     {
         ulTimeOutCANRx++;
         if (ulTimeOutCANRx == TIMEOUT_CAN_RX)
@@ -305,14 +305,14 @@ void AnalyzeCanMsg(void)
             ulTimeOutCANRx = 0;
         }
     }
-
-    memset(DataSaved, 0x00, 8); //Reset array to zero
+*/
+    memset(DataSaved, 0x00, 9); //Reset array to zero
 
     if (FIFO_CanRx.Estado_PILA != PILA_VACIA) //Check just in case
     {
         Desencolar_FIFO(&FIFO_CanRx);
         //Move data from FIFO to variable DataSaved for post-processing
-        memcpy((void *)DataSaved, (void *)FIFO_CanRx.Datos_FIFO, sizeof(DataSaved));
+        memcpy((void *)DataSaved, (void *)FIFO_CanRx.Datos_FIFO, 9);
 
         NodeIdRx = (uint16_t)DataSaved[0];
         AccessMode = (uint16_t)DataSaved[1];
@@ -353,7 +353,7 @@ void AnalyzeCanMsg(void)
             }
             else
             {
-                // Requestes Access Mode doesn´t exit, then set flag error and tx Error CAN msg
+                // Requested Access Mode doesn´t exit, then set flag error and tx Error CAN msg
                 StatusErrors.StatusFlags.Flags.AccessCmdForbidden = true;
                 Set_CANOpenErrorMsg_To_Tx(DictionaryIndex, &FIFO_CanTx, 0x00, RSDO + NodeIdRx);
             }
@@ -367,15 +367,15 @@ void AnalyzeCanMsg(void)
             {
                 if (Diccionario_CanOpen[DictionaryIndex].Modo_Acceso == AccessMode)
                 {
-                    //Request Acces Mode correct
+                    //Request Access Mode correct
                     if (StatusCom.StatusFlags.Flags.AccessModeRead)
                     {
-                        AdcValuesSaved.VoltageValue = AdcValue;                   //Raw value for Chademo logic
-                        AdcValuesSaved.floatVolatageValue = (float)AdcValue / 10; //0.1 A/bit
+                        //Do nothing
                     }
                     else if (StatusCom.StatusFlags.Flags.AccessModeWrite)
                     {
-                        //Do nothing
+                        AdcValuesSaved.VoltageValue = AdcValue;                   //Raw value for Chademo logic
+                        AdcValuesSaved.floatVolatageValue = (float) AdcValue/10.0; //0.1 A/bit
                     }
                     else if ((StatusCom.StatusFlags.Flags.AccessModeRead) &&
                              ((StatusCom.StatusFlags.Flags.AccessModeWrite)))
@@ -385,36 +385,54 @@ void AnalyzeCanMsg(void)
                 }
                 else
                 {
-                    //Request Acces Mode incorrect, send an error message to the transmitter
+                    //Requested Access Mode incorrect, send an error message to the transmitter
                     StatusErrors.StatusFlags.Flags.AccessCmdForbidden = true;
                     Set_CANOpenErrorMsg_To_Tx(DictionaryIndex, &FIFO_CanTx, 0x00, RSDO + NodeIdRx);
-
                 }
             }
-            else if (SubIndex == 0x01) //Iout from ADC
+            if (SubIndex == 0x01) //Iout from ADC
             {
-                AdcValuesSaved.CurrentValue = AdcValue; //Raw value for Chademo logic
-                //Get sign of the Current Value
-                if ((AdcValuesSaved.CurrentValue & 0x80000000) == 0x80000000)
+                if (Diccionario_CanOpen[DictionaryIndex].Modo_Acceso == AccessMode)
                 {
-                    AdcValuesSaved.NegativeCurrentValue = true; //Negative number
-                    // If it is negative, make it positive by inverting the bits
-                    // and adding one.
-                    AdcValue = ~AdcValue; //Bitwise negation of all bits
-                    AdcValue += 0x01;
+                    //Request Access Mode correct
+                    if (StatusCom.StatusFlags.Flags.AccessModeRead)
+                    {
+                        //Do nothing
+                    }
+                    else if (StatusCom.StatusFlags.Flags.AccessModeWrite)
+                    {
+                        AdcValuesSaved.CurrentValue = AdcValue; //Raw value for Chademo logic
+                        //Get sign of the Current Value
+                        if ((AdcValuesSaved.CurrentValue & 0x80000000) == 0x80000000)
+                        {
+                            AdcValuesSaved.NegativeCurrentValue = true; //Negative number
+                            // If it is negative, make it positive by inverting the bits
+                            // and adding one.
+                            AdcValue = ~AdcValue; //Bitwise negation of all bits
+                            AdcValue += 0x01;
+                        }
+                        AdcValuesSaved.floatCurrentValue = (float) AdcValue/10.0; //0.1 A/bit
+                    }
+                    else if ((StatusCom.StatusFlags.Flags.AccessModeRead) &&
+                             ((StatusCom.StatusFlags.Flags.AccessModeWrite)))
+                    {
+                        //Do nothing
+                    }
                 }
-
-                AdcValuesSaved.floatCurrentValue = (float)(AdcValue / 10); //0.1 A/bit
+                else
+                {
+                    //Requested Access Mode incorrect, send an error message to the transmitter
+                    StatusErrors.StatusFlags.Flags.AccessCmdForbidden = true;
+                    Set_CANOpenErrorMsg_To_Tx(DictionaryIndex, &FIFO_CanTx, 0x00, RSDO + NodeIdRx);
+                }
             }
-        break;
-
+            break;
 
         default:
-            StatusErrors.StatusFlags.Flags.ObjectIndexNotExist=true;
+            StatusErrors.StatusFlags.Flags.ObjectIndexNotExist = true;
             Set_CANOpenErrorMsg_To_Tx(DictionaryIndex, &FIFO_CanTx, 0x00, RSDO + NodeIdRx);
-        break;
+            break;
         }
-       
     }
 }
 /*  END CONTROL LOGIC FUNCTIONS */

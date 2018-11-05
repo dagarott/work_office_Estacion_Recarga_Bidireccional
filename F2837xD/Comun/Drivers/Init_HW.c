@@ -44,7 +44,7 @@ void Init_HW ()
     // 60MHz CPU Freq, 10 millisecond Period (in uSeconds)
     //
     InitCpuTimers();
-    ConfigCpuTimer(&CpuTimer0, 10, 100000);
+    ConfigCpuTimer(&CpuTimer0, (T_clk/1000000) , 10000);
     //
     // To ensure precise timing, use write-only instructions to write to the entire
     // register. Therefore, if any of the configuration bits are changed in

@@ -41,7 +41,7 @@ void Config_GPIO();
 #define P9_10          86 //Output
 #define P4_4           87 //Input
 #define P4_5           2  //Input
-#define P4_3           70 //Input. Emergency Stop
+#define P4_3           70 //Input. Emergency Stop9
 
 //NOT USED YET!!
 //Serigrafia PCB       GPIO

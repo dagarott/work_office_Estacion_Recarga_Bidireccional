@@ -60,7 +60,7 @@ typedef union
 #define Stop                P4_3
 #define StatusStop()        GPIO_ReadPin(Stop)
 #define RLY1_9              P9_9
-#define RLY1_9_ON()         GPIO_WritePin(P9_9,1)
-#define RLY1_9_OFF()        GPIO_WritePin(P9_9,0)
+#define RLY1_9_ON()         GPIO_WritePin(RLY1_9,1)
+#define RLY1_9_OFF()        GPIO_WritePin(RLY1_9,0)
 
     #endif /* DEF_GLOBAL_H_ */
