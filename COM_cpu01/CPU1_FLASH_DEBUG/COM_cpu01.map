@@ -1,7 +1,7 @@
 ******************************************************************************
              TMS320C2000 Linker PC v18.1.3                     
 ******************************************************************************
->> Linked Mon Nov  5 18:47:51 2018
+>> Linked Tue Nov  6 09:17:42 2018
 
 OUTPUT FILE NAME:   <COM_cpu01.out>
 ENTRY POINT SYMBOL: "_c_int00"  address: 00083e79
@@ -24,7 +24,7 @@ PAGE 0:
   BEGIN                 00080000   00000002  00000002  00000000  RWIX
   FLASHA                00080002   00001ffe  00000000  00001ffe  RWIX
   FLASHB                00082000   00002000  00001ffe  00000002  RWIX
-  FLASHC                00084000   00002000  00000031  00001fcf  RWIX
+  FLASHC                00084000   00002000  00000037  00001fc9  RWIX
   FLASHD                00086000   00002000  0000003f  00001fc1  RWIX
   FLASHE                00088000   00008000  00000000  00008000  RWIX
   FLASHF                00090000   00008000  000001c9  00007e37  RWIX
@@ -646,21 +646,21 @@ CpuSysRegsFile
                   00083dfd    0000007c     F2837xD_CpuTimers.obj (.text)
                   00083e79    00000056     rts2800_fpu32.lib : boot28.obj (.text)
                   00083ecf    00000032     Init_HW.obj (.text)
-                  00083f01    00000029     rts2800_fpu32.lib : exit.obj (.text)
-                  00083f2a    00000028     F2837xD_PieCtrl.obj (.text)
-                  00083f52    00000028     main_cpu1.obj (.text)
-                  00083f7a    00000026     F2837xD_PieVect.obj (.text)
-                  00083fa0    00000024     rts2800_fpu32.lib : cpy_tbl.obj (.text)
-                  00083fc4    0000001e                       : memcpy.obj (.text)
-                  00083fe2    00000019                       : args_main.obj (.text)
-                  00083ffb    00000003     F2837xD_DBGIER.obj (.text)
-                  00083ffe    00000002     rts2800_fpu32.lib : pre_init.obj (.text)
+                  00083f01    0000002e     main_cpu1.obj (.text)
+                  00083f2f    00000029     rts2800_fpu32.lib : exit.obj (.text)
+                  00083f58    00000028     F2837xD_PieCtrl.obj (.text)
+                  00083f80    00000026     F2837xD_PieVect.obj (.text)
+                  00083fa6    00000024     rts2800_fpu32.lib : cpy_tbl.obj (.text)
+                  00083fca    0000001e                       : memcpy.obj (.text)
+                  00083fe8    00000018                       : ll_aox28.obj (.text)
 
-.text.2    0    00084000    00000031     
-                  00084000    00000018     rts2800_fpu32.lib : ll_aox28.obj (.text)
-                  00084018    0000000f     interrupt.obj (.text:retain)
-                  00084027    00000009     rts2800_fpu32.lib : _lock.obj (.text)
-                  00084030    00000001                       : startup.obj (.text)
+.text.2    0    00084000    00000037     
+                  00084000    00000019     rts2800_fpu32.lib : args_main.obj (.text)
+                  00084019    0000000f     interrupt.obj (.text:retain)
+                  00084028    00000009     rts2800_fpu32.lib : _lock.obj (.text)
+                  00084031    00000003     F2837xD_DBGIER.obj (.text)
+                  00084034    00000002     rts2800_fpu32.lib : pre_init.obj (.text)
+                  00084036    00000001                       : startup.obj (.text)
 
 .ebss      1    0000ac00    00000240     UNINITIALIZED
                   0000ac00    000000bb     Diccionario_CANOpen.obj (.ebss)
@@ -682,9 +682,9 @@ MODULE SUMMARY
        Module                           code   initialized data   uninitialized data
        ------                           ----   ----------------   ------------------
     .\
-       main_cpu1.obj                    40     5                  2                 
+       main_cpu1.obj                    46     5                  2                 
     +--+--------------------------------+------+------------------+--------------------+
-       Total:                           40     5                  2                 
+       Total:                           46     5                  2                 
                                                                                     
     .\App\
        ComModule.obj                    713    31                 168               
@@ -743,7 +743,7 @@ MODULE SUMMARY
        Heap:                            0      0                  1024              
        Stack:                           0      0                  1024              
     +--+--------------------------------+------+------------------+--------------------+
-       Grand Total:                     8017   805                11135             
+       Grand Total:                     8023   805                11135             
 
 
 GLOBAL DATA SYMBOLS: SORTED BY DATA PAGE
@@ -1001,10 +1001,10 @@ GLOBAL SYMBOLS: SORTED ALPHABETICALLY BY Name
 page  address   name                                  
 ----  -------   ----                                  
 abs   ffffffff  .text                                 
-0     00083f01  C$$EXIT                               
-0     00084000  LL$$AND                               
-0     00084008  LL$$OR                                
-0     00084010  LL$$XOR                               
+0     00083f2f  C$$EXIT                               
+0     00083fe8  LL$$AND                               
+0     00083ff0  LL$$OR                                
+0     00083ff8  LL$$XOR                               
 1     0000ada2  _ADC                                  
 0     0008221e  _ADCA1_ISR                            
 0     00082553  _ADCA2_ISR                            
@@ -1197,7 +1197,7 @@ abs   ffffffff  .text
 1     00047800  _Emif2Regs                            
 1     00000d01  _EmuBMode                             
 1     00000d00  _EmuKey                               
-0     00083f49  _EnableInterrupts                     
+0     00083f77  _EnableInterrupts                     
 0     0008355e  _Encolar_FIFO                         
 0     00008037  _F28x_usDelay                         
 1     0000ad0c  _FIFO_CanRx                           
@@ -1255,8 +1255,8 @@ abs   ffffffff  .text
 0     00008000  _InitFlash                            
 0     000832d9  _InitGpio                             
 0     00082d06  _InitPeripheralClocks                 
-0     00083f2a  _InitPieCtrl                          
-0     00083f7a  _InitPieVectTable                     
+0     00083f58  _InitPieCtrl                          
+0     00083f80  _InitPieVectTable                     
 0     00082cbc  _InitSysCtrl                          
 0     00082dd7  _InitSysPll                           
 0     00083de6  _Init_Buzones                         
@@ -1264,7 +1264,7 @@ abs   ffffffff  .text
 0     0008352e  _Init_FIFO                            
 0     00083ecf  _Init_HW                              
 1     00007900  _InputXbarRegs                        
-0     00084018  _IntDefaultHandler                    
+0     00084019  _IntDefaultHandler                    
 0     000839d2  _IntDisable                           
 0     0008393f  _IntEnable                            
 0     00083a52  _IntIFRClear                          
@@ -1334,7 +1334,7 @@ abs   0000003f  _RamfuncsRunSize
 1     00005e80  _Sdfm2Regs                            
 0     00082da2  _SeizeFlashPump                       
 0     00082dbb  _ServiceDog                           
-0     00083ffb  _SetDBGIER                            
+0     00084031  _SetDBGIER                            
 0     000830ab  _Set_CANOpenErrorMsg_To_Tx            
 0     0008301d  _Set_CANOpenMsg_To_Tx                 
 0     0008317c  _Set_MailboxOne                       
@@ -1395,25 +1395,25 @@ abs   ffffffff  ___c_args__
 abs   ffffffff  ___etext__                            
 abs   ffffffff  ___pinit__                            
 abs   ffffffff  ___text__                             
-0     00083fe2  __args_main                           
+0     00084000  __args_main                           
 1     0000acbe  __lock                                
-0     0008402f  __nop                                 
-0     0008402b  __register_lock                       
-0     00084027  __register_unlock                     
+0     00084030  __nop                                 
+0     0008402c  __register_lock                       
+0     00084028  __register_unlock                     
 1     00000400  __stack                               
 1     0000a800  __sys_memory                          
-0     00084030  __system_post_cinit                   
-0     00083ffe  __system_pre_init                     
+0     00084036  __system_post_cinit                   
+0     00084034  __system_pre_init                     
 1     0000ae3c  __unlock                              
-0     00083f01  _abort                                
+0     00083f2f  _abort                                
 0     00083e79  _c_int00                              
 0     000838f0  _calloc                               
 0     000838ee  _chkheap                              
-0     00083fa0  _copy_in                              
+0     00083fa6  _copy_in                              
 0     00083d3e  _datos_char_to_int                    
 1     0000acbb  _deviceOpen                           
 1     0000ae02  _errorFlag                            
-0     00083f03  _exit                                 
+0     00083f31  _exit                                 
 0     00083735  _free                                 
 0     000838d0  _free_memory                          
 1     0003fc00  _g_asIPCCPU1toCPU2Buffers             
@@ -1423,10 +1423,10 @@ abs   ffffffff  ___text__
 0     0003f884  _g_usPutReadIndexes                   
 1     0003fc80  _g_usPutWriteIndexes                  
 1     0000ae00  _i                                    
-0     00083f52  _main                                 
+0     00083f01  _main                                 
 0     0008379e  _malloc                               
 0     000838ae  _max_free                             
-0     00083fc4  _memcpy                               
+0     00083fca  _memcpy                               
 0     00083779  _minit                                
 0     000837fc  _realloc                              
 1     0000acc8  _rxAdcMsgData                         
@@ -1715,26 +1715,26 @@ page  address   name
 0     00083e79  _c_int00                              
 0     00083ecf  _Init_HW                              
 0     00083ee9  _Hablitar_ISR                         
-0     00083f01  C$$EXIT                               
-0     00083f01  _abort                                
-0     00083f03  _exit                                 
-0     00083f2a  _InitPieCtrl                          
-0     00083f49  _EnableInterrupts                     
-0     00083f52  _main                                 
-0     00083f7a  _InitPieVectTable                     
-0     00083fa0  _copy_in                              
-0     00083fc4  _memcpy                               
-0     00083fe2  __args_main                           
-0     00083ffb  _SetDBGIER                            
-0     00083ffe  __system_pre_init                     
-0     00084000  LL$$AND                               
-0     00084008  LL$$OR                                
-0     00084010  LL$$XOR                               
-0     00084018  _IntDefaultHandler                    
-0     00084027  __register_unlock                     
-0     0008402b  __register_lock                       
-0     0008402f  __nop                                 
-0     00084030  __system_post_cinit                   
+0     00083f01  _main                                 
+0     00083f2f  C$$EXIT                               
+0     00083f2f  _abort                                
+0     00083f31  _exit                                 
+0     00083f58  _InitPieCtrl                          
+0     00083f77  _EnableInterrupts                     
+0     00083f80  _InitPieVectTable                     
+0     00083fa6  _copy_in                              
+0     00083fca  _memcpy                               
+0     00083fe8  LL$$AND                               
+0     00083ff0  LL$$OR                                
+0     00083ff8  LL$$XOR                               
+0     00084000  __args_main                           
+0     00084019  _IntDefaultHandler                    
+0     00084028  __register_unlock                     
+0     0008402c  __register_lock                       
+0     00084030  __nop                                 
+0     00084031  _SetDBGIER                            
+0     00084034  __system_pre_init                     
+0     00084036  __system_post_cinit                   
 0     00086000  _RamfuncsLoadStart                    
 0     0008603f  _RamfuncsLoadEnd                      
 0     00090000  _PieVectTableInit                     

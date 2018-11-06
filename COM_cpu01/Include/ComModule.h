@@ -34,12 +34,12 @@
 //extern FIFO FIFO_PowerSupplyTx;   //FIFO Tx defined for Power Supply
 //extern FIFO FIFO_PowerSupplyRX;   //FIFO Tx defined for Power Supply
 //extern FIFO FIFO_AdcRX;           //FIFO Rx defined for ADC
-extern FIFO FIFO_CanTx;             //Unique CAN FIFO defined for store CAN tx
+extern FIFO FIFO_CanTx; //Unique CAN FIFO defined for store CAN tx
 
-extern FIFO FIFO_CanRx;             //Unique CAN FIFO defined for store CAN rx
-                                    //messages from Power Supply and ADC
-extern FIFO FIFO_PcRx;              //FIFO Tx defined for Industrial PC
-extern FIFO FIFO_PcTx;              //FIFO Rx defined for Industrial PC
+extern FIFO FIFO_CanRx; //Unique CAN FIFO defined for store CAN rx
+                        //messages from Power Supply and ADC
+extern FIFO FIFO_PcRx;  //FIFO Tx defined for Industrial PC
+extern FIFO FIFO_PcTx;  //FIFO Rx defined for Industrial PC
 
 extern tCanMsg Diccionario_CanOpen[];
 extern enum Indice_Diccionario_TPO OD_Index;
@@ -104,13 +104,30 @@ typedef struct sAdcValues
     uint16_t NegativeCurrentValue;
 } AdcValues_t;
 
-extern AdcValues_t AdcValuesSaved;
+//extern AdcValues_t AdcValuesSaved;
+/**
+ * @brief 
+ * 
+ */
+typedef struct sPowerSupplyValues
+{
+
+    uint16_t PowerModuleStatus;     //0x2101 / [0-15]bit status
+    uint16_t DCOutputVoltage;       //0x2107 Actual output voltage 0.1V/step
+    int16_t DCOutputCurrrent;       //0x2108 Actual output current 0.1A/step
+    uint16_t DCOutputVSetpoint;     //0x2109 Setpoint output voltage 0.1A/step
+    int16_t DCOutputISetpoint;      //0x210A Setpoint output current 0.1A/step
+    uint16_t DCBusVoltage;          //0x210D DC Bus Volage
+    int16_t DCBusVoltageMeasured;   //0x212A Measured DC bus voltage
+
+} PowerSupplyValues_t;
 
 void Init_CANOpenMsgFIFOs(void);
 void Set_MailboxOne(void);
 void Set_MailboxTwo(void);
 uint16_t Set_CANOpenMsg_To_Tx(enum Indice_Diccionario_TPO Idx, FIFO *ptr_MsgToTx, uint32_t DataToTx, uint16_t Node_ID);
 sEstadoFIFO Transmit_CANOPenMsg(FIFO MsgToTx);
+void InitAdc(void);
 void AnalyzeCanMsg(void);
 
 #endif /* COMMODULE_H_ */

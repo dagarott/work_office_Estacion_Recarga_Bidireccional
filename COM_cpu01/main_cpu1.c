@@ -34,12 +34,12 @@
 uint32_t tmp = 0;
 
 /**
- * @brief  Main funtio, init system mHW
+ * @brief  Main function, init clcok system, HW, etc.
  * 
  */
 void main(void)
 {
-    uint16_t status = 0;
+   
 
     Init_HW(); /* Initialize all the HW*/
     Hablitar_ISR();
@@ -50,18 +50,17 @@ void main(void)
     Set_MailboxOne();
     Set_MailboxTwo();
 
-    OD_Index = Config_ADC; //CAN command array Index. Commands present in Diccionario_CANOpen.c file
-    status = Set_CANOpenMsg_To_Tx(OD_Index, &FIFO_CanTx,ENABLE_ADC,RSDO+ADC_NODE_ID);
-    Transmit_CANOPenMsg(FIFO_CanTx);
+ 
 /* USER CODE END */
     
     for (;;)
     {
-        //if(ulSysTickFlag)
-        //{
-         //   ulSysTickFlag=false;
+        if(ulSysTickFlag)
+        {
+            ulSysTickFlag=false;
             AnalyzeCanMsg(); //Triggered every 10ms
-       // }
+	
+       }
             
     }
 }
