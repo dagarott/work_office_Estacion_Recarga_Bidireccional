@@ -1832,7 +1832,10 @@ interrupt void CANA0_ISR(void)
         //memcpy (&FIFO_CanRx.New_Datos, &sMailboxOneCANOpenMsg.pucMsgData[0], sizeof(FIFO_CanRx.New_Datos));
         
         Encolar_FIFO(&FIFO_CanRx);
+
+        //Flags used by TimeOut Rx function
         StatusCom.StatusFlags.Flags.DataAvailable = true;
+        StatusCom.StatusFlags.Flags.TransmittedCanMsg = false; //Received data, transmission confirmed
         ulTimeOutCANRx = 0; //Reset TimeOut for next iteration
     }
     if (ulStatus == MAILBOX_TWO) // Assigend to ADC node
@@ -1854,7 +1857,9 @@ interrupt void CANA0_ISR(void)
                                                          //message received in the current pointer position   
         memcpy(&FIFO_CanRx.New_Datos[1], (void *)sMailboxTwoCANOpenMsg.pucMsgData, 8);
         Encolar_FIFO(&FIFO_CanRx);
+        //Flags used by TimeOut Rx function
         StatusCom.StatusFlags.Flags.DataAvailable = true;
+        StatusCom.StatusFlags.Flags.TransmittedCanMsg = false; //Received data, transmission confirmed
         ulTimeOutCANRx = 0; //Reset TimeOut for next iteration
     }
     // Otherwise, something unexpected caused the interrupt.  This should

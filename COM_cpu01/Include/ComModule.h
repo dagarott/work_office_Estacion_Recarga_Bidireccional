@@ -29,13 +29,14 @@
 #define COM_NODE_ID 0x01
 #define ADC_NODE_ID 0x03
 #define PS_NODE_ID 0x30
-#define TIMEOUT_CAN_RX 25 //SysTick == 10. TIMEOUT_RX_CAN= SysTick*25=250ms
+#define TIMEOUT_CAN_RX 1 //SysTick == 10ms. TIMEOUT_RX_CAN= SysTick*1=10ms
 
-//extern FIFO FIFO_PowerSupplyTx;   //FIFO Tx defined for Power Supply
-//extern FIFO FIFO_PowerSupplyRX;   //FIFO Tx defined for Power Supply
-//extern FIFO FIFO_AdcRX;           //FIFO Rx defined for ADC
+//Hardware dependent. Powersupply features
+#define V2G500V15A_VOLTAGE 500  //500V
+#define V2G500V15A_CURRENT 15   //-+15A
+
+
 extern FIFO FIFO_CanTx; //Unique CAN FIFO defined for store CAN tx
-
 extern FIFO FIFO_CanRx; //Unique CAN FIFO defined for store CAN rx
                         //messages from Power Supply and ADC
 extern FIFO FIFO_PcRx;  //FIFO Tx defined for Industrial PC
@@ -111,14 +112,16 @@ typedef struct sAdcValues
  */
 typedef struct sPowerSupplyValues
 {
-
+    unsigned char Model             //Store device name/model
+    uint16_t CurrentDeviceValue     //Values according to model
+    uint16_t VoltageDeviceValue     //Values according to model
     uint16_t PowerModuleStatus;     //0x2101 / [0-15]bit status
     uint16_t DCOutputVoltage;       //0x2107 Actual output voltage 0.1V/step
     int16_t DCOutputCurrrent;       //0x2108 Actual output current 0.1A/step
     uint16_t DCOutputVSetpoint;     //0x2109 Setpoint output voltage 0.1A/step
     int16_t DCOutputISetpoint;      //0x210A Setpoint output current 0.1A/step
-    uint16_t DCBusVoltage;          //0x210D DC Bus Volage
-    int16_t DCBusVoltageMeasured;   //0x212A Measured DC bus voltage
+    uint16_t DCBusVoltage;          //0x210D DC Bus Voltage
+    int16_t DCBusVoltageMeasured;   //0x212A DC Bus voltage filtered
 
 } PowerSupplyValues_t;
 
@@ -127,7 +130,6 @@ void Set_MailboxOne(void);
 void Set_MailboxTwo(void);
 uint16_t Set_CANOpenMsg_To_Tx(enum Indice_Diccionario_TPO Idx, FIFO *ptr_MsgToTx, uint32_t DataToTx, uint16_t Node_ID);
 sEstadoFIFO Transmit_CANOPenMsg(FIFO MsgToTx);
-void InitAdc(void);
-void AnalyzeCanMsg(void);
+uint16_t InitAdc(void);
 
 #endif /* COMMODULE_H_ */

@@ -29,39 +29,33 @@
 #include "ComModule.h"
 /* USER CODE END Includes */
 
-#define DEBUG
-
-uint32_t tmp = 0;
 
 /**
- * @brief  Main function, init clcok system, HW, etc.
+ * @brief  Main function, initialize clock system, HW, etc.
  * 
  */
 void main(void)
 {
-   
 
     Init_HW(); /* Initialize all the HW*/
     Hablitar_ISR();
     Config_CANA(500); //500kbit/s
 
-/* USER CODE BEGIN */
+    /* USER CODE BEGIN */
     Init_CANOpenMsgFIFOs();
     Set_MailboxOne();
     Set_MailboxTwo();
 
- 
-/* USER CODE END */
-    
+    /* USER CODE END */
+
     for (;;)
     {
-        if(ulSysTickFlag)
+        if (ulSysTickFlag)
         {
-            ulSysTickFlag=false;
-            AnalyzeCanMsg(); //Triggered every 10ms
-	
-       }
-            
+            ulSysTickFlag = false;
+            Scheduler(); //Triggered every 10ms
+        }
+
     }
 }
 
