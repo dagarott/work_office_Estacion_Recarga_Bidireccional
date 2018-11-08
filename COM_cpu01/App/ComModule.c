@@ -49,11 +49,11 @@ unsigned char rxPsMsgData[8] = {0};  //Array to store data from CAN object
 unsigned char rxAdcMsgData[8] = {0}; //Array to store data from CAN object
 
 volatile uint32_t ulTimeOutCANRx; //Variable used by function TimeOut
-unsigned uint16_t 10msCount = 0;  //Variable used by scheduler
-unsigned uint16_t 20msCount = 0;  //Variable used by scheduler
-unsigned uint16_t 100msCount = 0; //Variable used by scheduler
-unsigned uint16_t 500msCount = 0; //Variable used by scheduler
-unsigned uint16_t 1sCount = 0;    //Variable used by scheduler
+uint16_t Count10ms= 0;  //Variable used by scheduler
+uint16_t Count20ms = 0;  //Variable used by scheduler
+uint16_t Count100ms = 0; //Variable used by scheduler
+uint16_t Count500ms = 0; //Variable used by scheduler
+uint16_t Count1sec = 0;    //Variable used by scheduler
 
 typedef struct sObjectTx
 {
@@ -64,6 +64,16 @@ typedef struct sObjectTx
 LastObjectTx_t PowerSupply_LastObjectTx = {0x00, 0x00};
 
 AdcValues_t AdcValuesSaved = {0, 0.0, 0, 0.0, 0, 0, 0};
+
+PowerSupplyValues_t PowerSupplyValues = {" ", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+
+uint16_t CurrentProcess=0; //
+
+enum Process{
+
+
+
+};
 
 /* USER CODE END PV */
 
@@ -103,12 +113,18 @@ void Init_CANOpenMsgFIFOs(void)
  * 
  * @param Indice_Diccionario_TPO 
  * @param ptr_MsgToTx 
- * @param DataToTx 
+ * @param DataToTx  
+ * @param Access Mode     --> Values could be (0)not apply/write_xbytes/read_xbytres
+ *                        There are objects with both mode set, read_xbytes+write_xbytes,
+ *                        in dictionary acces mode item, then in order to set correct CAN
+ *                        frame is necessary to select one acces mode.
+ *                        In the other hand, we also have object with only one mode, then 
+ *                        reading directly from dictionary acces mode item it is enough
  * @return uint16_t 
  */
 uint16_t Set_CANOpenMsg_To_Tx(enum Indice_Diccionario_TPO Idx,
                               FIFO *ptr_MsgToTx, uint32_t DataToTx,
-                              uint16_t Idx_Node)
+                              uint16_t Idx_Node, uint8_t AccesMode)
 {
 
     int32_t tmp = 0;
@@ -124,8 +140,16 @@ uint16_t Set_CANOpenMsg_To_Tx(enum Indice_Diccionario_TPO Idx,
         return (0x00);  //NULL pointer. Error
 
     *(ptrMsg++) = Idx_Node;
-    *(ptrMsg++) = Diccionario_CanOpen[Idx].Modo_Acceso;               //Command Byte (CD), Read,Write or REad/write
-                                                                      //operation
+
+    if (AccesMode == 0)
+    {
+        *(ptrMsg++) = Diccionario_CanOpen[Idx].Modo_Acceso; //Command Byte (CD), Read,Write operation
+    }
+    else
+    {
+        *(ptrMsg++) = AccesMode; //Command Byte (CD) Read/write operation
+    }
+
     *(ptrMsg++) = (uint16_t)((Diccionario_CanOpen[Idx].ID) & 0x00FF); //Object Dictionary Index
     *(ptrMsg++) = (uint16_t)((Diccionario_CanOpen[Idx].ID) >> 8);     //Stored as little endian
     *(ptrMsg++) = ((Diccionario_CanOpen[Idx].SubIndice));             //Stored SubIndex
@@ -154,12 +178,12 @@ uint16_t Set_CANOpenMsg_To_Tx(enum Indice_Diccionario_TPO Idx,
     return (0x01); //All OK
 }
 /**
- * @brief  Build an error message in the correct CANOpen Protocol way and stack it in FIFO,
- *         waiting to be transmitted by CAN peripheral
+ * @brief
  * 
  * @param Indice_Diccionario_TPO 
  * @param ptr_MsgToTx 
  * @param DataToTx 
+ * @param Idx_Node 
  * @return uint16_t 
  */
 uint16_t Set_CANOpenErrorMsg_To_Tx(enum Indice_Diccionario_TPO Idx,
@@ -297,12 +321,42 @@ void Set_MailboxTwo(void)
 uint16_t InitAdc(void)
 {
     uint16_t status = 0;
-
+    enum OD_Index;
     OD_Index = Config_ADC; //CAN command array Index. Commands present in Diccionario_CANOpen.c file
     status = Set_CANOpenMsg_To_Tx(OD_Index, &FIFO_CanTx, ENABLE_ADC,
-                                  RSDO + ADC_NODE_ID);
+                                  RSDO + ADC_NODE_ID, 0);
     Transmit_CANOPenMsg(FIFO_CanTx);
 
+    return (status);
+}
+/**
+ * @brief 
+ * 
+ * @return uint16_t 
+ */
+uint16_t InitPowerSupply(void)
+{
+    static uint16_t state = 0;
+    uint16_t status = 0;
+    enum OD_Index;
+
+    switch (state)
+    {
+        case 0: //test com. with PS
+            OD_Index = Nombre_dispositivo;
+            status = Set_CANOpenMsg_To_Tx(OD_Index, &FIFO_CanTx, 0, RSDO + PS_NODE_ID, OD_WRITE_2BYTES);
+            Transmit_CANOPenMsg(FIFO_CanTx);
+            StatusCom.StatusFlags.Flags.TransmittedCanMsg = 1; //Start CAN tx timeOut exception
+            state=1;
+            break;
+        case 1:
+            if()
+                state=2;
+            break;
+
+        default:
+            break;
+    }
     return (status);
 }
 /**
@@ -311,54 +365,22 @@ uint16_t InitAdc(void)
  * @param VoltageRequest 
  * @return uint16_t 
  */
-uint16_t PsvoltageSetPoint(uint16_t VoltageRequest)
+uint16_t PsSetVoltageCurrent(uint16_t VoltageRequest, uint16_t CurrentRequest,
+                             bool EnablePs)
 {
-
-    if (VoltageRequest <= V2G500V15A_VOLTAGE)
-    {
-        //It is below, then set new CAN frame to send to Power
-        //supply
-        OD_Index = Module_Enable;
-        status = Set_CANOpenMsg_To_Tx(OD_Index, &FIFO_CanTx,
-                VoltageRequest, RSDO + PS_NODE_ID);
-        Transmit_CANOPenMsg(FIFO_CanTx);
-        StatusCom.StatusFlags.Flags.TransmittedCanMsg = 1; //Start CAN tx timeOut exception
-    }
-    return(status);
-
-}
-/**
- * @brief Set +/- current from power supply to desired value
- * 
- * @param CurrentRequest 
- * @return uint16_t 
- */
-uint16_t PsCurrentSetPoint(int16_t CurrentRequest)
-{
-
     uint16_t status = 0;
-    int16_t tmpCurrentRequest = CurrentRequest;
 
-    if ((tmpCurrentRequest & 0x8000) == 0x8000)
-    {
-        // It is negative, make it positive by inverting the bits
-        // and adding one.
-        tmpCurrentRequest=~tmpCurrentRequest;
-        tmpCurrentRequest+= 0x01;
-    }
-    //Check if absolute requested value current is below maximum
-    //current provided by power supply
-    if (tmpCurrentRequest <= V2G500V15A_CURRENT)
-    {
-        //It is below, then set new CAN frame to send to Power
-        //supply
-        OD_Index = Module_Enable;
-        status = Set_CANOpenMsg_To_Tx(OD_Index, &FIFO_CanTx,
-                CurrentRequest, RSDO + PS_NODE_ID);
-        Transmit_CANOPenMsg(FIFO_CanTx);
-        StatusCom.StatusFlags.Flags.TransmittedCanMsg = 1; //Start CAN tx timeOut exception
-    }
-    return(status);
+    if ((VoltageRequest <= V2G500V15A_VOLTAGE) &&  (CurrentRequest <= V2G500V15A_CURRENT))
+        {
+            //It is below, then set new CAN frame to send to Power
+            //supply
+            OD_Index = Module_Enable;
+            status = Set_CANOpenMsg_To_Tx(OD_Index, &FIFO_CanTx,
+                                          VoltageRequest, RSDO + PS_NODE_ID, OD_WRITE_2BYTES);
+            Transmit_CANOPenMsg(FIFO_CanTx);
+            StatusCom.StatusFlags.Flags.TransmittedCanMsg = 1; //Start CAN tx timeOut exception
+        }
+    return (status);
 }
 /**
  * @brief 
@@ -366,30 +388,30 @@ uint16_t PsCurrentSetPoint(int16_t CurrentRequest)
  */
 void Scheduler(void)
 {
-    10msCount ++;
+    Count10ms ++;
     TimeOutRxCanMsg(); //Every 10ms
-    if (10mCount >= 2)
+    if (Count10ms >= 2)
     {
-        10msCount = 0;
-        20msCount ++;
+        Count10ms = 0;
+        Count20ms++;
         //Every 20ms
         AnalyzeCanMsg();
     }
-    if (20msCount >= 5)
+    if (Count20ms >= 5)
     {
-        20msCount = 0;
-        100msCount ++;
+        Count20ms = 0;
+        Count100ms++;
         //Every 100ms
     }
-    if (100msCount >= 5)
+    if (Count100ms >= 5)
     {
-        100msCount = 0;
-        500msCount ++;
+        Count100ms = 0;
+        Count500ms ++;
         //Every 500ms
     }
-    if (500msCount >= 2)
+    if (Count500ms >= 2)
     {
-        500msCount = 0;
+        Count500ms = 0;
         //Every 1s
     }
 }
@@ -425,7 +447,7 @@ void AnalyzeCanMsg(void)
     uint16_t ObjIndex = 0; //Temporal variable to save Object Index
     uint16_t AccessMode = 0;
     uint16_t DataSaved[9] = {0x00}; //Temporal array where store data received from CAN
-    uint32_t AdcValue = 0;          //
+    uint32_t TmpValue = 0;          //
     uint16_t DictionaryIndex = 0;   //Temporal variable used for check ObjectIndex
                                     //and AccesCmd
     uint16_t NodeIdRx = 0;          //Temporal variable to store Id from node transmitter
@@ -444,10 +466,10 @@ void AnalyzeCanMsg(void)
         ObjIndex = (uint16_t)DataSaved[2] + (uint16_t)(DataSaved[3] << 8);
         SubIndex = (uint16_t)DataSaved[4];
         //AdcValue = datos_char_to_int(DataSaved[5]);
-        AdcValue = (uint32_t)DataSaved[8] << 24;
-        AdcValue += (uint32_t)DataSaved[7] << 16;
-        AdcValue += (uint32_t)DataSaved[6] << 8;
-        AdcValue += (uint32_t)DataSaved[5];
+        TmpValue = (uint32_t)DataSaved[8] << 24;
+        TmpValue += (uint32_t)DataSaved[7] << 16;
+        TmpValue += (uint32_t)DataSaved[6] << 8;
+        TmpValue += (uint32_t)DataSaved[5];
 
         DictionaryIndex = Econtrar_Indice_Diccionario(ObjIndex, SubIndex);
 
@@ -501,8 +523,8 @@ void AnalyzeCanMsg(void)
                 }
                 else if (StatusCom.StatusFlags.Flags.AccessModeWrite)
                 {
-                    AdcValuesSaved.VoltageValue = AdcValue;                     //Raw value for Chademo logic
-                    AdcValuesSaved.floatVolatageValue = (float)AdcValue / 10.0; //0.1 A/bit
+                    AdcValuesSaved.VoltageValue = TmpValue;                     //Raw value for Chademo logic
+                    AdcValuesSaved.floatVolatageValue = (float)TmpValue / 10.0; //0.1 A/bit
                 }
                 else if ((StatusCom.StatusFlags.Flags.AccessModeRead) && ((StatusCom.StatusFlags.Flags.AccessModeWrite)))
                 {
@@ -526,17 +548,17 @@ void AnalyzeCanMsg(void)
                 }
                 else if (StatusCom.StatusFlags.Flags.AccessModeWrite)
                 {
-                    AdcValuesSaved.CurrentValue = AdcValue; //Raw value for Chademo logic
+                    AdcValuesSaved.CurrentValue = TmpValue; //Raw value for Chademo logic
                     //Get sign of the Current Value
                     if ((AdcValuesSaved.CurrentValue & 0x80000000) == 0x80000000)
                     {
                         AdcValuesSaved.NegativeCurrentValue = true; //Negative number
                         // If it is negative, make it positive by inverting the bits
                         // and adding one.
-                        AdcValue = ~AdcValue; //Bitwise negation of all bits
-                        AdcValue += 0x01;
+                        TmpValue = ~TmpValue; //Bitwise negation of all bits
+                        TmpValue += 0x01;
                     }
-                    AdcValuesSaved.floatCurrentValue = (float)AdcValue / 10.0; //0.1 A/bit
+                    AdcValuesSaved.floatCurrentValue = (float)TmpValue / 10.0; //0.1 A/bit
                 }
                 else if ((StatusCom.StatusFlags.Flags.AccessModeRead) && ((StatusCom.StatusFlags.Flags.AccessModeWrite)))
                 {
@@ -551,6 +573,13 @@ void AnalyzeCanMsg(void)
                                           RSDO + NodeIdRx);
             }
             break;
+
+        case 0x1008: //Device Name
+
+
+
+            break;
+
 
         default:
             StatusErrors.StatusFlags.Flags.ObjectIndexNotExist = true;

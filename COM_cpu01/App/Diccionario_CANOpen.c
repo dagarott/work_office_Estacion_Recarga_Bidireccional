@@ -51,12 +51,12 @@ tCanMsg Diccionario_CanOpen[] = {
     {OD_READ + OD_WRITE, 0x2100, 0x00}, //Module_Enable
     {OD_READ, 0x2101, 0x00},            //Module_Status
     {OD_READ, 0x2104, 0x00},            //Module_Temperature
-    {OD_READ + OD_WRITE, 0x2105, 0x00}, //Uac_Input
+    {OD_READ_2BYTES + OD_WRITE_2BYTES, 0x2105, 0x00}, //Uac_Input
     {OD_READ, 0x2106, 0x00},            //Iac_Input
     {OD_READ, 0x2107, 0x00},            //Udc_Out
     {OD_READ, 0x2108, 0x00},            //Idc_Out
-    {OD_READ + OD_WRITE, 0x2109, 0x00}, //Udc_Out_Setpoint
-    {OD_READ + OD_WRITE, 0x210A, 0x00}, //Idc_Out_Setpoint
+    {OD_READ_2BYTES + OD_WRITE_2BYTES, 0x2109, 0x00}, //Udc_Out_Setpoint
+    {OD_READ_2BYTES + OD_WRITE_2BYTES, 0x210A, 0x00}, //Idc_Out_Setpoint
     {OD_READ, 0x210D, 0x00},            //Udc_Bus
     {OD_READ, 0x210E, 0x00},            //I_Solar_Out
     //------------------------------------------------------------------------------
