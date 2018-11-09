@@ -16,51 +16,48 @@
 //
 // Variables publicas
 //
-typedef enum { FALSE = 0, TRUE } BOOL;
+typedef enum
+{
+    FALSE = 0,
+    TRUE
+} BOOL;
 
-typedef union
-    {
+typedef union {
     uint32_t DATOS_32bits;
     struct
-        {
-        uint32_t Parte_Alta:16;
-        uint32_t Parte_Baja:16;
-        } DATOS_16bits ;
+    {
+        uint32_t Parte_Alta : 16;
+        uint32_t Parte_Baja : 16;
+    } DATOS_16bits;
     struct
-        {
-        uint32_t Parte_Alta2:8;
-        uint32_t Parte_Alta1:8;
-        uint32_t Parte_Baja2:8;
-        uint32_t Parte_Baja1:8;
-        } DATOS_8bits ;
+    {
+        uint32_t Parte_Alta2 : 8;
+        uint32_t Parte_Alta1 : 8;
+        uint32_t Parte_Baja2 : 8;
+        uint32_t Parte_Baja1 : 8;
+    } DATOS_8bits;
     struct
-        {
-        uint32_t Parte_Alta2B:4;
-        uint32_t Parte_Alta2A:4;
-        uint32_t Parte_Alta1B:4;
-        uint32_t Parte_Alta1A:4;
-        uint32_t Parte_Baja2B:4;
-        uint32_t Parte_Baja2A:4;
-        uint32_t Parte_Baja1B:4;
-        uint32_t Parte_Baja1A:4;
-        } DATOS_4bits ;
-    }DATOS;
+    {
+        uint32_t Parte_Alta2B : 4;
+        uint32_t Parte_Alta2A : 4;
+        uint32_t Parte_Alta1B : 4;
+        uint32_t Parte_Alta1A : 4;
+        uint32_t Parte_Baja2B : 4;
+        uint32_t Parte_Baja2A : 4;
+        uint32_t Parte_Baja1B : 4;
+        uint32_t Parte_Baja1A : 4;
+    } DATOS_4bits;
+} DATOS;
 
+#define Stop P4_3
+#define StatusStop() GPIO_ReadPin(Stop)
+#define PsEnnable P9_9
+#define PsEnable_ON() GPIO_WritePin(PsEnnable, 1)
+#define PsEnable_OFF() GPIO_WritePin(PsEnnable, 0)
+#define EarthTest P9_10
+#define EarthTest_ON() GPIO_WritePin(PsEnnable, 1)
+#define EarthTest_OFF() GPIO_WritePin(PsEnnable, 0)
+#define EarthEmergency P4_4
+#define StatusEarthEmergency() GPIO_ReadPin(EarthEmergency)
 
-#define LED9                34
-#define Toggle_LED9()       GpioDataRegs.GPATOGGLE.bit.GPIO12 = 1
-#define ON_LED9()           GPIO_WritePin(34,0)
-#define OFF_LED9()          GPIO_WritePin(34,1)
-#define LED10               31
-#define Toggle_LED10()      GpioDataRegs.GPATOGGLE.bit.GPIO13 = 1
-#define ON_LED10()          GPIO_WritePin(31,0)
-#define OFF_LED10()         GPIO_WritePin(31,1)
-
-
-#define Stop                P4_3
-#define StatusStop()        GPIO_ReadPin(Stop)
-#define PsInterlock         P9_9
-#define PsInterlock_ON()    GPIO_WritePin(PsInterlock,1)
-#define PsInterlock_OFF()   GPIO_WritePin(Psinterlock,0)
-
-    #endif /* DEF_GLOBAL_H_ */
+#endif /* DEF_GLOBAL_H_ */

@@ -35,9 +35,10 @@
 #define V2G500V15A_VOLTAGE 500 //500V
 #define V2G500V15A_CURRENT 15  //-+15A
 
-#define CPU01_TO_CPU02_PASSMSG 0x0003FBF4 // CPU01 TO CPU02 MSG RAM (256 words)
-#define CPU02_TO_CPU01_PASSMSG 0x0003FCF4 // CPU02 TO CPU01 MSG RAM (256 words)
-#define END_PASSMSG 0x0003FDF4            // CPU01 TO CPU02 MSG RAM
+#define CPU01_TO_CPU02_PASSMSG 0x0003FC00 // CPU01 TO CPU02 MSG RAM (256 words)
+#define CPU02_TO_CPU01_PASSMSG 0x0003F800 // CPU02 TO CPU01 MSG RAM (256 words)
+//TODO: Define end Ram memory
+//#define END_PASSMSG 0x0003FDF4            // CPU01 TO CPU02 MSG RAM
 
 extern FIFO FIFO_CanTx; //Unique CAN FIFO defined for store CAN tx
 extern FIFO FIFO_CanRx; //Unique CAN FIFO defined for store CAN rx
@@ -60,8 +61,9 @@ typedef struct sFlagsError
         uint16_t AllFlags;
         struct
         {
-            uint16_t ObjectIndexNotExist : 1;
-            uint16_t AccessCmdForbidden : 1;
+            uint16_t ObjectIndexError : 1;
+            uint16_t AccessCmdError : 1;
+            uint16_t SubIndexError : 1;
         } Flags;
     } StatusFlags;
 } FlagsError_t;
@@ -106,6 +108,14 @@ typedef struct sAdcValues
     int16_t TempPositive;
     int16_t TempNegative;
     uint16_t NegativeCurrentValue;
+    union {
+            uint16_t AllFlags;
+            struct
+            {
+                uint16_t VoltageAnswerFromAdc : 1;
+                uint16_t CurrentAnswerFromAdc : 1;
+            } Flags;
+        } StatusFlags;
 } AdcValues_t;
 
 //extern AdcValues_t AdcValuesSaved;
@@ -121,13 +131,26 @@ typedef struct sPowerSupplyValues
     uint16_t PowerModuleStatus;   //0x2101 / [0-15]bit status
     uint16_t DCOutputVoltage;     //0x2107 Actual output voltage 0.1V/step
     int16_t DCOutputCurrrent;     //0x2108 Actual output current 0.1A/step
-    uint16_t DCOutputVSetpoint;   //0x2109 Setpoint output voltage 0.1A/step
-    int16_t DCOutputISetpoint;    //0x210A Setpoint output current 0.1A/step
+    uint16_t DCOutputVSetpoint;   //0x2109 Set point output voltage 0.1A/step
+    int16_t DCOutputISetpoint;    //0x210A Set point output current 0.1A/step
     uint16_t DCBusVoltage;        //0x210D DC Bus Voltage
     int16_t DCBusVoltageMeasured; //0x212A DC Bus voltage filtered
     uint16_t ActualVoltageValue;
     uint16_t ActualCurrentValue;
 
+    union {
+        uint16_t AllFlags;
+        struct
+        {
+            uint16_t AnswerFromPs : 1;
+            uint16_t AnswerDeviceName : 1;
+            uint16_t AnswerDeviceNameError : 1;
+            uint16_t AnswerVSet : 1;
+            uint16_t AnswerVSetError : 1;
+            uint16_t AnswerISet : 1;
+            uint16_t AnswerISetError : 1;
+        } Flags;
+    } StatusFlags;
 } PowerSupplyValues_t;
 
 void Init_CANOpenMsgFIFOs(void);
@@ -144,5 +167,5 @@ uint16_t InitAdc(void);
 uint16_t InitPowerSupply(void);
 uint16_t PsSetVoltageCurrent(uint16_t VoltageRequest, uint16_t CurrentRequest,
                              bool EnablePs);
-
+void Scheduler(void);
 #endif /* COMMODULE_H_ */
