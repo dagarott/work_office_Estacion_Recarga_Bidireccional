@@ -34,12 +34,7 @@
 		<link>
 			<name>Comun</name>
 			<type>2</type>
-			<locationURI>WORKSPACE_LOC/Firmware_Test/UFCharger/F2837xD/Comun</locationURI>
-		</link>
-		<link>
-			<name>UFCharger/F2837xD/Comun</name>
-			<type>2</type>
-			<location>C:/Users/dagaro/workspace/Firmware_Test/UFCharger/F2837xD/Comun</location>
+			<locationURI>WORKSPACE_LOC/UFCharger/F2837xD/Comun</locationURI>
 		</link>
 	</linkedResources>
 	<variableList>

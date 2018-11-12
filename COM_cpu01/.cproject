@@ -92,7 +92,7 @@
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>
-						<entry excluding="2837x_FLASH_lnk_cpu1.cmd|UFCharger/F2837xD/Comun/driverlib/usb_hal.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+						<entry excluding="2837x_FLASH_lnk_cpu1.cmd" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>
@@ -137,12 +137,15 @@
 								<option id="com.ti.ccstudio.buildDefinitions.C2000_18.1.compilerID.VCU_SUPPORT.299215949" name="Specify VCU support (--vcu_support)" superClass="com.ti.ccstudio.buildDefinitions.C2000_18.1.compilerID.VCU_SUPPORT" value="com.ti.ccstudio.buildDefinitions.C2000_18.1.compilerID.VCU_SUPPORT.vcu2" valueType="enumerated"/>
 								<option id="com.ti.ccstudio.buildDefinitions.C2000_18.1.compilerID.TMU_SUPPORT.1224486009" name="Specify TMU support (--tmu_support)" superClass="com.ti.ccstudio.buildDefinitions.C2000_18.1.compilerID.TMU_SUPPORT" value="com.ti.ccstudio.buildDefinitions.C2000_18.1.compilerID.TMU_SUPPORT.tmu0" valueType="enumerated"/>
 								<option id="com.ti.ccstudio.buildDefinitions.C2000_18.1.compilerID.INCLUDE_PATH.637911905" name="Add dir to #include search path (--include_path, -I)" superClass="com.ti.ccstudio.buildDefinitions.C2000_18.1.compilerID.INCLUDE_PATH" valueType="includePath">
-									<listOptionValue builtIn="false" value="${WorkspaceDirPath}\Firmware_Test\UFCharger\F2837xD\ti-cgt-c2000_16.9.6.LTS\include"/>
-									<listOptionValue builtIn="false" value="${WorkspaceDirPath}\Firmware_Test\UFCharger\F2837xD\F2837xD_common\include"/>
-									<listOptionValue builtIn="false" value="${WorkspaceDirPath}\Firmware_Test\UFCharger\F2837xD\F2837xD_headers\include"/>
-									<listOptionValue builtIn="false" value="${WorkspaceDirPath}\Firmware_Test\UFCharger\COM_cpu01\Include"/>
-									<listOptionValue builtIn="false" value="${WorkspaceDirPath}\Firmware_Test\UFCharger\F2837xD\Comun\Drivers\Include"/>
-									<listOptionValue builtIn="false" value="${WorkspaceDirPath}\Firmware_Test\UFCharger\F2837xD\Comun\driverlib"/>
+									<listOptionValue builtIn="false" value="${WorkspaceDirPath}\UFCharger\F2837xD\ti-cgt-c2000_16.9.6.LTS\include"/>
+									<listOptionValue builtIn="false" value="${WorkspaceDirPath}\UFCharger\F2837xD\flash_api\example\F2806x_headers\cmd"/>
+									<listOptionValue builtIn="false" value="${workspace_loc:/${ProjName}/Include}"/>
+									<listOptionValue builtIn="false" value="${WorkspaceDirPath}\UFCharger\F2837xD\Comun\driverlib"/>
+									<listOptionValue builtIn="false" value="${WorkspaceDirPath}\UFCharger\F2837xD\F2837xD_headers\include"/>
+									<listOptionValue builtIn="false" value="${WorkspaceDirPath}\UFCharger\F2837xD\Comun\Drivers\Include"/>
+									<listOptionValue builtIn="false" value="${WorkspaceDirPath}\UFCharger\F2837xD\Comun\driverlib"/>
+									<listOptionValue builtIn="false" value="${WorkspaceDirPath}\UFCharger\F2837xD\F2837xD_common\include"/>
+									<listOptionValue builtIn="false" value="${WorkspaceDirPath}\UFCharger\F2837xD\flash_api\include"/>
 								</option>
 								<option id="com.ti.ccstudio.buildDefinitions.C2000_18.1.compilerID.ADVICE__PERFORMANCE.1169019879" name="Provide advice on optimization techniques (--advice:performance)" superClass="com.ti.ccstudio.buildDefinitions.C2000_18.1.compilerID.ADVICE__PERFORMANCE" value="--advice:performance=all" valueType="string"/>
 								<option id="com.ti.ccstudio.buildDefinitions.C2000_18.1.compilerID.DEFINE.1868044048" name="Pre-define NAME (--define, -D)" superClass="com.ti.ccstudio.buildDefinitions.C2000_18.1.compilerID.DEFINE" valueType="definedSymbols">
@@ -154,7 +157,7 @@
 									<listOptionValue builtIn="false" value="225"/>
 								</option>
 								<option id="com.ti.ccstudio.buildDefinitions.C2000_18.1.compilerID.DISPLAY_ERROR_NUMBER.1683859688" name="Emit diagnostic identifier numbers (--display_error_number, -pden)" superClass="com.ti.ccstudio.buildDefinitions.C2000_18.1.compilerID.DISPLAY_ERROR_NUMBER" value="true" valueType="boolean"/>
-								<option id="com.ti.ccstudio.buildDefinitions.C2000_18.1.compilerID.FP_MODE.164356044" superClass="com.ti.ccstudio.buildDefinitions.C2000_18.1.compilerID.FP_MODE" value="com.ti.ccstudio.buildDefinitions.C2000_18.1.compilerID.FP_MODE.relaxed" valueType="enumerated"/>
+								<option id="com.ti.ccstudio.buildDefinitions.C2000_18.1.compilerID.FP_MODE.164356044" name="Floating Point mode (--fp_mode)" superClass="com.ti.ccstudio.buildDefinitions.C2000_18.1.compilerID.FP_MODE" value="com.ti.ccstudio.buildDefinitions.C2000_18.1.compilerID.FP_MODE.relaxed" valueType="enumerated"/>
 								<inputType id="com.ti.ccstudio.buildDefinitions.C2000_18.1.compiler.inputType__C_SRCS.396922905" name="C Sources" superClass="com.ti.ccstudio.buildDefinitions.C2000_18.1.compiler.inputType__C_SRCS"/>
 								<inputType id="com.ti.ccstudio.buildDefinitions.C2000_18.1.compiler.inputType__CPP_SRCS.376485984" name="C++ Sources" superClass="com.ti.ccstudio.buildDefinitions.C2000_18.1.compiler.inputType__CPP_SRCS"/>
 								<inputType id="com.ti.ccstudio.buildDefinitions.C2000_18.1.compiler.inputType__ASM_SRCS.1491175586" name="Assembly Sources" superClass="com.ti.ccstudio.buildDefinitions.C2000_18.1.compiler.inputType__ASM_SRCS"/>
@@ -172,10 +175,11 @@
 									<listOptionValue builtIn="false" value="libc.a"/>
 								</option>
 								<option id="com.ti.ccstudio.buildDefinitions.C2000_18.1.linkerID.SEARCH_PATH.1969867276" name="Add &lt;dir&gt; to library search path (--search_path, -i)" superClass="com.ti.ccstudio.buildDefinitions.C2000_18.1.linkerID.SEARCH_PATH" valueType="libPaths">
-									<listOptionValue builtIn="false" value="${WorkspaceDirPath}\Firmware_Test\UFCharger\F2837xD\F2837xD_headers\cmd"/>
-									<listOptionValue builtIn="false" value="${WorkspaceDirPath}\Firmware_Test\UFCharger\F2837xD\F2837xD_common\cmd"/>
-									<listOptionValue builtIn="false" value="${WorkspaceDirPath}\Firmware_Test\UFCharger\F2837xD\ti-cgt-c2000_16.9.6.LTS\include"/>
-									<listOptionValue builtIn="false" value="${WorkspaceDirPath}\Firmware_Test\UFCharger\F2837xD\ti-cgt-c2000_16.9.6.LTS\lib"/>
+									<listOptionValue builtIn="false" value="${CG_TOOL_CL}/lib"/>
+									<listOptionValue builtIn="false" value="${WorkspaceDirPath}\include"/>
+									<listOptionValue builtIn="false" value="${WorkspaceDirPath}\UFCharger\F2837xD\F2837xD_headers\cmd"/>
+									<listOptionValue builtIn="false" value="${WorkspaceDirPath}\UFCharger\F2837xD\F2837xD_common\cmd"/>
+									<listOptionValue builtIn="false" value="${WorkspaceDirPath}\UFCharger\F2837xD\ti-cgt-c2000_16.9.6.LTS\lib"/>
 								</option>
 								<option id="com.ti.ccstudio.buildDefinitions.C2000_18.1.linkerID.DISPLAY_ERROR_NUMBER.1012407597" name="Emit diagnostic identifier numbers (--display_error_number)" superClass="com.ti.ccstudio.buildDefinitions.C2000_18.1.linkerID.DISPLAY_ERROR_NUMBER" value="true" valueType="boolean"/>
 								<option id="com.ti.ccstudio.buildDefinitions.C2000_18.1.linkerID.XML_LINK_INFO.437699385" name="Detailed link information data-base into &lt;file&gt; (--xml_link_info, -xml_link_info)" superClass="com.ti.ccstudio.buildDefinitions.C2000_18.1.linkerID.XML_LINK_INFO" value="&quot;${ProjName}_linkInfo.xml&quot;" valueType="string"/>
@@ -187,7 +191,7 @@
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>
-						<entry excluding="2837x_FLASH_lnk_cpu1.cmd|UFCharger/F2837xD/Comun/driverlib/usb.c|Comun|UFCharger/F2837xD/Comun/driverlib/usb_hal.c|Comun/driverlib/usb.c|Comun/driverlib/usb_hal.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+						<entry excluding="2837x_FLASH_lnk_cpu1.cmd|UFCharger/F2837xD/Comun/driverlib/usb.c|UFCharger/F2837xD/Comun/driverlib/usb_hal.c|Comun/driverlib/usb.c|Comun/driverlib/usb_hal.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>
@@ -276,7 +280,7 @@
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>
-						<entry excluding="2837x_FLASH_lnk_cpu1.cmd|UFCharger/F2837xD/Comun/driverlib/usb_hal.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+						<entry excluding="2837x_FLASH_lnk_cpu1.cmd" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>

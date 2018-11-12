@@ -25,23 +25,21 @@ void Init_HW ()
     InitSysCtrl();
 
 #ifdef CPU2
-// Sincronizaci�n de arranque CPU1
-// Esperamos a que se configure la cpu1
+    // Sincronizaci�n de arranque CPU1
+    // Esperamos a que se configure la cpu1
     //IPCLtoRFlagSet (IPC17);
     while (IpcRegs.IPCSTS.bit.IPC17 == 0) ;
-#endif
+    //
+    // Inciar relojes
+    //
+    // CANB
+    CpuSysRegs.PCLKCR10.bit.CAN_B = 1;
 
-// Step 2. Inicializar GPIO:
-// This example function is found in the F2837xS_Gpio.c file and
-// illustrates how to set the GPIO to it's default state.
-//
-#ifdef CPU1
-
-//
-// Configurar Timer 0
-//
+#endif   
+    // Configurar Timer 0
+    //
     // Configure CPU-Timer 0 to __interrupt every 10 milliseconds:
-    // 60MHz CPU Freq, 10 millisecond Period (in uSeconds)
+    // 200MHz CPU Freq, 10 millisecond Period (in uSeconds)
     //
     InitCpuTimers();
     ConfigCpuTimer(&CpuTimer0, (T_clk/1000000) , 10000);
@@ -52,24 +50,18 @@ void Init_HW ()
     // settings must also be updated.
     //
     CpuTimer0Regs.TCR.all = 0x4001;
-/*
-#ifdef _FLASH
-    //
-    //  Send boot command to allow the CPU02 application to begin execution
-    //
-    IPCBootCPU2(C1C2_BROM_BOOTMODE_BOOT_FROM_FLASH);
-#else
-    //
-    //  Send boot command to allow the CPU02 application to begin execution
-    //
-    IPCBootCPU2(C1C2_BROM_BOOTMODE_BOOT_FROM_RAM);
-#endif
-*/
-    Config_GPIO ();
 
-// Step 2.2 Inicializar GPIO para CPU2:
-//    GPIO_SetupPinMux(LED9, GPIO_MUX_CPU2, 0);
-//    GPIO_SetupPinOptions(LED9, GPIO_OUTPUT, GPIO_PUSHPULL);
+// Step 2. Inicializar GPIO:
+// This example function is found in the F2837xS_Gpio.c file and
+// illustrates how to set the GPIO to it's default state.
+//
+#ifdef CPU1
+
+    Config_GPIO ();
+    EALLOW;
+    // Toma el control of CAN_B to CPU2
+    DevCfgRegs.CPUSEL8.bit.CAN_B = 1;
+    EDIS;
 
 // Sincronizaci�n de arranque CPU1
 // Indicamos que se ha configurado la cpu1

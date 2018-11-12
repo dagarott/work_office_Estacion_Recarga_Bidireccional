@@ -331,7 +331,7 @@ uint16_t InitAdc(void)
         RSDO + ADC_NODE_ID,
                                       0);
         Transmit_CANOPenMsg(FIFO_CanTx);
-        stateInitAdc=1;
+        stateInitAdc = 1;
         break;
 
     case 1: //Check if we have a TimeOut reception from PS, if so,
@@ -348,34 +348,35 @@ uint16_t InitAdc(void)
 
     case 2: //No TimeOut reception from PS, then analyze CAN message received
         AnalyzeCanMsg();
-        if(AdcValuesSaved.StatusFlags.Flags.VoltageAnswerFromAdc)
+        if (AdcValuesSaved.StatusFlags.Flags.VoltageAnswerFromAdc)
         {
             AdcValuesSaved.StatusFlags.Flags.VoltageAnswerFromAdc = false;
-            stateInitAdc =2;
+            stateInitAdc = 2;
         }
         else if (AdcValuesSaved.StatusFlags.Flags.CurrentAnswerFromAdc)
         {
             AdcValuesSaved.StatusFlags.Flags.CurrentAnswerFromAdc = false;
-            stateInitAdc =3;
+            stateInitAdc = 3;
         }
         else
         {
             //TODO: Set an error flag, stop everything and display it in user interface
-            return(0x00);
+            return (0x00);
         }
         break;
 
     case 3:
         //All ok
-        stateInitAdc=0;
-        return(0x01);
+        stateInitAdc = 0;
+        status = 0x01;
         break;
 
     default:
         //TODO: Set an error flag, stop everything and display it in user interface
-        return(0x00);
+        status = 0x00;
         break;
     }
+    return (status);
 }
 /**
  * @brief Initialize Power Supply. First check communication with PowerSuply,
@@ -426,7 +427,7 @@ uint16_t InitPowerSupply(void)
         else if ((OD_Index == Udc_Out_Setpoint)
                 && (PowerSupplyValues.StatusFlags.Flags.AnswerVSet))
         {
-            PowerSupplyValues.StatusFlags.Flags.AnswerVSet= false;
+            PowerSupplyValues.StatusFlags.Flags.AnswerVSet = false;
             stateInitPs = 4;
         }
         else if ((OD_Index == Idc_Out_Setpoint)
@@ -459,15 +460,101 @@ uint16_t InitPowerSupply(void)
         PowerSupplyValues.ActualCurrentValue = 0;
         PowerSupplyValues.ActualVoltageValue = 0;
         stateInitPs = 0;
-        return (0X01);
+        status = 0X01;
         break;
 
     default:
         //TODO: Set an error flag, stop everything and display it in user interface
-        return(0x00);
+        status = 0x00;
         break;
     }
 
+    return (status);
+}
+
+/**
+ * @brief      Create a rump up of voltage or current
+ *
+ * @param[in]  VoltageTarget  final voltage desired
+ * @param[in]  CurrentTarget  final current desired
+ *
+ * @return     { 0x01 ok / 0x00 error  }
+ */
+uint16_t PsRampup(uint16_t VoltageTarget, int16_t CurrentTarget)
+{
+
+    uint16_t status = 0x01; //By default all ok
+    uint16_t ChangeValue = false;
+
+    if (VoltageTarget < PowerSupplyValues.ActualVoltageValue)
+    {
+        if (PowerSupplyValues.ActualVoltageValue != 0)
+        {
+            //TODO:Calculate interpolation 
+            PowerSupplyValues.ActualVoltageValue -= VOLTAGE_THRESHOLD;
+            ChangeValue= true;
+        }
+    }
+    else if (VoltageTarget > PowerSupplyValues.ActualVoltageValue)
+    {
+        if (PowerSupplyValues.ActualVoltageValue != V2G500V15A_VOLTAGE)
+        {
+            //TODO:Calculate interpolation 
+            PowerSupplyValues.ActualVoltageValue += VOLTAGE_THRESHOLD;
+            ChangeValue= true;
+        }
+    }
+    //Get sign of the Current Value
+    if ((CurrentTarget & 0x80000000) == 0x80000000)
+    {
+        //Current is negative
+        if (CurrentTarget < PowerSupplyValues.ActualCurrentValue)
+        {
+            if (PowerSupplyValues.ActualCurrentValue != -V2G500V15A_CURRENT)
+            {
+                //TODO:Calculate interpolation 
+                PowerSupplyValues.ActualCurrentValue += CURRENT_THRESHOLD;
+                ChangeValue= true;
+            }
+        }
+        else if (CurrentTarget > PowerSupplyValues.ActualCurrentValue)
+        {
+            if (PowerSupplyValues.ActualCurrentValue != 0)
+            {
+                //TODO:Calculate interpolation 
+                PowerSupplyValues.ActualCurrentValue -= CURRENT_THRESHOLD;
+                ChangeValue= true;
+            }
+        }
+    }
+    else if ((CurrentTarget & 0x80000000) != 0x80000000)
+    {
+        //Current is positive
+        if (CurrentTarget < PowerSupplyValues.ActualCurrentValue)
+        {
+            if (PowerSupplyValues.ActualCurrentValue != 0)
+            {
+                PowerSupplyValues.ActualCurrentValue -= CURRENT_THRESHOLD;
+                ChangeValue= true;
+            }
+        }
+        else if (CurrentTarget > PowerSupplyValues.ActualCurrentValue)
+        {
+            if (PowerSupplyValues.ActualCurrentValue != V2G500V15A_CURRENT)
+            {
+                PowerSupplyValues.ActualCurrentValue += CURRENT_THRESHOLD;
+                ChangeValue= true;
+            }
+        }
+    }
+    if(ChangeValue)
+    {
+        ChangeValue=false;
+        status=PsSetVoltageCurrent(PowerSupplyValues.ActualVoltageValue,
+                  PowerSupplyValues.ActualCurrentValue);
+    }
+
+    return(status);
 }
 /*
  * @brief Set voltage from power supply to desired value 
@@ -475,24 +562,104 @@ uint16_t InitPowerSupply(void)
  * @param VoltageRequest 
  * @return uint16_t 
  */
-uint16_t PsSetVoltageCurrent(uint16_t VoltageRequest, uint16_t CurrentRequest,
-bool EnablePs)
+uint16_t PsSetVoltageCurrent(uint16_t VoltageRequest, int16_t CurrentRequest)
 {
-    uint16_t status = 0;
-    static
-    if ((VoltageRequest <= V2G500V15A_VOLTAGE)
-            && (CurrentRequest <= V2G500V15A_CURRENT))
-    {
+    static uint16_t stateSetPsVI = 0;
+    uint16_t status = 0x01; //By default all ok
+    enum OD_Index;
 
-        //It is below, then set new CAN frame to send to Power
-        //supply
-        OD_Index = Module_Enable;
-        status = Set_CANOpenMsg_To_Tx(OD_Index, &FIFO_CanTx, VoltageRequest,
-                RSDO + PS_NODE_ID,
-                OD_WRITE_2BYTES);
+    switch (stateSetPsVI)
+    {
+    case 0: //Send a Device Name CAN message to test communication with PS
+        //PsEnable_ON();
+        OD_Index = Nombre_dispositivo;
+        status = Set_CANOpenMsg_To_Tx(OD_Index, &FIFO_CanTx, 0,
+        RSDO + PS_NODE_ID,
+                                      OD_WRITE_2BYTES);
         Transmit_CANOPenMsg(FIFO_CanTx);
-        StatusCom.StatusFlags.Flags.TransmittedCanMsg = 1;//Start CAN tx timeOut exception
+        stateSetPsVI = 1;
+        break;
+
+    case 1: //Check if we have a TimeOut reception from PS, if so,
+            //set an error
+        if (StatusCom.StatusFlags.Flags.DataAvailable)
+        {
+            stateSetPsVI = 2;
+        }
+        else if (StatusCom.StatusFlags.Flags.ErrorCom)
+        {
+            //TODO: Set an error flag, stop everything and display it in user interface
+        }
+        break;
+
+    case 2: //No TimeOut reception from PS, then analyze CAN message received
+        AnalyzeCanMsg();
+        if ((OD_Index == Nombre_dispositivo)
+                && (PowerSupplyValues.StatusFlags.Flags.AnswerDeviceName))
+        {
+            //Correct CAN message received
+            PowerSupplyValues.StatusFlags.Flags.AnswerDeviceName = false;
+            stateSetPsVI = 3;
+        }
+        else if ((OD_Index == Udc_Out_Setpoint)
+                && (PowerSupplyValues.StatusFlags.Flags.AnswerVSet))
+        {
+            PowerSupplyValues.StatusFlags.Flags.AnswerVSet = false;
+            stateSetPsVI = 4;
+        }
+        else if ((OD_Index == Idc_Out_Setpoint)
+                && (PowerSupplyValues.StatusFlags.Flags.AnswerISet))
+        {
+            PowerSupplyValues.StatusFlags.Flags.AnswerISet = false;
+            stateSetPsVI = 5;
+        }
+        break;
+
+    case 3: //Next set V to desired value 
+
+        if (VoltageRequest > V2G500V15A_VOLTAGE)
+        {
+            //Maximum value allowed
+            VoltageRequest = V2G500V15A_VOLTAGE;
+        }
+
+        OD_Index = Udc_Out_Setpoint;
+        status = Set_CANOpenMsg_To_Tx(OD_Index, &FIFO_CanTx, VoltageRequest,
+        RSDO + PS_NODE_ID,
+                                      OD_WRITE_2BYTES);
+        Transmit_CANOPenMsg(FIFO_CanTx);
+        stateSetPsVI = 1;
+        break;
+
+    case 4: //Next set I to desired values
+
+        if (CurrentRequest > V2G500V15A_CURRENT)
+        {
+            //Maximum value alloewd 
+            CurrentRequest = V2G500V15A_CURRENT;
+        }
+
+        OD_Index = Idc_Out_Setpoint;
+        status = Set_CANOpenMsg_To_Tx(OD_Index, &FIFO_CanTx, CurrentRequest,
+        RSDO + PS_NODE_ID,
+                                      OD_WRITE_2BYTES);
+        Transmit_CANOPenMsg(FIFO_CanTx);
+        stateSetPsVI = 1;
+        break;
+
+    case 5:
+        PowerSupplyValues.ActualCurrentValue = CurrentRequest;
+        PowerSupplyValues.ActualVoltageValue = VoltageRequest;
+        stateSetPsVI = 0;
+        status = 0X01;
+        break;
+
+    default:
+        //TODO: Set an error flag, stop everything and display it in user interface
+        status = 0x00;
+        break;
     }
+
     return (status);
 }
 /**
@@ -643,7 +810,7 @@ void AnalyzeCanMsg(void)
                 {
                     AdcValuesSaved.VoltageValue = TmpValue; //Raw value for Chademo logic
                     AdcValuesSaved.floatVolatageValue = (float) TmpValue / 10.0; //0.1 A/bit
-                    AdcValuesSaved.StatusFlags.Flags.VoltageAnswerFromAdc=true;
+                    AdcValuesSaved.StatusFlags.Flags.VoltageAnswerFromAdc = true;
                 }
                 else if ((StatusCom.StatusFlags.Flags.AccessModeRead)
                         && ((StatusCom.StatusFlags.Flags.AccessModeWrite)))
@@ -680,7 +847,7 @@ void AnalyzeCanMsg(void)
                         TmpValue += 0x01;
                     }
                     //AdcValuesSaved.floatCurrentValue = (float)TmpValue / 10.0; //0.1 A/bit
-                    AdcValuesSaved.StatusFlags.Flags.CurrentAnswerFromAdc=true;
+                    AdcValuesSaved.StatusFlags.Flags.CurrentAnswerFromAdc = true;
                 }
                 else if ((StatusCom.StatusFlags.Flags.AccessModeRead)
                         && ((StatusCom.StatusFlags.Flags.AccessModeWrite)))

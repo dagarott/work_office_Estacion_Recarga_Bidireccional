@@ -113,7 +113,7 @@ PDE_DEPS__QUOTED :=
 SUBDIRS := \
 . \
 App \
-UFCharger/F2837xD/Comun/Drivers \
-UFCharger/F2837xD/Comun/common \
-UFCharger/F2837xD/Comun/driverlib \
+Comun/Drivers \
+Comun/common \
+Comun/driverlib \
 

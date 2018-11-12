@@ -1,0 +1,329 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+			[
+				"Actual",
+				"ActualVoltageValue"
+			],
+			[
+				"Powe",
+				"PowerSupplyValues"
+			],
+			[
+				"Curr",
+				"CurrentTarget"
+			],
+			[
+				"Current",
+				"CurrentTarget"
+			],
+			[
+				"Power",
+				"PowerSupplyValues"
+			],
+			[
+				"V2G",
+				"V2G500V15A_CURRENT"
+			],
+			[
+				"cURRE",
+				"CurrentRequest"
+			],
+			[
+				"Volta",
+				"VoltageRequest"
+			],
+			[
+				"vOLTA",
+				"VoltageRequest"
+			],
+			[
+				"Volt",
+				"VoltageTarget"
+			],
+			[
+				"Vol",
+				"VoltageTarget"
+			]
+		]
+	},
+	"buffers":
+	[
+		{
+			"file": "COM_cpu01/App/ComModule.c",
+			"settings":
+			{
+				"buffer_size": 30987,
+				"encoding": "UTF-8",
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "F2837xD/Comun/Drivers/Init_HW.c",
+			"settings":
+			{
+				"buffer_size": 3339,
+				"encoding": "UTF-8",
+				"line_ending": "Windows"
+			}
+		}
+	],
+	"build_system": "",
+	"build_system_choices":
+	[
+	],
+	"build_varint": "",
+	"command_palette":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+			[
+				"packa",
+				"Package Control: Remove Package"
+			],
+			[
+				"Inst",
+				"Package Control: Install Package"
+			],
+			[
+				"inst",
+				"Package Control: Install Package"
+			],
+			[
+				"install",
+				"Package Control: Install Package"
+			],
+			[
+				"insta",
+				"Package Control: Install Package"
+			]
+		],
+		"width": 0.0
+	},
+	"console":
+	{
+		"height": 0.0,
+		"history":
+		[
+		]
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"expanded_folders":
+	[
+		"/C/Users/dagaro/workspace/Firmware_Test/UFCharger",
+		"/C/Users/dagaro/workspace/Firmware_Test/UFCharger/COM_cpu01",
+		"/C/Users/dagaro/workspace/Firmware_Test/UFCharger/COM_cpu01/App",
+		"/C/Users/dagaro/workspace/Firmware_Test/UFCharger/F2837xD",
+		"/C/Users/dagaro/workspace/Firmware_Test/UFCharger/F2837xD/Comun",
+		"/C/Users/dagaro/workspace/Firmware_Test/UFCharger/F2837xD/Comun/Drivers"
+	],
+	"file_history":
+	[
+		"/C/Users/dagaro/workspace/Firmware_Test/UFCharger/COM_cpu01/main_cpu1.c",
+		"/C/Users/dagaro/workspace/Firmware_Test/UFCharger/F2837xD/Comun/Drivers/Config_CAN.c",
+		"/C/Users/dagaro/workspace/Firmware_Test/UFCharger/F2837xD/Comun/Drivers/Include/FIFO.h",
+		"/C/Users/dagaro/workspace/Firmware_Test/UFCharger/F2837xD/Comun/driverlib/can.h",
+		"/C/Sublime Text Build 3176/Data/Packages/Function Name Display/Function Name Display.sublime-settings",
+		"/C/Sublime Text Build 3176/Data/Packages/WhoCalled Function Finder/README.md",
+		"/C/Sublime Text Build 3176/Data/Packages/Clang Format/Default (Windows).sublime-keymap",
+		"/C/Sublime Text Build 3176/Data/Packages/Clang Format/clang_format.sublime-settings"
+	],
+	"find":
+	{
+		"height": 27.0
+	},
+	"find_in_files":
+	{
+		"height": 0.0,
+		"where_history":
+		[
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": false,
+		"find_history":
+		[
+			"stateInitPs",
+			"case",
+			"OD_Index"
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": false,
+		"replace_history":
+		[
+		],
+		"reverse": false,
+		"show_context": true,
+		"use_buffer2": true,
+		"whole_word": false,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"selected": 0,
+			"sheets":
+			[
+				{
+					"buffer": 0,
+					"file": "COM_cpu01/App/ComModule.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 30987,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								18118
+							]
+						],
+						"settings":
+						{
+							"function_name_status_row": 0,
+							"syntax": "Packages/C++/C++.sublime-syntax",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 9314.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"file": "F2837xD/Comun/Drivers/Init_HW.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 3339,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1782,
+								1782
+							]
+						],
+						"settings":
+						{
+							"function_name_status_row": 80,
+							"syntax": "Packages/C++/C++.sublime-syntax",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 1130.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
+					"type": "text"
+				}
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 27.0
+	},
+	"input":
+	{
+		"height": 0.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"output.find_results":
+	{
+		"height": 0.0
+	},
+	"pinned_build_system": "",
+	"project": "Test_sublime_workspace.sublime-project",
+	"replace":
+	{
+		"height": 50.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_symbol":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"selected_group": 0,
+	"settings":
+	{
+	},
+	"show_minimap": true,
+	"show_open_files": false,
+	"show_tabs": true,
+	"side_bar_visible": true,
+	"side_bar_width": 249.0,
+	"status_bar_visible": true,
+	"template_settings":
+	{
+	}
+}

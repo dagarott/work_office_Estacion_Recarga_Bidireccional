@@ -34,6 +34,8 @@
 //Hardware dependent. Powersupply features
 #define V2G500V15A_VOLTAGE 500 //500V
 #define V2G500V15A_CURRENT 15  //-+15A
+#define VOLTAGE_THRESHOLD 5
+#define CURRENT_THRESHOLD 5
 
 #define CPU01_TO_CPU02_PASSMSG 0x0003FC00 // CPU01 TO CPU02 MSG RAM (256 words)
 #define CPU02_TO_CPU01_PASSMSG 0x0003F800 // CPU02 TO CPU01 MSG RAM (256 words)
@@ -112,6 +114,7 @@ typedef struct sAdcValues
             uint16_t AllFlags;
             struct
             {
+                // Flags used during CAN comunication
                 uint16_t VoltageAnswerFromAdc : 1;
                 uint16_t CurrentAnswerFromAdc : 1;
             } Flags;
@@ -119,6 +122,7 @@ typedef struct sAdcValues
 } AdcValues_t;
 
 //extern AdcValues_t AdcValuesSaved;
+
 /**
  * @brief 
  * 
@@ -126,7 +130,7 @@ typedef struct sAdcValues
 typedef struct sPowerSupplyValues
 {
     unsigned char Model[4];       //Store device name/model
-    uint16_t CurrentDeviceValue;  //Values according to model
+    int16_t CurrentDeviceValue;  //Values according to model
     uint16_t VoltageDeviceValue;  //Values according to model
     uint16_t PowerModuleStatus;   //0x2101 / [0-15]bit status
     uint16_t DCOutputVoltage;     //0x2107 Actual output voltage 0.1V/step
@@ -136,12 +140,13 @@ typedef struct sPowerSupplyValues
     uint16_t DCBusVoltage;        //0x210D DC Bus Voltage
     int16_t DCBusVoltageMeasured; //0x212A DC Bus voltage filtered
     uint16_t ActualVoltageValue;
-    uint16_t ActualCurrentValue;
+    int16_t ActualCurrentValue;
 
     union {
         uint16_t AllFlags;
         struct
         {
+            // Flags used during CAN comunication
             uint16_t AnswerFromPs : 1;
             uint16_t AnswerDeviceName : 1;
             uint16_t AnswerDeviceNameError : 1;
@@ -152,6 +157,57 @@ typedef struct sPowerSupplyValues
         } Flags;
     } StatusFlags;
 } PowerSupplyValues_t;
+
+typedef struct sIPCRegisterValues
+{
+    uint16_t Start:1;
+    uint16_t EndProcess:1;
+    uint16_t Emergency:1;
+    uint16_t DataModifiedByCPU1:1
+    uint16_t DataModifiedByCPU2:1
+
+}IPCregisterValues_t;
+
+/**
+*******************************************************************************
+\typedef        tProcesoCarga
+\brief          Tipo definido para la identificación del proceso de carga
+                seleccionada por el usuario
+\enum           eProcesoCarga
+\brief          Enumerado definido para la identificación del proceso de carga
+                seleccionada por el usuario
+******************************************************************************/
+typedef enum eTargetProcess
+{
+    /** Sin definido aún */
+    Proceso_Sin_Definir = 0,
+    /** Cargar el VE al 100% SOC    */
+    Cargar_VE,
+    /** Descargar el VE al 0% SOC    */
+    Descargar_VE,
+    /** Cargar/Descargar el VE    */
+    V2G,
+}tTargetProcess;
+
+/**
+*******************************************************************************
+\typedef        tModoEstacion
+\brief          Tipo definido para la identificación del modo de actuar la
+                estacion.
+\enum           eModoEstacion
+\brief          Enumerado definido para la identificación del modo de actuar la
+                estacion.
+******************************************************************************/
+typedef enum eStationMode
+{
+    /** Sin definido aún */
+    Modo_Sin_Definir = 0,
+    /** Modo cargador de VE    */
+    Cargardor,
+    /** Modo inversor, injeccion a red   */
+    Inversor,
+
+}tStationMode;
 
 void Init_CANOpenMsgFIFOs(void);
 void Set_MailboxOne(void);
@@ -165,7 +221,7 @@ uint16_t Set_CANOpenErrorMsg_To_Tx(enum Indice_Diccionario_TPO Idx,
 sEstadoFIFO Transmit_CANOPenMsg(FIFO MsgToTx);
 uint16_t InitAdc(void);
 uint16_t InitPowerSupply(void);
-uint16_t PsSetVoltageCurrent(uint16_t VoltageRequest, uint16_t CurrentRequest,
-                             bool EnablePs);
+uint16_t PsRampup(uint16_t VoltageTarget, int16_t CurrentTarget);
+uint16_t PsSetVoltageCurrent(uint16_t VoltageRequest, int16_t CurrentRequest);
 void Scheduler(void);
 #endif /* COMMODULE_H_ */
