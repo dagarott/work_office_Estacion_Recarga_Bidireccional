@@ -37,6 +37,10 @@
 void main(void)
 {
 
+    
+    int16_t tmp1;
+    uint16_t tmp2;
+    float tmp3;
     Init_HW(); /* Initialize all the HW*/
     Hablitar_ISR();
     Config_CANA(500); //500kbit/s
@@ -45,6 +49,21 @@ void main(void)
     Init_CANOpenMsgFIFOs();
     Set_MailboxOne();
     Set_MailboxTwo();
+
+    //debug
+    tmp3=100-((100-300)/8);
+    tmp2=(uint16_t)tmp3;
+    tmp3=300-((300-90)/8);
+    tmp2=(uint16_t)tmp3;
+    tmp3=1-((1-8)/8);
+    tmp1=(uint16_t)tmp3;
+    tmp3=3-((3-1)/8);
+    tmp1=(uint16_t)tmp3;
+    tmp3=-1.5-((-1.5+7)/8);
+    tmp1=(uint16_t)tmp3;
+    tmp3=-10-((-10+3)/8);
+    tmp1=(uint16_t)tmp3;
+    //debug
 
     /* USER CODE END */
 

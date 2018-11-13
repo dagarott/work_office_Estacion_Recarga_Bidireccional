@@ -32,8 +32,9 @@
 #define TIMEOUT_CAN_RX 1 //SysTick == 10ms. TIMEOUT_RX_CAN= SysTick*1=10ms
 
 //Hardware dependent. Powersupply features
-#define V2G500V15A_VOLTAGE 500 //500V
-#define V2G500V15A_CURRENT 15  //-+15A
+#define V2G500V15A_VOLTAGE 500      //500V
+#define V2G500V15A_MIN_VOLTAGE 50   //50V
+#define V2G500V15A_CURRENT 15       //-+15A
 #define VOLTAGE_THRESHOLD 5
 #define CURRENT_THRESHOLD 5
 
@@ -163,8 +164,8 @@ typedef struct sIPCRegisterValues
     uint16_t Start:1;
     uint16_t EndProcess:1;
     uint16_t Emergency:1;
-    uint16_t DataModifiedByCPU1:1
-    uint16_t DataModifiedByCPU2:1
+    uint16_t DataModifiedByCPU1:1;
+    uint16_t DataModifiedByCPU2:1;
 
 }IPCregisterValues_t;
 
@@ -222,6 +223,6 @@ sEstadoFIFO Transmit_CANOPenMsg(FIFO MsgToTx);
 uint16_t InitAdc(void);
 uint16_t InitPowerSupply(void);
 uint16_t PsRampup(uint16_t VoltageTarget, int16_t CurrentTarget);
-uint16_t PsSetVoltageCurrent(uint16_t VoltageRequest, int16_t CurrentRequest);
+uint16_t PsSetVoltageCurrent(uint16_t VoltageRequest, int16_t CurrentRequest, bool EnablePs);
 void Scheduler(void);
 #endif /* COMMODULE_H_ */

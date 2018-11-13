@@ -45,15 +45,15 @@ tCANMsgObject sTX_CANOpenMsg;        //Can message objet for tx
 tCANMsgObject sMailboxOneCANOpenMsg; //Can message object for rx
 tCANMsgObject sMailboxTwoCANOpenMsg; //Can message object for rx
 
-unsigned char rxPsMsgData[8] = { 0 };  //Array to store data from CAN object
-unsigned char rxAdcMsgData[8] = { 0 }; //Array to store data from CAN object
+unsigned char rxPsMsgData[8] = {0};  //Array to store data from CAN object
+unsigned char rxAdcMsgData[8] = {0}; //Array to store data from CAN object
 
 volatile uint32_t ulTimeOutCANRx; //Variable used by function TimeOut
-uint16_t Count10ms = 0;  //Variable used by scheduler
-uint16_t Count20ms = 0;  //Variable used by scheduler
-uint16_t Count100ms = 0; //Variable used by scheduler
-uint16_t Count500ms = 0; //Variable used by scheduler
-uint16_t Count1sec = 0;    //Variable used by scheduler
+uint16_t Count10ms = 0;           //Variable used by scheduler
+uint16_t Count20ms = 0;           //Variable used by scheduler
+uint16_t Count100ms = 0;          //Variable used by scheduler
+uint16_t Count500ms = 0;          //Variable used by scheduler
+uint16_t Count1sec = 0;           //Variable used by scheduler
 
 typedef struct sObjectTx
 {
@@ -61,11 +61,11 @@ typedef struct sObjectTx
     uint16_t Node_ID; //Id of Node that has sent last Object
 } LastObjectTx_t;
 
-LastObjectTx_t PowerSupply_LastObjectTx = { 0x00, 0x00 };
+LastObjectTx_t PowerSupply_LastObjectTx = {0x00, 0x00};
 
-AdcValues_t AdcValuesSaved = { 0, 0.0, 0, 0.0, 0, 0, 0, 0 };
+AdcValues_t AdcValuesSaved = {0, 0.0, 0, 0.0, 0, 0, 0, 0};
 
-PowerSupplyValues_t PowerSupplyValues = { " ", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+PowerSupplyValues_t PowerSupplyValues = {" ", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 
 uint16_t CurrentProcess = 0; //
 
@@ -74,8 +74,8 @@ uint16_t CurrentProcess = 0; //
 /* USER CODE BEGIN NPV */
 /* Non Private variables ---------------------------------------------------------*/
 enum Indice_Diccionario_TPO OD_Index = FIN_Diccionario;
-FlagsCom_t StatusCom = { 0x00 };
-FlagsError_t StatusErrors = { 0x00 };
+FlagsCom_t StatusCom = {0x00};
+FlagsError_t StatusErrors = {0x00};
 /* USER CODE END NPV */
 
 /*-----------------------------------BEGIN MISCELANIOUS FUNCTIONS--------------------------------------*/
@@ -144,23 +144,23 @@ uint16_t Set_CANOpenMsg_To_Tx(enum Indice_Diccionario_TPO Idx,
         *(ptrMsg++) = AccesMode; //Command Byte (CD) Read/write operation
     }
 
-    *(ptrMsg++) = (uint16_t) ((Diccionario_CanOpen[Idx].ID) & 0x00FF); //Object Dictionary Index
-    *(ptrMsg++) = (uint16_t) ((Diccionario_CanOpen[Idx].ID) >> 8); //Stored as little endian
-    *(ptrMsg++) = ((Diccionario_CanOpen[Idx].SubIndice));      //Stored SubIndex
+    *(ptrMsg++) = (uint16_t)((Diccionario_CanOpen[Idx].ID) & 0x00FF); //Object Dictionary Index
+    *(ptrMsg++) = (uint16_t)((Diccionario_CanOpen[Idx].ID) >> 8);     //Stored as little endian
+    *(ptrMsg++) = ((Diccionario_CanOpen[Idx].SubIndice));             //Stored SubIndex
 
     tmp = DataToTx;
-    *(ptrMsg++) = (uint16_t) (tmp & 0x00FF); // Data are saves as little endian
+    *(ptrMsg++) = (uint16_t)(tmp & 0x00FF); // Data are saves as little endian
     tmp = tmp >> 8;
-    *(ptrMsg++) = (uint16_t) (tmp & 0x00FF); // Data are saves little endian
+    *(ptrMsg++) = (uint16_t)(tmp & 0x00FF); // Data are saves little endian
     tmp = tmp >> 8;
-    *(ptrMsg++) = (uint16_t) (tmp & 0x00FF); // Data are saves little endian
+    *(ptrMsg++) = (uint16_t)(tmp & 0x00FF); // Data are saves little endian
     tmp = tmp >> 8;
-    *(ptrMsg++) = (uint16_t) (tmp & 0x00FF); // Data are savesas little endian
+    *(ptrMsg++) = (uint16_t)(tmp & 0x00FF); // Data are savesas little endian
 
     ptrMsg = CANMsg; //Restart pointer to first position of buffer
-    memcpy((void *) (ptr_MsgToTx->New_Datos), (void *) (ptrMsg),
-    MSG_DATA_LENGTH + 1); //Message in correct format
-                          //stored in one item of FIFO struct
+    memcpy((void *)(ptr_MsgToTx->New_Datos), (void *)(ptrMsg),
+           MSG_DATA_LENGTH + 1); //Message in correct format
+                                 //stored in one item of FIFO struct
 
     status = Encolar_FIFO(ptr_MsgToTx);
 
@@ -198,25 +198,25 @@ uint16_t Set_CANOpenErrorMsg_To_Tx(enum Indice_Diccionario_TPO Idx,
         return (0x00);  //NULL pointer. Error
 
     *(ptrMsg++) = Idx_Node;
-    *(ptrMsg++) = OD_ERROR;                   //Command Byte (CD), OR_ERROR=0x80
-    *(ptrMsg++) = (uint16_t) ((Diccionario_CanOpen[Idx].ID) & 0x00FF); //Object Dictionary Index stored as
-    *(ptrMsg++) = (uint16_t) ((Diccionario_CanOpen[Idx].ID) >> 8); //little endian
-    *(ptrMsg++) = ((Diccionario_CanOpen[Idx].SubIndice));      //Stored SubIndex
+    *(ptrMsg++) = OD_ERROR;                                           //Command Byte (CD), OR_ERROR=0x80
+    *(ptrMsg++) = (uint16_t)((Diccionario_CanOpen[Idx].ID) & 0x00FF); //Object Dictionary Index stored as
+    *(ptrMsg++) = (uint16_t)((Diccionario_CanOpen[Idx].ID) >> 8);     //little endian
+    *(ptrMsg++) = ((Diccionario_CanOpen[Idx].SubIndice));             //Stored SubIndex
 
     // Data are saves as little endian
     tmp = DataToTx;
-    *(ptrMsg++) = (uint16_t) (tmp & 0x00FF);
+    *(ptrMsg++) = (uint16_t)(tmp & 0x00FF);
     tmp = tmp >> 8;
-    *(ptrMsg++) = (uint16_t) (tmp & 0x00FF);
+    *(ptrMsg++) = (uint16_t)(tmp & 0x00FF);
     tmp = tmp >> 8;
-    *(ptrMsg++) = (uint16_t) (tmp & 0x00FF);
+    *(ptrMsg++) = (uint16_t)(tmp & 0x00FF);
     tmp = tmp >> 8;
-    *(ptrMsg++) = (uint16_t) (tmp & 0x00FF);
+    *(ptrMsg++) = (uint16_t)(tmp & 0x00FF);
 
     ptrMsg = CANMsg; //Restart pointer to first position of buffer
-    memcpy((void *) (ptr_MsgToTx->New_Datos), (void *) (ptrMsg),
-    MSG_DATA_LENGTH + 1); //Message in correct format
-                          //stored in one item of FIFO struct
+    memcpy((void *)(ptr_MsgToTx->New_Datos), (void *)(ptrMsg),
+           MSG_DATA_LENGTH + 1); //Message in correct format
+                                 //stored in one item of FIFO struct
 
     status = Encolar_FIFO(ptr_MsgToTx);
 
@@ -263,19 +263,18 @@ sEstadoFIFO Transmit_CANOPenMsg(FIFO MsgToTx)
             sTX_CANOpenMsg.ui32MsgIDMask = 0;
             sTX_CANOpenMsg.ui32Flags = 0;
             sTX_CANOpenMsg.ui32MsgLen = MSG_DATA_LENGTH;
-            memcpy((void *) sTX_CANOpenMsg.pucMsgData,
-                   (void *) ptr_MsgToTx->Datos_Recibidos, MSG_DATA_LENGTH);
+            memcpy((void *)sTX_CANOpenMsg.pucMsgData,
+                   (void *)ptr_MsgToTx->Datos_Recibidos, MSG_DATA_LENGTH);
             //TODO: Add condition to check that, "Not send a new CAN frame
             //if no exit a previously succes tx"
             StatusCom.StatusFlags.Flags.TransmittedCanMsg = 1; //Start CAN tx timeOut exception
             CANMessageSet(CANA_BASE, 1, &sTX_CANOpenMsg, MSG_OBJ_TYPE_TX);
             while (CanaRegs.CAN_ES.bit.TxOk != 0x01)
             {
-            };                                        //Wait until CAN tx finish
+            }; //Wait until CAN tx finish
             //TODO: Check if we shall put a delay() instead of while (...)
 
-        }
-        while (MsgToTx.Msg_pendientes != 0);
+        } while (MsgToTx.Msg_pendientes != 0);
     }
     else
         return (status);
@@ -289,8 +288,7 @@ void Set_MailboxOne(void)
 
     sMailboxOneCANOpenMsg.ui32MsgID = TSDO + PS_NODE_ID;
     sMailboxOneCANOpenMsg.ui32MsgIDMask = 0x1FFFFFFF;
-    sMailboxOneCANOpenMsg.ui32Flags = MSG_OBJ_RX_INT_ENABLE
-            | MSG_OBJ_USE_ID_FILTER;
+    sMailboxOneCANOpenMsg.ui32Flags = MSG_OBJ_RX_INT_ENABLE | MSG_OBJ_USE_ID_FILTER;
     sMailboxOneCANOpenMsg.ui32MsgLen = MSG_DATA_LENGTH;
     sMailboxOneCANOpenMsg.pucMsgData = rxPsMsgData;
     CANMessageSet(CANA_BASE, MAILBOX_ONE, &sMailboxOneCANOpenMsg,
@@ -305,8 +303,7 @@ void Set_MailboxTwo(void)
 
     sMailboxTwoCANOpenMsg.ui32MsgID = RSDO + COM_NODE_ID;
     sMailboxTwoCANOpenMsg.ui32MsgIDMask = 0x1FFFFFFF;
-    sMailboxTwoCANOpenMsg.ui32Flags = MSG_OBJ_RX_INT_ENABLE
-            | MSG_OBJ_USE_ID_FILTER;
+    sMailboxTwoCANOpenMsg.ui32Flags = MSG_OBJ_RX_INT_ENABLE | MSG_OBJ_USE_ID_FILTER;
     sMailboxTwoCANOpenMsg.ui32MsgLen = MSG_DATA_LENGTH;
     sMailboxTwoCANOpenMsg.pucMsgData = rxAdcMsgData;
     CANMessageSet(CANA_BASE, MAILBOX_TWO, &sMailboxTwoCANOpenMsg,
@@ -328,14 +325,14 @@ uint16_t InitAdc(void)
     case 0:
         OD_Index = Config_ADC; //CAN command array Index. Commands present in Diccionario_CANOpen.c file
         status = Set_CANOpenMsg_To_Tx(OD_Index, &FIFO_CanTx, ENABLE_ADC,
-        RSDO + ADC_NODE_ID,
+                                      RSDO + ADC_NODE_ID,
                                       0);
         Transmit_CANOPenMsg(FIFO_CanTx);
         stateInitAdc = 1;
         break;
 
     case 1: //Check if we have a TimeOut reception from PS, if so,
-            //set an error
+        //set an error
         if (StatusCom.StatusFlags.Flags.DataAvailable)
         {
             stateInitAdc = 2;
@@ -397,14 +394,14 @@ uint16_t InitPowerSupply(void)
         PsEnable_ON();
         OD_Index = Nombre_dispositivo;
         status = Set_CANOpenMsg_To_Tx(OD_Index, &FIFO_CanTx, 0,
-        RSDO + PS_NODE_ID,
+                                      RSDO + PS_NODE_ID,
                                       OD_WRITE_2BYTES);
         Transmit_CANOPenMsg(FIFO_CanTx);
         stateInitPs = 1;
         break;
 
     case 1: //Check if we have a TimeOut reception from PS, if so,
-            //set an error
+        //set an error
         if (StatusCom.StatusFlags.Flags.DataAvailable)
         {
             stateInitPs = 2;
@@ -417,21 +414,18 @@ uint16_t InitPowerSupply(void)
 
     case 2: //No TimeOut reception from PS, then analyze CAN message received
         AnalyzeCanMsg();
-        if ((OD_Index == Nombre_dispositivo)
-                && (PowerSupplyValues.StatusFlags.Flags.AnswerDeviceName))
+        if ((OD_Index == Nombre_dispositivo) && (PowerSupplyValues.StatusFlags.Flags.AnswerDeviceName))
         {
             //Correct CAN message received
             PowerSupplyValues.StatusFlags.Flags.AnswerDeviceName = false;
             stateInitPs = 3;
         }
-        else if ((OD_Index == Udc_Out_Setpoint)
-                && (PowerSupplyValues.StatusFlags.Flags.AnswerVSet))
+        else if ((OD_Index == Udc_Out_Setpoint) && (PowerSupplyValues.StatusFlags.Flags.AnswerVSet))
         {
             PowerSupplyValues.StatusFlags.Flags.AnswerVSet = false;
             stateInitPs = 4;
         }
-        else if ((OD_Index == Idc_Out_Setpoint)
-                && (PowerSupplyValues.StatusFlags.Flags.AnswerISet))
+        else if ((OD_Index == Idc_Out_Setpoint) && (PowerSupplyValues.StatusFlags.Flags.AnswerISet))
         {
             PowerSupplyValues.StatusFlags.Flags.AnswerISet = false;
             stateInitPs = 5;
@@ -441,7 +435,7 @@ uint16_t InitPowerSupply(void)
     case 3: //Next set V to zero values, just in case
         OD_Index = Udc_Out_Setpoint;
         status = Set_CANOpenMsg_To_Tx(OD_Index, &FIFO_CanTx, 0,
-        RSDO + PS_NODE_ID,
+                                      RSDO + PS_NODE_ID,
                                       OD_WRITE_2BYTES);
         Transmit_CANOPenMsg(FIFO_CanTx);
         stateInitPs = 1;
@@ -450,7 +444,7 @@ uint16_t InitPowerSupply(void)
     case 4: //Next set I to zero values, just in case
         OD_Index = Idc_Out_Setpoint;
         status = Set_CANOpenMsg_To_Tx(OD_Index, &FIFO_CanTx, 0,
-        RSDO + PS_NODE_ID,
+                                      RSDO + PS_NODE_ID,
                                       OD_WRITE_2BYTES);
         Transmit_CANOPenMsg(FIFO_CanTx);
         stateInitPs = 1;
@@ -471,110 +465,41 @@ uint16_t InitPowerSupply(void)
 
     return (status);
 }
-
-/**
- * @brief      Create a rump up of voltage or current
- *
- * @param[in]  VoltageTarget  final voltage desired
- * @param[in]  CurrentTarget  final current desired
- *
- * @return     { 0x01 ok / 0x00 error  }
- */
-uint16_t PsRampup(uint16_t VoltageTarget, int16_t CurrentTarget)
-{
-
-    uint16_t status = 0x01; //By default all ok
-    uint16_t ChangeValue = false;
-
-    if (VoltageTarget < PowerSupplyValues.ActualVoltageValue)
-    {
-        if (PowerSupplyValues.ActualVoltageValue != 0)
-        {
-            //TODO:Calculate interpolation 
-            PowerSupplyValues.ActualVoltageValue -= VOLTAGE_THRESHOLD;
-            ChangeValue= true;
-        }
-    }
-    else if (VoltageTarget > PowerSupplyValues.ActualVoltageValue)
-    {
-        if (PowerSupplyValues.ActualVoltageValue != V2G500V15A_VOLTAGE)
-        {
-            //TODO:Calculate interpolation 
-            PowerSupplyValues.ActualVoltageValue += VOLTAGE_THRESHOLD;
-            ChangeValue= true;
-        }
-    }
-    //Get sign of the Current Value
-    if ((CurrentTarget & 0x80000000) == 0x80000000)
-    {
-        //Current is negative
-        if (CurrentTarget < PowerSupplyValues.ActualCurrentValue)
-        {
-            if (PowerSupplyValues.ActualCurrentValue != -V2G500V15A_CURRENT)
-            {
-                //TODO:Calculate interpolation 
-                PowerSupplyValues.ActualCurrentValue += CURRENT_THRESHOLD;
-                ChangeValue= true;
-            }
-        }
-        else if (CurrentTarget > PowerSupplyValues.ActualCurrentValue)
-        {
-            if (PowerSupplyValues.ActualCurrentValue != 0)
-            {
-                //TODO:Calculate interpolation 
-                PowerSupplyValues.ActualCurrentValue -= CURRENT_THRESHOLD;
-                ChangeValue= true;
-            }
-        }
-    }
-    else if ((CurrentTarget & 0x80000000) != 0x80000000)
-    {
-        //Current is positive
-        if (CurrentTarget < PowerSupplyValues.ActualCurrentValue)
-        {
-            if (PowerSupplyValues.ActualCurrentValue != 0)
-            {
-                PowerSupplyValues.ActualCurrentValue -= CURRENT_THRESHOLD;
-                ChangeValue= true;
-            }
-        }
-        else if (CurrentTarget > PowerSupplyValues.ActualCurrentValue)
-        {
-            if (PowerSupplyValues.ActualCurrentValue != V2G500V15A_CURRENT)
-            {
-                PowerSupplyValues.ActualCurrentValue += CURRENT_THRESHOLD;
-                ChangeValue= true;
-            }
-        }
-    }
-    if(ChangeValue)
-    {
-        ChangeValue=false;
-        status=PsSetVoltageCurrent(PowerSupplyValues.ActualVoltageValue,
-                  PowerSupplyValues.ActualCurrentValue);
-    }
-
-    return(status);
-}
 /*
  * @brief Set voltage from power supply to desired value 
  * 
  * @param VoltageRequest 
  * @return uint16_t 
  */
-uint16_t PsSetVoltageCurrent(uint16_t VoltageRequest, int16_t CurrentRequest)
+uint16_t PsSetVoltageCurrent(uint16_t VoltageRequest, int16_t CurrentRequest, bool EnablePs)
 {
     static uint16_t stateSetPsVI = 0;
     uint16_t status = 0x01; //By default all ok
+    uint16_t tmpVoltageValue = 0;
+    static uint16_t CounterVoltageIterations = 9;
+    static uint16_t CounterCurrentIterations = 9;
+    int16_t tmpCurrentValue = 0;
+    float DeltaVoltageValue = 0;
+    float DeltaCurrentValue = 0.0;
     enum OD_Index;
 
     switch (stateSetPsVI)
     {
     case 0: //Send a Device Name CAN message to test communication with PS
-        //PsEnable_ON();
+            //this CAN message is also used as keep alive frame
+        if (EnablePs == false)
+        {
+            PsEnable_OFF();
+            stateSetPsVI = 0;
+            break;
+        }
+        else if (EnablePs == true)
+        {
+            PsEnable_ON();
+        }
         OD_Index = Nombre_dispositivo;
         status = Set_CANOpenMsg_To_Tx(OD_Index, &FIFO_CanTx, 0,
-        RSDO + PS_NODE_ID,
+                                      RSDO + PS_NODE_ID,
                                       OD_WRITE_2BYTES);
         Transmit_CANOPenMsg(FIFO_CanTx);
         stateSetPsVI = 1;
@@ -594,60 +519,158 @@ uint16_t PsSetVoltageCurrent(uint16_t VoltageRequest, int16_t CurrentRequest)
 
     case 2: //No TimeOut reception from PS, then analyze CAN message received
         AnalyzeCanMsg();
-        if ((OD_Index == Nombre_dispositivo)
-                && (PowerSupplyValues.StatusFlags.Flags.AnswerDeviceName))
+        if ((OD_Index == Nombre_dispositivo) && (PowerSupplyValues.StatusFlags.Flags.AnswerDeviceName))
         {
             //Correct CAN message received
             PowerSupplyValues.StatusFlags.Flags.AnswerDeviceName = false;
             stateSetPsVI = 3;
         }
-        else if ((OD_Index == Udc_Out_Setpoint)
-                && (PowerSupplyValues.StatusFlags.Flags.AnswerVSet))
+        else if ((OD_Index == Udc_Out_Setpoint) && (PowerSupplyValues.StatusFlags.Flags.AnswerVSet))
         {
             PowerSupplyValues.StatusFlags.Flags.AnswerVSet = false;
             stateSetPsVI = 4;
         }
-        else if ((OD_Index == Idc_Out_Setpoint)
-                && (PowerSupplyValues.StatusFlags.Flags.AnswerISet))
+        else if ((OD_Index == Idc_Out_Setpoint) && (PowerSupplyValues.StatusFlags.Flags.AnswerISet))
         {
             PowerSupplyValues.StatusFlags.Flags.AnswerISet = false;
             stateSetPsVI = 5;
         }
         break;
 
-    case 3: //Next set V to desired value 
-
-        if (VoltageRequest > V2G500V15A_VOLTAGE)
+    case 3: //Analize desired current/voltage values. If they are different from previous
+            //current/voltage values, then calculate ramp up/down and go to next state
+            // If not, 
+        if (VoltageRequest != PowerSupplyValues.ActualVoltageValue)
         {
-            //Maximum value allowed
-            VoltageRequest = V2G500V15A_VOLTAGE;
+            if (VoltageRequest > V2G500V15A_VOLTAGE)
+            {
+                //Maximum value allowed
+                VoltageRequest = V2G500V15A_VOLTAGE;
+            }
+            if (VoltageRequest > PowerSupplyValues.ActualVoltageValue)
+            {
+                //Dc output voltage set point = 8 x (DeltaVoltage+Actualvoltage)
+                //each iteration take 0.5ms, then after all iterations ramp up/down last
+                //four seconds
+                DeltaVoltageValue = ((VoltageRequest - PowerSupplyValues.ActualVoltageValue) /
+                                     8); //8 x 0.5ms = 4 seconds, that is the total time ramp up/dowm
+                                         //process
+            }
+            else if (VoltageRequest < PowerSupplyValues.ActualVoltageValue)
+            {
+                //Dc output voltage set point = 8 x (DeltaVoltage+Actualvoltage)
+                //each iteration take 0.5ms, then after all iterations ramp up/down last
+                //four seconds
+                DeltaVoltageValue = ((PowerSupplyValues.ActualVoltageValue - VoltageRequest) /
+                                     8); //8 x 0.5ms = 4 seconds, that is the total time ramp up/dowm
+                                         //process
+            }
+            CounterVoltageIterations = 0;
+            stateSetPsVI = 4;
         }
+        
+        else if (CurrentRequest != PowerSupplyValues.ActualCurrentValue)
+        {
+             //Get sign of current
+            if((CurrentRequest & 0x80000000) == 0x80000000)
+            {
+                //current is negative
+                if (CurrentRequest < -(V2G500V15A_VOLTAGE))
+                {
+                    //Maximum value allowed
+                    CurrentRequest = -(V2G500V15A_CURRENT);
+                }
+                if(CurrentRequest > PowerSupplyValues.ActualCurrentValue )
+                {
+                    DeltaCurrentValue=((CurrentRequest + PowerSupplyValues.ActualCurrentValue)/
+                    8);//8 x 0.5ms = 4 seconds, that is the total time ramp up/dowm
+                                         //process
 
-        OD_Index = Udc_Out_Setpoint;
-        status = Set_CANOpenMsg_To_Tx(OD_Index, &FIFO_CanTx, VoltageRequest,
-        RSDO + PS_NODE_ID,
-                                      OD_WRITE_2BYTES);
-        Transmit_CANOPenMsg(FIFO_CanTx);
-        stateSetPsVI = 1;
+                }
+                if(CurrentRequest < PowerSupplyValues.ActualCurrentValue )
+                {
+                    DeltaCurrentValue=((CurrentRequest + PowerSupplyValues.ActualCurrentValue)/
+                    8);//8 x 0.5ms = 4 seconds, that is the total time ramp up/dowm
+                                         //process
+
+                }
+
+            }
+            
+           
+        } 
+        else if ((VoltageRequest == PowerSupplyValues.ActualVoltageValue) &&
+                (CurrentRequest == PowerSupplyValues.ActualCurrentValue))
+        {
+            //No change on V/I to be done, then go to case 0 and send alive frame
+            stateSetPsVI = 0;
+        }
         break;
 
-    case 4: //Next set I to desired values
-
-        if (CurrentRequest > V2G500V15A_CURRENT)
+    case 4: //Send new values of voltage
+        if (CounterVoltageIterations < 7)
         {
-            //Maximum value alloewd 
-            CurrentRequest = V2G500V15A_CURRENT;
+            //Start increment voltage. First 7 iterations  
+            tmpVoltageValue = DeltaVoltageValue + PowerSupplyValues.ActualVoltageValue;
+            OD_Index = Udc_Out_Setpoint;
+            status = Set_CANOpenMsg_To_Tx(OD_Index, &FIFO_CanTx, tmpVoltageValue,
+                                          RSDO + PS_NODE_ID,
+                                          OD_WRITE_2BYTES);
+            Transmit_CANOPenMsg(FIFO_CanTx);
+            CounterVoltageIterations++;
+            stateSetPsVI = 1;
         }
-
-        OD_Index = Idc_Out_Setpoint;
-        status = Set_CANOpenMsg_To_Tx(OD_Index, &FIFO_CanTx, CurrentRequest,
-        RSDO + PS_NODE_ID,
-                                      OD_WRITE_2BYTES);
-        Transmit_CANOPenMsg(FIFO_CanTx);
-        stateSetPsVI = 1;
+        else if (CounterVoltageIterations == 7)
+        {
+            //Last iteration, we set the final values as value requested by system
+            OD_Index = Udc_Out_Setpoint;
+            status = Set_CANOpenMsg_To_Tx(OD_Index, &FIFO_CanTx, VoltageRequest,
+                                          RSDO + PS_NODE_ID,
+                                          OD_WRITE_2BYTES);
+            Transmit_CANOPenMsg(FIFO_CanTx);
+            CounterVoltageIterations++;
+            stateSetPsVI = 1;
+        }
+        else if (CounterVoltageIterations == 8)
+        {
+            //
+            CounterVoltageIterations = 9;
+            stateSetPsVI = 5;
+        }
         break;
 
-    case 5:
+    case 5: //Send new values of current
+
+        if (CounterCurrentIterations < 7)
+        {
+            tmpCurrentValue = DeltaCurrentValue + PowerSupplyValues.ActualCurrentValue;
+            OD_Index = Idc_Out_Setpoint;
+            status = Set_CANOpenMsg_To_Tx(OD_Index, &FIFO_CanTx, tmpCurrentValue,
+                                          RSDO + PS_NODE_ID,
+                                          OD_WRITE_2BYTES);
+            Transmit_CANOPenMsg(FIFO_CanTx);
+            CounterVoltageIterations++;
+            stateSetPsVI = 1;
+        }
+        else if (CounterCurrentIterations == 7)
+        {
+            //8th iteration, we set the final values as value requested by system
+            OD_Index = Idc_Out_Setpoint;
+            status = Set_CANOpenMsg_To_Tx(OD_Index, &FIFO_CanTx, CurrentRequest,
+                                          RSDO + PS_NODE_ID,
+                                          OD_WRITE_2BYTES);
+            Transmit_CANOPenMsg(FIFO_CanTx);
+            CounterCurrentIterations = 8;
+            stateSetPsVI = 1;
+        }
+        else if (CounterCurrentIterations == 8)
+        {
+            CounterCurrentIterations = 9;
+            stateSetPsVI = 6;
+        }
+        break;
+
+    case 6:
         PowerSupplyValues.ActualCurrentValue = CurrentRequest;
         PowerSupplyValues.ActualVoltageValue = VoltageRequest;
         stateSetPsVI = 0;
@@ -701,8 +724,7 @@ void Scheduler(void)
  */
 void TimeOutRxCanMsg(void)
 {
-    if ((StatusCom.StatusFlags.Flags.TransmittedCanMsg == true)
-            && (StatusCom.StatusFlags.Flags.DataAvailable != true))
+    if ((StatusCom.StatusFlags.Flags.TransmittedCanMsg == true) && (StatusCom.StatusFlags.Flags.DataAvailable != true))
     {
         ulTimeOutCANRx++;
         if (ulTimeOutCANRx == TIMEOUT_CAN_RX)
@@ -727,11 +749,11 @@ void AnalyzeCanMsg(void)
     uint16_t SubIndex = 0; //Temporal variable to save SubIndex
     uint16_t ObjIndex = 0; //Temporal variable to save Object Index
     uint16_t AccessMode = 0;
-    uint16_t DataSaved[9] = { 0x00 }; //Temporal array where store data received from CAN
+    uint16_t DataSaved[9] = {0x00}; //Temporal array where store data received from CAN
     uint32_t TmpValue = 0;          //
-    uint16_t DictionaryIndex = 0; //Temporal variable used for check ObjectIndex
-                                  //and AccesCmd
-    uint16_t NodeIdRx = 0; //Temporal variable to store Id from node transmitter
+    uint16_t DictionaryIndex = 0;   //Temporal variable used for check ObjectIndex
+                                    //and AccesCmd
+    uint16_t NodeIdRx = 0;          //Temporal variable to store Id from node transmitter
 
     //TODO: Check this
     //memset(DataSaved, 0x00, 9); //Reset array to zero
@@ -740,17 +762,17 @@ void AnalyzeCanMsg(void)
     {
         Desencolar_FIFO(&FIFO_CanRx);
         //Move data from FIFO to variable DataSaved for post-processing
-        memcpy((void *) DataSaved, (void *) FIFO_CanRx.Datos_FIFO, 9);
+        memcpy((void *)DataSaved, (void *)FIFO_CanRx.Datos_FIFO, 9);
 
-        NodeIdRx = (uint16_t) DataSaved[0];
-        AccessMode = (uint16_t) DataSaved[1];
-        ObjIndex = (uint16_t) DataSaved[2] + (uint16_t) (DataSaved[3] << 8);
-        SubIndex = (uint16_t) DataSaved[4];
+        NodeIdRx = (uint16_t)DataSaved[0];
+        AccessMode = (uint16_t)DataSaved[1];
+        ObjIndex = (uint16_t)DataSaved[2] + (uint16_t)(DataSaved[3] << 8);
+        SubIndex = (uint16_t)DataSaved[4];
         //AdcValue = datos_char_to_int(DataSaved[5]);
-        TmpValue = (uint32_t) DataSaved[8] << 24;
-        TmpValue += (uint32_t) DataSaved[7] << 16;
-        TmpValue += (uint32_t) DataSaved[6] << 8;
-        TmpValue += (uint32_t) DataSaved[5];
+        TmpValue = (uint32_t)DataSaved[8] << 24;
+        TmpValue += (uint32_t)DataSaved[7] << 16;
+        TmpValue += (uint32_t)DataSaved[6] << 8;
+        TmpValue += (uint32_t)DataSaved[5];
 
         DictionaryIndex = Econtrar_Indice_Diccionario(ObjIndex, SubIndex);
 
@@ -759,7 +781,7 @@ void AnalyzeCanMsg(void)
             // Requested Object index doesn´t exit, then set flag error and tx Error CAN msg
             StatusErrors.StatusFlags.Flags.ObjectIndexError = true;
             Set_CANOpenErrorMsg_To_Tx(DictionaryIndex, &FIFO_CanTx, 0x00,
-            RSDO + NodeIdRx);
+                                      RSDO + NodeIdRx);
         }
         else
         {
@@ -772,14 +794,12 @@ void AnalyzeCanMsg(void)
                     StatusCom.StatusFlags.Flags.AccessModeRead = true;
                     StatusCom.StatusFlags.Flags.AccessModeWrite = false;
                 }
-                else if ((AccessMode >= OD_WRITE)
-                        && (AccessMode <= OD_WRITE_4BYTES))
+                else if ((AccessMode >= OD_WRITE) && (AccessMode <= OD_WRITE_4BYTES))
                 {
                     StatusCom.StatusFlags.Flags.AccessModeRead = false;
                     StatusCom.StatusFlags.Flags.AccessModeWrite = true;
                 }
-                else if ((AccessMode >= OD_WRITE + OD_READ)
-                        && (AccessMode <= OD_WRITE_4BYTES + OD_READ_4BYTES))
+                else if ((AccessMode >= OD_WRITE + OD_READ) && (AccessMode <= OD_WRITE_4BYTES + OD_READ_4BYTES))
                 {
                     StatusCom.StatusFlags.Flags.AccessModeRead = true;
                     StatusCom.StatusFlags.Flags.AccessModeWrite = true;
@@ -808,12 +828,11 @@ void AnalyzeCanMsg(void)
                 }
                 else if (StatusCom.StatusFlags.Flags.AccessModeWrite)
                 {
-                    AdcValuesSaved.VoltageValue = TmpValue; //Raw value for Chademo logic
-                    AdcValuesSaved.floatVolatageValue = (float) TmpValue / 10.0; //0.1 A/bit
+                    AdcValuesSaved.VoltageValue = TmpValue;                     //Raw value for Chademo logic
+                    AdcValuesSaved.floatVolatageValue = (float)TmpValue / 10.0; //0.1 A/bit
                     AdcValuesSaved.StatusFlags.Flags.VoltageAnswerFromAdc = true;
                 }
-                else if ((StatusCom.StatusFlags.Flags.AccessModeRead)
-                        && ((StatusCom.StatusFlags.Flags.AccessModeWrite)))
+                else if ((StatusCom.StatusFlags.Flags.AccessModeRead) && ((StatusCom.StatusFlags.Flags.AccessModeWrite)))
                 {
                     //Do nothing
                 }
@@ -823,7 +842,7 @@ void AnalyzeCanMsg(void)
                 //Requested Access Mode incorrect, send an error message to the transmitter
                 StatusErrors.StatusFlags.Flags.AccessCmdError = true;
                 Set_CANOpenErrorMsg_To_Tx(DictionaryIndex, &FIFO_CanTx, 0x00,
-                RSDO + NodeIdRx);
+                                          RSDO + NodeIdRx);
             }
             if (SubIndex == 0x01) //Iout from ADC
             {
@@ -837,8 +856,7 @@ void AnalyzeCanMsg(void)
                 {
                     AdcValuesSaved.CurrentValue = TmpValue; //Raw value for Chademo logic
                     //Get sign of the Current Value
-                    if ((AdcValuesSaved.CurrentValue & 0x80000000)
-                            == 0x80000000)
+                    if ((AdcValuesSaved.CurrentValue & 0x80000000) == 0x80000000)
                     {
                         AdcValuesSaved.NegativeCurrentValue = true; //Negative number
                         // If it is negative, make it positive by inverting the bits
@@ -846,11 +864,14 @@ void AnalyzeCanMsg(void)
                         TmpValue = ~TmpValue; //Bitwise negation of all bits
                         TmpValue += 0x01;
                     }
+                    else
+                    {
+                        AdcValuesSaved.NegativeCurrentValue = false; //No negative number
+                    }
                     //AdcValuesSaved.floatCurrentValue = (float)TmpValue / 10.0; //0.1 A/bit
                     AdcValuesSaved.StatusFlags.Flags.CurrentAnswerFromAdc = true;
                 }
-                else if ((StatusCom.StatusFlags.Flags.AccessModeRead)
-                        && ((StatusCom.StatusFlags.Flags.AccessModeWrite)))
+                else if ((StatusCom.StatusFlags.Flags.AccessModeRead) && ((StatusCom.StatusFlags.Flags.AccessModeWrite)))
                 {
                     //Do nothing
                 }
@@ -860,7 +881,7 @@ void AnalyzeCanMsg(void)
                 //Requested Access Mode incorrect, send an error message to the transmitter
                 StatusErrors.StatusFlags.Flags.AccessCmdError = true;
                 Set_CANOpenErrorMsg_To_Tx(DictionaryIndex, &FIFO_CanTx, 0x00,
-                RSDO + NodeIdRx);
+                                          RSDO + NodeIdRx);
             }
             break;
 
@@ -876,7 +897,7 @@ void AnalyzeCanMsg(void)
                 else
                 {
                     PowerSupplyValues.StatusFlags.Flags.AnswerDeviceNameError =
-                    true;
+                        true;
                 }
             }
             else
@@ -888,7 +909,7 @@ void AnalyzeCanMsg(void)
         default:
             StatusErrors.StatusFlags.Flags.ObjectIndexError = true;
             Set_CANOpenErrorMsg_To_Tx(DictionaryIndex, &FIFO_CanTx, 0x00,
-            RSDO + NodeIdRx);
+                                      RSDO + NodeIdRx);
             break;
         }
     }
