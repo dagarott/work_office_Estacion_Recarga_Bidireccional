@@ -32,11 +32,12 @@
 #define TIMEOUT_CAN_RX 1 //SysTick == 10ms. TIMEOUT_RX_CAN= SysTick*1=10ms
 
 //Hardware dependent. Powersupply features
-#define V2G500V15A_VOLTAGE 500      //500V
-#define V2G500V15A_MIN_VOLTAGE 50   //50V
-#define V2G500V15A_CURRENT 15       //-+15A
-#define VOLTAGE_THRESHOLD 5
-#define CURRENT_THRESHOLD 5
+#define V2G500V15A_VOLTAGE 500    //500V
+#define V2G500V15A_MIN_VOLTAGE 50 //50V
+#define V2G500V15A_CURRENT 15     //-+15A
+#define LENGHT_SECONDS_RAMP 4     //Total number of seconds of ramp up/down process 
+#define NUMBER_STEPS_RAMP 8       //Number of steps-iterations to do ramp up/dowm process
+#define MS_STEP_RAMP LENGHT_SECONDS_RAMP / NUMBER_STEPS_RAMP //500 ms/step
 
 #define CPU01_TO_CPU02_PASSMSG 0x0003FC00 // CPU01 TO CPU02 MSG RAM (256 words)
 #define CPU02_TO_CPU01_PASSMSG 0x0003F800 // CPU02 TO CPU01 MSG RAM (256 words)
@@ -112,14 +113,14 @@ typedef struct sAdcValues
     int16_t TempNegative;
     uint16_t NegativeCurrentValue;
     union {
-            uint16_t AllFlags;
-            struct
-            {
-                // Flags used during CAN comunication
-                uint16_t VoltageAnswerFromAdc : 1;
-                uint16_t CurrentAnswerFromAdc : 1;
-            } Flags;
-        } StatusFlags;
+        uint16_t AllFlags;
+        struct
+        {
+            // Flags used during CAN comunication
+            uint16_t VoltageAnswerFromAdc : 1;
+            uint16_t CurrentAnswerFromAdc : 1;
+        } Flags;
+    } StatusFlags;
 } AdcValues_t;
 
 //extern AdcValues_t AdcValuesSaved;
@@ -131,7 +132,7 @@ typedef struct sAdcValues
 typedef struct sPowerSupplyValues
 {
     unsigned char Model[4];       //Store device name/model
-    int16_t CurrentDeviceValue;  //Values according to model
+    int16_t CurrentDeviceValue;   //Values according to model
     uint16_t VoltageDeviceValue;  //Values according to model
     uint16_t PowerModuleStatus;   //0x2101 / [0-15]bit status
     uint16_t DCOutputVoltage;     //0x2107 Actual output voltage 0.1V/step
@@ -159,36 +160,43 @@ typedef struct sPowerSupplyValues
     } StatusFlags;
 } PowerSupplyValues_t;
 
+//
+//  Flags IPC de sincronizacion con CPU1 y CPU2
+//
+#define IPC_Start                   IpcRegs.IPCSTS.bit.IPC1
+#define Set_IPC_Start()             IPCLtoRFlagSet (IPC_FLAG1)
+#define Clear_IPC_Start()           IPCLtoRFlagClear (IPC_FLAG1)
+#define IPC_Stop                    IpcRegs.IPCSTS.bit.IPC2
+#define Set_IPC_Stop()              IPCLtoRFlagSet (IPC_FLAG2)
+#define Clear_IPC_Stop()            IPCLtoRFlagClear (IPC_FLAG2)
+#define IPC_Error                   IpcRegs.IPCSTS.bit.IPC3
+#define Set_IPC_Error()             IPCLtoRFlagSet (IPC_FLAG3)
+#define Clear_IPC_Error()           IPCLtoRFlagClear (IPC_FLAG3)
+#define IPC_CPU1toCPU2              IpcRegs.IPCSTS.bit.IPC4
+#define Set_IPC_CPU1toCPU2()        IPCLtoRFlagSet (IPC_FLAG4)
+#define Clear_IPC_CPU1toCPU2()      IPCLtoRFlagClear (IPC_FLAG4)
+#define IPC_CPU2toCPU1              IpcRegs.IPCSTS.bit.IPC5
+#define Set_IPC_CPU2toCPU1()        IPCLtoRFlagSet (IPC_FLAG5)
+#define Clear_IPC_CPU2toCPU1()      IPCLtoRFlagClear (IPC_FLAG5)
+#define IPC_Potencia_Ready          IpcRegs.IPCSTS.bit.IPC6
+#define Set_IPC_Potencia_Ready()    IPCLtoRFlagSet (IPC_FLAG6)
+#define Clear_IPC_Potencia_Ready()  IPCLtoRFlagClear (IPC_FLAG6)
+#define IPC_V2G_Compatible          IpcRegs.IPCSTS.bit.IPC7
+#define Set_IPC_V2G_Compatible()    IPCLtoRFlagSet (IPC_FLAG7)
+#define Clear_IPC_V2G_Compatible()  IPCLtoRFlagClear (IPC_FLAG7)
+#define IPC_EVPS_Inversor           IpcRegs.IPCSTS.bit.IPC8
+#define Set_IPC_EVPS_Inversor()     IPCLtoRFlagSet (IPC_FLAG8)
+#define Clear_IPC_EVPS_Inversor()   IPCLtoRFlagClear (IPC_FLAG8)
+
 typedef struct sIPCRegisterValues
 {
-    uint16_t Start:1;
-    uint16_t EndProcess:1;
-    uint16_t Emergency:1;
-    uint16_t DataModifiedByCPU1:1;
-    uint16_t DataModifiedByCPU2:1;
+    uint16_t Start : 1;
+    uint16_t EndProcess : 1;
+    uint16_t Emergency : 1;
+    uint16_t DataModifiedByCPU1 : 1;
+    uint16_t DataModifiedByCPU2 : 1;
 
-}IPCregisterValues_t;
-
-/**
-*******************************************************************************
-\typedef        tProcesoCarga
-\brief          Tipo definido para la identificación del proceso de carga
-                seleccionada por el usuario
-\enum           eProcesoCarga
-\brief          Enumerado definido para la identificación del proceso de carga
-                seleccionada por el usuario
-******************************************************************************/
-typedef enum eTargetProcess
-{
-    /** Sin definido aún */
-    Proceso_Sin_Definir = 0,
-    /** Cargar el VE al 100% SOC    */
-    Cargar_VE,
-    /** Descargar el VE al 0% SOC    */
-    Descargar_VE,
-    /** Cargar/Descargar el VE    */
-    V2G,
-}tTargetProcess;
+} IPCregisterValues_t;
 
 /**
 *******************************************************************************
@@ -208,7 +216,7 @@ typedef enum eStationMode
     /** Modo inversor, injeccion a red   */
     Inversor,
 
-}tStationMode;
+} tStationMode;
 
 void Init_CANOpenMsgFIFOs(void);
 void Set_MailboxOne(void);

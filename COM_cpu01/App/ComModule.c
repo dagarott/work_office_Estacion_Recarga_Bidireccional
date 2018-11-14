@@ -239,7 +239,7 @@ sEstadoFIFO Transmit_CANOPenMsg(FIFO MsgToTx)
     FIFO *ptr_MsgToTx;
     ptr_MsgToTx = &MsgToTx;
 
-    if (MsgToTx.Estado_PILA == PILA_OK) //Are there messages to send?
+    if (MsgToTx.Estado_PILA != PILA_VACIA) //Are there messages to send?
     {
         do
         {
@@ -269,9 +269,13 @@ sEstadoFIFO Transmit_CANOPenMsg(FIFO MsgToTx)
             //if no exit a previously succes tx"
             StatusCom.StatusFlags.Flags.TransmittedCanMsg = 1; //Start CAN tx timeOut exception
             CANMessageSet(CANA_BASE, 1, &sTX_CANOpenMsg, MSG_OBJ_TYPE_TX);
+
             while (CanaRegs.CAN_ES.bit.TxOk != 0x01)
             {
+                //CanaRegs.CAN_ES.bit.TxOk
             }; //Wait until CAN tx finish
+
+            // DELAY_US(3000);
             //TODO: Check if we shall put a delay() instead of while (...)
 
         } while (MsgToTx.Msg_pendientes != 0);
@@ -394,8 +398,7 @@ uint16_t InitPowerSupply(void)
         PsEnable_ON();
         OD_Index = Nombre_dispositivo;
         status = Set_CANOpenMsg_To_Tx(OD_Index, &FIFO_CanTx, 0,
-                                      RSDO + PS_NODE_ID,
-                                      OD_WRITE_2BYTES);
+                                      RSDO + PS_NODE_ID, OD_READ_2BYTES);
         Transmit_CANOPenMsg(FIFO_CanTx);
         stateInitPs = 1;
         break;
@@ -404,16 +407,18 @@ uint16_t InitPowerSupply(void)
         //set an error
         if (StatusCom.StatusFlags.Flags.DataAvailable)
         {
+            StatusCom.StatusFlags.Flags.DataAvailable = false;
             stateInitPs = 2;
         }
         else if (StatusCom.StatusFlags.Flags.ErrorCom)
         {
             //TODO: Set an error flag, stop everything and display it in user interface
+            status = 0x00;
         }
         break;
 
     case 2: //No TimeOut reception from PS, then analyze CAN message received
-        AnalyzeCanMsg();
+        //AnalyzeCanMsg();
         if ((OD_Index == Nombre_dispositivo) && (PowerSupplyValues.StatusFlags.Flags.AnswerDeviceName))
         {
             //Correct CAN message received
@@ -434,7 +439,7 @@ uint16_t InitPowerSupply(void)
 
     case 3: //Next set V to zero values, just in case
         OD_Index = Udc_Out_Setpoint;
-        status = Set_CANOpenMsg_To_Tx(OD_Index, &FIFO_CanTx, 0,
+        status = Set_CANOpenMsg_To_Tx(OD_Index, &FIFO_CanTx, 0x0000F401,
                                       RSDO + PS_NODE_ID,
                                       OD_WRITE_2BYTES);
         Transmit_CANOPenMsg(FIFO_CanTx);
@@ -451,8 +456,9 @@ uint16_t InitPowerSupply(void)
         break;
 
     case 5:
-        PowerSupplyValues.ActualCurrentValue = 0;
+        PowerSupplyValues.ActualCurrentValue = 0x0000F401;
         PowerSupplyValues.ActualVoltageValue = 0;
+        PowerSupplyValues.PowerModuleStatus = 0x01; //Charger ON
         stateInitPs = 0;
         status = 0X01;
         break;
@@ -471,22 +477,23 @@ uint16_t InitPowerSupply(void)
  * @param VoltageRequest 
  * @return uint16_t 
  */
-uint16_t PsSetVoltageCurrent(uint16_t VoltageRequest, int16_t CurrentRequest, bool EnablePs)
+uint16_t PsSetVoltageCurrent(uint16_t VoltageRequest, int16_t CurrentRequest,
+                             bool EnablePs)
 {
     static uint16_t stateSetPsVI = 0;
     uint16_t status = 0x01; //By default all ok
     uint16_t tmpVoltageValue = 0;
+    int16_t tmpCurrentValue = 0;
     static uint16_t CounterVoltageIterations = 9;
     static uint16_t CounterCurrentIterations = 9;
-    int16_t tmpCurrentValue = 0;
-    float DeltaVoltageValue = 0;
-    float DeltaCurrentValue = 0.0;
+    float SlopeVoltage = 0.0;
+    float SlopeCurrent = 0.0;
     enum OD_Index;
 
     switch (stateSetPsVI)
     {
     case 0: //Send a Device Name CAN message to test communication with PS
-            //this CAN message is also used as keep alive frame
+        //this CAN message is also used as keep alive frame
         if (EnablePs == false)
         {
             PsEnable_OFF();
@@ -506,7 +513,7 @@ uint16_t PsSetVoltageCurrent(uint16_t VoltageRequest, int16_t CurrentRequest, bo
         break;
 
     case 1: //Check if we have a TimeOut reception from PS, if so,
-            //set an error
+        //set an error
         if (StatusCom.StatusFlags.Flags.DataAvailable)
         {
             stateSetPsVI = 2;
@@ -514,11 +521,12 @@ uint16_t PsSetVoltageCurrent(uint16_t VoltageRequest, int16_t CurrentRequest, bo
         else if (StatusCom.StatusFlags.Flags.ErrorCom)
         {
             //TODO: Set an error flag, stop everything and display it in user interface
+            return (0x00);
         }
         break;
 
     case 2: //No TimeOut reception from PS, then analyze CAN message received
-        AnalyzeCanMsg();
+        //AnalyzeCanMsg();
         if ((OD_Index == Nombre_dispositivo) && (PowerSupplyValues.StatusFlags.Flags.AnswerDeviceName))
         {
             //Correct CAN message received
@@ -538,8 +546,15 @@ uint16_t PsSetVoltageCurrent(uint16_t VoltageRequest, int16_t CurrentRequest, bo
         break;
 
     case 3: //Analize desired current/voltage values. If they are different from previous
-            //current/voltage values, then calculate ramp up/down and go to next state
-            // If not, 
+        //current/voltage values, then calculate necessary values to ramp up/down
+        //and go to next state. If not, go to first state and send keep alive frame every 500ms
+
+        /* if (VoltageRequest < 0) //Not possible. but just in case
+         {
+         //TODO: Set an error flag, stop everything and display it in user interface
+         status=0x00;
+         break;
+         }*/
         if (VoltageRequest != PowerSupplyValues.ActualVoltageValue)
         {
             if (VoltageRequest > V2G500V15A_VOLTAGE)
@@ -547,62 +562,52 @@ uint16_t PsSetVoltageCurrent(uint16_t VoltageRequest, int16_t CurrentRequest, bo
                 //Maximum value allowed
                 VoltageRequest = V2G500V15A_VOLTAGE;
             }
-            if (VoltageRequest > PowerSupplyValues.ActualVoltageValue)
-            {
-                //Dc output voltage set point = 8 x (DeltaVoltage+Actualvoltage)
-                //each iteration take 0.5ms, then after all iterations ramp up/down last
-                //four seconds
-                DeltaVoltageValue = ((VoltageRequest - PowerSupplyValues.ActualVoltageValue) /
-                                     8); //8 x 0.5ms = 4 seconds, that is the total time ramp up/dowm
-                                         //process
-            }
-            else if (VoltageRequest < PowerSupplyValues.ActualVoltageValue)
-            {
-                //Dc output voltage set point = 8 x (DeltaVoltage+Actualvoltage)
-                //each iteration take 0.5ms, then after all iterations ramp up/down last
-                //four seconds
-                DeltaVoltageValue = ((PowerSupplyValues.ActualVoltageValue - VoltageRequest) /
-                                     8); //8 x 0.5ms = 4 seconds, that is the total time ramp up/dowm
-                                         //process
-            }
+            //Linear Interpolation. We calculate slope as:
+            //Slope = ((Requested Value - Actual Values) / Seconds to ramp up/down)
+            //Function, PsSetVoltageCurrent() is triggered every 500ms using our scheduler,
+            //then after all iterations has been executed, ramp up or down process will have
+            //lasted four seconds. Total number of steps-iteration = 8, each
+            //step-iteration take 500ms.
+            SlopeVoltage = ((VoltageRequest - PowerSupplyValues.ActualVoltageValue) /
+                            LENGHT_SECONDS_RAMP); // slope V/s
             CounterVoltageIterations = 0;
             stateSetPsVI = 4;
         }
-        
+
         else if (CurrentRequest != PowerSupplyValues.ActualCurrentValue)
         {
-             //Get sign of current
-            if((CurrentRequest & 0x80000000) == 0x80000000)
+            if ((CurrentRequest & 0x80000000) == 0x80000000)
             {
-                //current is negative
+                //Negative current
                 if (CurrentRequest < -(V2G500V15A_VOLTAGE))
                 {
                     //Maximum value allowed
                     CurrentRequest = -(V2G500V15A_CURRENT);
                 }
-                if(CurrentRequest > PowerSupplyValues.ActualCurrentValue )
-                {
-                    DeltaCurrentValue=((CurrentRequest + PowerSupplyValues.ActualCurrentValue)/
-                    8);//8 x 0.5ms = 4 seconds, that is the total time ramp up/dowm
-                                         //process
-
-                }
-                if(CurrentRequest < PowerSupplyValues.ActualCurrentValue )
-                {
-                    DeltaCurrentValue=((CurrentRequest + PowerSupplyValues.ActualCurrentValue)/
-                    8);//8 x 0.5ms = 4 seconds, that is the total time ramp up/dowm
-                                         //process
-
-                }
-
             }
-            
-           
-        } 
-        else if ((VoltageRequest == PowerSupplyValues.ActualVoltageValue) &&
-                (CurrentRequest == PowerSupplyValues.ActualCurrentValue))
+            else
+            {
+                //Positive current
+                if (CurrentRequest > V2G500V15A_VOLTAGE)
+                {
+                    //Maximum value allowed
+                    CurrentRequest = V2G500V15A_CURRENT;
+                }
+            }
+            //Linear Interpolation. We calculate slope as:
+            //Slope = ((Requested Value - Actual Values) / Total step-iteration)
+            //Total steps-iteration = 8, each step-iteration take 500ms.
+            //Function, PsSetVoltageCurrent() is triggered every 500ms using our scheduler,
+            //then after all iterations has been executed, ramp up or down process will have
+            //lasted four seconds
+            SlopeCurrent = ((CurrentRequest - PowerSupplyValues.ActualCurrentValue) /
+                            LENGHT_SECONDS_RAMP); // slope V/I
+            CounterCurrentIterations = 0;
+            stateSetPsVI = 4;
+        }
+        else if ((VoltageRequest == PowerSupplyValues.ActualVoltageValue) && (CurrentRequest == PowerSupplyValues.ActualCurrentValue))
         {
-            //No change on V/I to be done, then go to case 0 and send alive frame
+            //No changes on V/I to be done, then go to case 0 and send keep alive frame
             stateSetPsVI = 0;
         }
         break;
@@ -610,10 +615,12 @@ uint16_t PsSetVoltageCurrent(uint16_t VoltageRequest, int16_t CurrentRequest, bo
     case 4: //Send new values of voltage
         if (CounterVoltageIterations < 7)
         {
-            //Start increment voltage. First 7 iterations  
-            tmpVoltageValue = DeltaVoltageValue + PowerSupplyValues.ActualVoltageValue;
+            //Start increment voltage. First 7 iterations
+            tmpVoltageValue =
+                (PowerSupplyValues.ActualVoltageValue + ((CounterVoltageIterations * MS_STEP_RAMP) * SlopeVoltage));
             OD_Index = Udc_Out_Setpoint;
-            status = Set_CANOpenMsg_To_Tx(OD_Index, &FIFO_CanTx, tmpVoltageValue,
+            status = Set_CANOpenMsg_To_Tx(OD_Index, &FIFO_CanTx,
+                                          tmpVoltageValue,
                                           RSDO + PS_NODE_ID,
                                           OD_WRITE_2BYTES);
             Transmit_CANOPenMsg(FIFO_CanTx);
@@ -633,7 +640,8 @@ uint16_t PsSetVoltageCurrent(uint16_t VoltageRequest, int16_t CurrentRequest, bo
         }
         else if (CounterVoltageIterations == 8)
         {
-            //
+            //Finished ramp up/down for voltage, reset step-iterations counter
+            //and go to ramp up/dowm for current
             CounterVoltageIterations = 9;
             stateSetPsVI = 5;
         }
@@ -643,9 +651,11 @@ uint16_t PsSetVoltageCurrent(uint16_t VoltageRequest, int16_t CurrentRequest, bo
 
         if (CounterCurrentIterations < 7)
         {
-            tmpCurrentValue = DeltaCurrentValue + PowerSupplyValues.ActualCurrentValue;
+            tmpCurrentValue =
+                (PowerSupplyValues.ActualCurrentValue + ((CounterCurrentIterations * MS_STEP_RAMP) * SlopeCurrent));
             OD_Index = Idc_Out_Setpoint;
-            status = Set_CANOpenMsg_To_Tx(OD_Index, &FIFO_CanTx, tmpCurrentValue,
+            status = Set_CANOpenMsg_To_Tx(OD_Index, &FIFO_CanTx,
+                                          tmpCurrentValue,
                                           RSDO + PS_NODE_ID,
                                           OD_WRITE_2BYTES);
             Transmit_CANOPenMsg(FIFO_CanTx);
@@ -654,7 +664,7 @@ uint16_t PsSetVoltageCurrent(uint16_t VoltageRequest, int16_t CurrentRequest, bo
         }
         else if (CounterCurrentIterations == 7)
         {
-            //8th iteration, we set the final values as value requested by system
+            //Last iteration, we set the final values as value requested by system
             OD_Index = Idc_Out_Setpoint;
             status = Set_CANOpenMsg_To_Tx(OD_Index, &FIFO_CanTx, CurrentRequest,
                                           RSDO + PS_NODE_ID,
@@ -665,6 +675,8 @@ uint16_t PsSetVoltageCurrent(uint16_t VoltageRequest, int16_t CurrentRequest, bo
         }
         else if (CounterCurrentIterations == 8)
         {
+            //Finished ramp up/down for current, reset step-iteration conter
+            //and go to next state to save final values
             CounterCurrentIterations = 9;
             stateSetPsVI = 6;
         }
@@ -691,6 +703,8 @@ uint16_t PsSetVoltageCurrent(uint16_t VoltageRequest, int16_t CurrentRequest, bo
  */
 void Scheduler(void)
 {
+    uint16_t status = 0x01; //By default all ok
+
     Count10ms++;
     TimeOutRxCanMsg(); //Every 10ms
     if (Count10ms >= 2)
@@ -710,6 +724,11 @@ void Scheduler(void)
     {
         Count100ms = 0;
         Count500ms++;
+        //if (PowerSupplyValues.PowerModuleStatus != 0x01)
+        //{
+        //Power Supply OFF. This sentence execute only once.
+        status = InitPowerSupply();
+        //}
         //Every 500ms
     }
     if (Count500ms >= 2)
@@ -736,7 +755,6 @@ void TimeOutRxCanMsg(void)
         }
     }
 }
-
 /*-----------------------------------END MISCELANIOUS FUNCTIONS--------------------------------------*/
 
 /*----------------------------------BEGIN CONTROL LOGIC FUNCTIONS------------------------------------*/
@@ -804,6 +822,7 @@ void AnalyzeCanMsg(void)
                     StatusCom.StatusFlags.Flags.AccessModeRead = true;
                     StatusCom.StatusFlags.Flags.AccessModeWrite = true;
                 }
+                //TODO: Check  Access Command Error 0x80
                 else
                 {
                     //Requested Access Mode doesn´t exit, then set flag error and tx Error CAN msg
@@ -830,7 +849,8 @@ void AnalyzeCanMsg(void)
                 {
                     AdcValuesSaved.VoltageValue = TmpValue;                     //Raw value for Chademo logic
                     AdcValuesSaved.floatVolatageValue = (float)TmpValue / 10.0; //0.1 A/bit
-                    AdcValuesSaved.StatusFlags.Flags.VoltageAnswerFromAdc = true;
+                    AdcValuesSaved.StatusFlags.Flags.VoltageAnswerFromAdc =
+                        true;
                 }
                 else if ((StatusCom.StatusFlags.Flags.AccessModeRead) && ((StatusCom.StatusFlags.Flags.AccessModeWrite)))
                 {
@@ -869,7 +889,8 @@ void AnalyzeCanMsg(void)
                         AdcValuesSaved.NegativeCurrentValue = false; //No negative number
                     }
                     //AdcValuesSaved.floatCurrentValue = (float)TmpValue / 10.0; //0.1 A/bit
-                    AdcValuesSaved.StatusFlags.Flags.CurrentAnswerFromAdc = true;
+                    AdcValuesSaved.StatusFlags.Flags.CurrentAnswerFromAdc =
+                        true;
                 }
                 else if ((StatusCom.StatusFlags.Flags.AccessModeRead) && ((StatusCom.StatusFlags.Flags.AccessModeWrite)))
                 {
@@ -896,13 +917,32 @@ void AnalyzeCanMsg(void)
                 }
                 else
                 {
-                    PowerSupplyValues.StatusFlags.Flags.AnswerDeviceNameError =
-                        true;
+                    PowerSupplyValues.StatusFlags.Flags.AnswerDeviceNameError = false;
                 }
             }
             else
             {
                 StatusErrors.StatusFlags.Flags.SubIndexError = true;
+            }
+            break;
+
+        case 0x2109:
+            if (SubIndex == 0x00)
+            {
+                if (AccessMode == 60)
+                {
+                    PowerSupplyValues.StatusFlags.Flags.AnswerVSet = true;
+                }
+            }
+            break;
+
+        case 0x210A:
+            if (SubIndex == 0x00)
+            {
+                if (AccessMode == 60)
+                {
+                    PowerSupplyValues.StatusFlags.Flags.AnswerISet = true;
+                }
             }
             break;
 
