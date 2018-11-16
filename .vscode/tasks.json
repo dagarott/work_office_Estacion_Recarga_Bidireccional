@@ -3,7 +3,8 @@
     // for the documentation about the tasks.json format
     "version": "2.0.0",
     "options": {
-        "cwd": "${workspaceRoot}/COM_cpu01/CPU1_FLASH_DEBUG/",
+        //"cwd": "${workspaceRoot}/COM_cpu01/CPU1_FLASH_DEBUG/",
+        "cwd": "C:/Users/dagaro/workspace/Firmware_Test/UFCharger/COM_cpu01/CPU1_FLASH_DEBUG/"
     },
     "tasks": [
         {

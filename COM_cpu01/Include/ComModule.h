@@ -32,11 +32,11 @@
 #define TIMEOUT_CAN_RX 1 //SysTick == 10ms. TIMEOUT_RX_CAN= SysTick*1=10ms
 
 //Hardware dependent. Powersupply features
-#define V2G500V15A_VOLTAGE 500    //500V
-#define V2G500V15A_MIN_VOLTAGE 50 //50V
-#define V2G500V15A_CURRENT 15     //-+15A
-#define LENGHT_SECONDS_RAMP 4     //Total number of seconds of ramp up/down process 
-#define NUMBER_STEPS_RAMP 8       //Number of steps-iterations to do ramp up/dowm process
+#define V2G500V15A_VOLTAGE 500                               //500V
+#define V2G500V15A_MIN_VOLTAGE 50                            //50V
+#define V2G500V15A_CURRENT 15                                //-+15A
+#define LENGHT_SECONDS_RAMP 4                                //Total number of seconds of ramp up/down process
+#define NUMBER_STEPS_RAMP 8                                  //Number of steps-iterations to do ramp up/dowm process
 #define MS_STEP_RAMP LENGHT_SECONDS_RAMP / NUMBER_STEPS_RAMP //500 ms/step
 
 #define CPU01_TO_CPU02_PASSMSG 0x0003FC00 // CPU01 TO CPU02 MSG RAM (256 words)
@@ -96,7 +96,7 @@ typedef struct sFlagsCom
 
 extern FlagsCom_t StatusCom;
 extern volatile uint32_t ulTimeOutCANRx;
-extern volatile uint32_t ulSysTickFlag;
+extern volatile uint16_t SysTickFlag;
 /**
  * @brief Variable used for save Voltage, Current and Temperature values
  * from ADC PCB. Voltage/Current values saved in two format, integer and
@@ -163,30 +163,30 @@ typedef struct sPowerSupplyValues
 //
 //  Flags IPC de sincronizacion con CPU1 y CPU2
 //
-#define IPC_Start                   IpcRegs.IPCSTS.bit.IPC1
-#define Set_IPC_Start()             IPCLtoRFlagSet (IPC_FLAG1)
-#define Clear_IPC_Start()           IPCLtoRFlagClear (IPC_FLAG1)
-#define IPC_Stop                    IpcRegs.IPCSTS.bit.IPC2
-#define Set_IPC_Stop()              IPCLtoRFlagSet (IPC_FLAG2)
-#define Clear_IPC_Stop()            IPCLtoRFlagClear (IPC_FLAG2)
-#define IPC_Error                   IpcRegs.IPCSTS.bit.IPC3
-#define Set_IPC_Error()             IPCLtoRFlagSet (IPC_FLAG3)
-#define Clear_IPC_Error()           IPCLtoRFlagClear (IPC_FLAG3)
-#define IPC_CPU1toCPU2              IpcRegs.IPCSTS.bit.IPC4
-#define Set_IPC_CPU1toCPU2()        IPCLtoRFlagSet (IPC_FLAG4)
-#define Clear_IPC_CPU1toCPU2()      IPCLtoRFlagClear (IPC_FLAG4)
-#define IPC_CPU2toCPU1              IpcRegs.IPCSTS.bit.IPC5
-#define Set_IPC_CPU2toCPU1()        IPCLtoRFlagSet (IPC_FLAG5)
-#define Clear_IPC_CPU2toCPU1()      IPCLtoRFlagClear (IPC_FLAG5)
-#define IPC_Potencia_Ready          IpcRegs.IPCSTS.bit.IPC6
-#define Set_IPC_Potencia_Ready()    IPCLtoRFlagSet (IPC_FLAG6)
-#define Clear_IPC_Potencia_Ready()  IPCLtoRFlagClear (IPC_FLAG6)
-#define IPC_V2G_Compatible          IpcRegs.IPCSTS.bit.IPC7
-#define Set_IPC_V2G_Compatible()    IPCLtoRFlagSet (IPC_FLAG7)
-#define Clear_IPC_V2G_Compatible()  IPCLtoRFlagClear (IPC_FLAG7)
-#define IPC_EVPS_Inversor           IpcRegs.IPCSTS.bit.IPC8
-#define Set_IPC_EVPS_Inversor()     IPCLtoRFlagSet (IPC_FLAG8)
-#define Clear_IPC_EVPS_Inversor()   IPCLtoRFlagClear (IPC_FLAG8)
+#define IPC_Start IpcRegs.IPCSTS.bit.IPC1
+#define Set_IPC_Start() IPCLtoRFlagSet(IPC_FLAG1)
+#define Clear_IPC_Start() IPCLtoRFlagClear(IPC_FLAG1)
+#define IPC_Stop IpcRegs.IPCSTS.bit.IPC2
+#define Set_IPC_Stop() IPCLtoRFlagSet(IPC_FLAG2)
+#define Clear_IPC_Stop() IPCLtoRFlagClear(IPC_FLAG2)
+#define IPC_Error IpcRegs.IPCSTS.bit.IPC3
+#define Set_IPC_Error() IPCLtoRFlagSet(IPC_FLAG3)
+#define Clear_IPC_Error() IPCLtoRFlagClear(IPC_FLAG3)
+#define IPC_CPU1toCPU2 IpcRegs.IPCSTS.bit.IPC4
+#define Set_IPC_CPU1toCPU2() IPCLtoRFlagSet(IPC_FLAG4)
+#define Clear_IPC_CPU1toCPU2() IPCLtoRFlagClear(IPC_FLAG4)
+#define IPC_CPU2toCPU1 IpcRegs.IPCSTS.bit.IPC5
+#define Set_IPC_CPU2toCPU1() IPCLtoRFlagSet(IPC_FLAG5)
+#define Clear_IPC_CPU2toCPU1() IPCLtoRFlagClear(IPC_FLAG5)
+#define IPC_Potencia_Ready IpcRegs.IPCSTS.bit.IPC6
+#define Set_IPC_Potencia_Ready() IPCLtoRFlagSet(IPC_FLAG6)
+#define Clear_IPC_Potencia_Ready() IPCLtoRFlagClear(IPC_FLAG6)
+#define IPC_V2G_Compatible IpcRegs.IPCSTS.bit.IPC7
+#define Set_IPC_V2G_Compatible() IPCLtoRFlagSet(IPC_FLAG7)
+#define Clear_IPC_V2G_Compatible() IPCLtoRFlagClear(IPC_FLAG7)
+#define IPC_EVPS_Inversor IpcRegs.IPCSTS.bit.IPC8
+#define Set_IPC_EVPS_Inversor() IPCLtoRFlagSet(IPC_FLAG8)
+#define Clear_IPC_EVPS_Inversor() IPCLtoRFlagClear(IPC_FLAG8)
 
 typedef struct sIPCRegisterValues
 {

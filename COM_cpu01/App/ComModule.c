@@ -49,11 +49,16 @@ unsigned char rxPsMsgData[8] = {0};  //Array to store data from CAN object
 unsigned char rxAdcMsgData[8] = {0}; //Array to store data from CAN object
 
 volatile uint32_t ulTimeOutCANRx; //Variable used by function TimeOut
+uint16_t Count1ms = 0;            //Variable used by scheduler
 uint16_t Count10ms = 0;           //Variable used by scheduler
 uint16_t Count20ms = 0;           //Variable used by scheduler
+uint16_t Count50ms = 0;           //Variable used by scheduler
 uint16_t Count100ms = 0;          //Variable used by scheduler
+uint16_t Count200ms = 0;          //Variable used by scheduler
 uint16_t Count500ms = 0;          //Variable used by scheduler
-uint16_t Count1sec = 0;           //Variable used by scheduler
+uint16_t Count1s = 0;             //Variable used by scheduler
+uint16_t Count2s = 0;             //Variable used by scheduler
+uint16_t Count5s = 0;             //Variable used by scheduler
 
 typedef struct sObjectTx
 {
@@ -235,53 +240,53 @@ uint16_t Set_CANOpenErrorMsg_To_Tx(enum Indice_Diccionario_TPO Idx,
  */
 sEstadoFIFO Transmit_CANOPenMsg(FIFO MsgToTx)
 {
-    sEstadoFIFO status = PILA_VACIA; //Variable set to a default value
-    FIFO *ptr_MsgToTx;
-    ptr_MsgToTx = &MsgToTx;
+    sEstadoFIFO status = PILA_OK; //Variable set to a default value
+    //FIFO *ptr_MsgToTx;
+    //ptr_MsgToTx = &MsgToTx;
 
-    if (MsgToTx.Estado_PILA != PILA_VACIA) //Are there messages to send?
+    //if (MsgToTx.Estado_PILA != PILA_VACIA) //Are there messages to send?
+    //{
+    //do
+    //{
+    //status = Desencolar_FIFO(&MsgToTx);
+
+    //if ((status == PILA_RESET) || (status == PILA_LLENA)) //TODO: Check these conditions
+    //    return (status);
+    //|------------------FIFO.Datos_Recibidos-------------------|
+    //|---------------------------------------------------------|
+    //| Node_ID      | Modo_Acceso | Object Index | SI | B4-B7  |
+    //|---------------------------------------------------------|
+    //|CAN Struct    |              CAN Struct                  |
+    //|item MsgID    |              CAN item pucMsgData         |
+    //|---------------------------------------------------------|
+    // First direction pointed by *ptr_MsgToTx->Datos_Recibidos
+    // is Node_ID, thus it is post-incremented to point to
+    // Modo_Acceso FIFO item. Then the rest of CANOpen message
+    // datas, included Modo_Acceso, are copied on item putcMsgData
+    // of CAN structure by memcpy() function.
+    //sTX_CANOpenMsg.ui32MsgID = *(ptr_MsgToTx->Datos_Recibidos)++;
+    sTX_CANOpenMsg.ui32MsgID = MsgToTx.Datos_Recibidos[0];
+    sTX_CANOpenMsg.ui32MsgIDMask = 0;
+    sTX_CANOpenMsg.ui32Flags = 0;
+    sTX_CANOpenMsg.ui32MsgLen = MSG_DATA_LENGTH;
+    memcpy(sTX_CANOpenMsg.pucMsgData, MsgToTx.Datos_Recibidos + 1,
+           MSG_DATA_LENGTH);
+    //TODO: Add condition to check that, "Not send a new CAN frame
+    //if no exit a previously succes tx"
+    CANMessageSet(CANA_BASE, 1, &sTX_CANOpenMsg, MSG_OBJ_TYPE_TX);
+    while (CanaRegs.CAN_ES.bit.TxOk != 0x01)
     {
-        do
-        {
-            status = Desencolar_FIFO(&MsgToTx);
+        //CanaRegs.CAN_ES.bit.TxOk
+    }; //Wait until CAN tx finish
+        //DELAY_US(6000);
+        //Start CAN tx timeOut exception
+    StatusCom.StatusFlags.Flags.TransmittedCanMsg = 1;
+    //TODO: Check if we shall put a delay() instead of while (...)
 
-            if ((status == PILA_RESET) || (status == PILA_LLENA)) //TODO: Check these conditions
-                return (status);
-            //|------------------FIFO.Datos_Recibidos-------------------|
-            //|---------------------------------------------------------|
-            //| Node_ID      | Modo_Acceso | Object Index | SI | B4-B7  |
-            //|---------------------------------------------------------|
-            //|CAN Struct    |              CAN Struct                  |
-            //|item MsgID    |              CAN item pucMsgData         |
-            //|---------------------------------------------------------|
-            // First direction pointed by *ptr_MsgToTx->Datos_Recibidos
-            // is Node_ID, thus it is post-incremented to point to
-            // Modo_Acceso FIFO item. Then the rest of CANOpen message
-            // datas, included Modo_Acceso, are copied on item putcMsgData
-            // of CAN structure by memcpy() function.
-            sTX_CANOpenMsg.ui32MsgID = *(ptr_MsgToTx->Datos_Recibidos++);
-            sTX_CANOpenMsg.ui32MsgIDMask = 0;
-            sTX_CANOpenMsg.ui32Flags = 0;
-            sTX_CANOpenMsg.ui32MsgLen = MSG_DATA_LENGTH;
-            memcpy((void *)sTX_CANOpenMsg.pucMsgData,
-                   (void *)ptr_MsgToTx->Datos_Recibidos, MSG_DATA_LENGTH);
-            //TODO: Add condition to check that, "Not send a new CAN frame
-            //if no exit a previously succes tx"
-            StatusCom.StatusFlags.Flags.TransmittedCanMsg = 1; //Start CAN tx timeOut exception
-            CANMessageSet(CANA_BASE, 1, &sTX_CANOpenMsg, MSG_OBJ_TYPE_TX);
-
-            while (CanaRegs.CAN_ES.bit.TxOk != 0x01)
-            {
-                //CanaRegs.CAN_ES.bit.TxOk
-            }; //Wait until CAN tx finish
-
-            // DELAY_US(3000);
-            //TODO: Check if we shall put a delay() instead of while (...)
-
-        } while (MsgToTx.Msg_pendientes != 0);
-    }
-    else
-        return (status);
+    // } while (MsgToTx.Msg_pendientes != 0);
+    //}
+    //else
+    return (status);
 }
 /**
  * @brief Create mailbox for Power Supply
@@ -331,7 +336,11 @@ uint16_t InitAdc(void)
         status = Set_CANOpenMsg_To_Tx(OD_Index, &FIFO_CanTx, ENABLE_ADC,
                                       RSDO + ADC_NODE_ID,
                                       0);
-        Transmit_CANOPenMsg(FIFO_CanTx);
+        if (FIFO_CanTx.Estado_PILA != PILA_VACIA)
+        {
+            status = Desencolar_FIFO(&FIFO_CanTx);
+            Transmit_CANOPenMsg(FIFO_CanTx);
+        }
         stateInitAdc = 1;
         break;
 
@@ -348,7 +357,7 @@ uint16_t InitAdc(void)
         break;
 
     case 2: //No TimeOut reception from PS, then analyze CAN message received
-        AnalyzeCanMsg();
+        //AnalyzeCanMsg();
         if (AdcValuesSaved.StatusFlags.Flags.VoltageAnswerFromAdc)
         {
             AdcValuesSaved.StatusFlags.Flags.VoltageAnswerFromAdc = false;
@@ -398,8 +407,13 @@ uint16_t InitPowerSupply(void)
         PsEnable_ON();
         OD_Index = Nombre_dispositivo;
         status = Set_CANOpenMsg_To_Tx(OD_Index, &FIFO_CanTx, 0,
-                                      RSDO + PS_NODE_ID, OD_READ_2BYTES);
-        Transmit_CANOPenMsg(FIFO_CanTx);
+                                      RSDO + PS_NODE_ID,
+                                      OD_READ_2BYTES);
+        if (FIFO_CanTx.Estado_PILA != PILA_VACIA)
+        {
+            status = Desencolar_FIFO(&FIFO_CanTx);
+            Transmit_CANOPenMsg(FIFO_CanTx);
+        }
         stateInitPs = 1;
         break;
 
@@ -442,7 +456,11 @@ uint16_t InitPowerSupply(void)
         status = Set_CANOpenMsg_To_Tx(OD_Index, &FIFO_CanTx, 0x0000F401,
                                       RSDO + PS_NODE_ID,
                                       OD_WRITE_2BYTES);
-        Transmit_CANOPenMsg(FIFO_CanTx);
+        if (FIFO_CanTx.Estado_PILA != PILA_VACIA)
+        {
+            status = Desencolar_FIFO(&FIFO_CanTx);
+            Transmit_CANOPenMsg(FIFO_CanTx);
+        }
         stateInitPs = 1;
         break;
 
@@ -451,7 +469,11 @@ uint16_t InitPowerSupply(void)
         status = Set_CANOpenMsg_To_Tx(OD_Index, &FIFO_CanTx, 0,
                                       RSDO + PS_NODE_ID,
                                       OD_WRITE_2BYTES);
-        Transmit_CANOPenMsg(FIFO_CanTx);
+        if (FIFO_CanTx.Estado_PILA != PILA_VACIA)
+        {
+            status = Desencolar_FIFO(&FIFO_CanTx);
+            Transmit_CANOPenMsg(FIFO_CanTx);
+        }
         stateInitPs = 1;
         break;
 
@@ -705,36 +727,61 @@ void Scheduler(void)
 {
     uint16_t status = 0x01; //By default all ok
 
-    Count10ms++;
-    TimeOutRxCanMsg(); //Every 10ms
-    if (Count10ms >= 2)
+    Count1ms++;
+    if (Count1ms >= 10)
+    {
+        Count1ms = 0;
+        Count10ms++;
+        //Every 10ms
+        TimeOutRxCanMsg();
+    }
+/*    if(Count10ms == 5)
+    {
+        //Every 50ms
+
+
+    }*/
+    if (Count10ms >= 10)
     {
         Count10ms = 0;
-        Count20ms++;
-        //Every 20ms
-        AnalyzeCanMsg();
-    }
-    if (Count20ms >= 5)
-    {
-        Count20ms = 0;
         Count100ms++;
         //Every 100ms
+        if ((StatusCom.StatusFlags.Flags.ErrorCom != true) && (FIFO_CanRx.Estado_PILA != PILA_VACIA))
+               {
+                   //No timeout in Rx and there are data on FIFO Rx to analyze
+                   AnalyzeCanMsg();
+               }
+       
     }
     if (Count100ms >= 5)
     {
         Count100ms = 0;
         Count500ms++;
-        //if (PowerSupplyValues.PowerModuleStatus != 0x01)
-        //{
-        //Power Supply OFF. This sentence execute only once.
-        status = InitPowerSupply();
-        //}
         //Every 500ms
+        if (PowerSupplyValues.PowerModuleStatus != 0x01)
+        {
+            //Power Supply OFF. This sentence execute only once.
+            //Check com. with power supply and set values
+            status = InitPowerSupply();
+        }
+        
     }
     if (Count500ms >= 2)
     {
         Count500ms = 0;
-        //Every 1s
+        Count1s++;
+        //Every 1000ms
+    }
+    if (Count1s >= 5)
+    {
+        Count1s = 0;
+        Count5s++;
+        //Every 5000ms
+    }
+    if (Count5s >= 2)
+    {
+        Count5s = 0;
+        //Every 10000ms
     }
 }
 /**
@@ -776,182 +823,182 @@ void AnalyzeCanMsg(void)
     //TODO: Check this
     //memset(DataSaved, 0x00, 9); //Reset array to zero
 
-    if (FIFO_CanRx.Estado_PILA != PILA_VACIA) //Check just in case
+    Desencolar_FIFO(&FIFO_CanRx);
+    //Move data from FIFO to variable DataSaved for post-processing
+    memcpy((void *)DataSaved, (void *)FIFO_CanRx.Datos_Recibidos, 9);
+
+    NodeIdRx = (uint16_t)DataSaved[0];
+    AccessMode = (uint16_t)DataSaved[1];
+    ObjIndex = (uint16_t)DataSaved[2] + (uint16_t)(DataSaved[3] << 8);
+    SubIndex = (uint16_t)DataSaved[4];
+    //AdcValue = datos_char_to_int(DataSaved[5]);
+    TmpValue = (uint32_t)DataSaved[8] << 24;
+    TmpValue += (uint32_t)DataSaved[7] << 16;
+    TmpValue += (uint32_t)DataSaved[6] << 8;
+    TmpValue += (uint32_t)DataSaved[5];
+
+    DictionaryIndex = Econtrar_Indice_Diccionario(ObjIndex, SubIndex);
+
+    if (DictionaryIndex == FIN_Diccionario)
     {
-        Desencolar_FIFO(&FIFO_CanRx);
-        //Move data from FIFO to variable DataSaved for post-processing
-        memcpy((void *)DataSaved, (void *)FIFO_CanRx.Datos_FIFO, 9);
-
-        NodeIdRx = (uint16_t)DataSaved[0];
-        AccessMode = (uint16_t)DataSaved[1];
-        ObjIndex = (uint16_t)DataSaved[2] + (uint16_t)(DataSaved[3] << 8);
-        SubIndex = (uint16_t)DataSaved[4];
-        //AdcValue = datos_char_to_int(DataSaved[5]);
-        TmpValue = (uint32_t)DataSaved[8] << 24;
-        TmpValue += (uint32_t)DataSaved[7] << 16;
-        TmpValue += (uint32_t)DataSaved[6] << 8;
-        TmpValue += (uint32_t)DataSaved[5];
-
-        DictionaryIndex = Econtrar_Indice_Diccionario(ObjIndex, SubIndex);
-
-        if (DictionaryIndex == FIN_Diccionario)
+        // Requested Object index doesn´t exit, then set flag error and tx Error CAN msg
+        StatusErrors.StatusFlags.Flags.ObjectIndexError = true;
+        Set_CANOpenErrorMsg_To_Tx(DictionaryIndex, &FIFO_CanTx, 0x00,
+                                  RSDO + NodeIdRx);
+    }
+    else
+    {
+        // Requested Object index received exist
+        if (Diccionario_CanOpen[DictionaryIndex].Modo_Acceso == AccessMode) //TODO: Check if necessary this condition
         {
-            // Requested Object index doesn´t exit, then set flag error and tx Error CAN msg
-            StatusErrors.StatusFlags.Flags.ObjectIndexError = true;
-            Set_CANOpenErrorMsg_To_Tx(DictionaryIndex, &FIFO_CanTx, 0x00,
-                                      RSDO + NodeIdRx);
+            // Requested Access mode for that Object index exist
+            if ((AccessMode >= OD_READ) && (AccessMode <= OD_READ_4BYTES))
+            {
+                StatusCom.StatusFlags.Flags.AccessModeRead = true;
+                StatusCom.StatusFlags.Flags.AccessModeWrite = false;
+            }
+            else if ((AccessMode >= OD_WRITE) && (AccessMode <= OD_WRITE_4BYTES))
+            {
+                StatusCom.StatusFlags.Flags.AccessModeRead = false;
+                StatusCom.StatusFlags.Flags.AccessModeWrite = true;
+            }
+            else if ((AccessMode >= OD_WRITE + OD_READ) && (AccessMode <= OD_WRITE_4BYTES + OD_READ_4BYTES))
+            {
+                StatusCom.StatusFlags.Flags.AccessModeRead = true;
+                StatusCom.StatusFlags.Flags.AccessModeWrite = true;
+            }
+            //TODO: Check  Access Command Error 0x80
+            else
+            {
+                //Requested Access Mode doesn´t exit, then set flag error and tx Error CAN msg
+                StatusErrors.StatusFlags.Flags.AccessCmdError = true;
+                Set_CANOpenErrorMsg_To_Tx(DictionaryIndex, &FIFO_CanTx, 0x00,
+                                          RSDO + NodeIdRx);
+                //TODO: No transmission done, only set CAN error frame
+            }
+        }
+    }
+
+    switch (ObjIndex)
+    {
+    case 0x9000: // Get Voltage/Current values from ADC
+
+        if (SubIndex == 0x00) //Vout from ADC
+        {
+            //Request Access Mode correct
+            if (StatusCom.StatusFlags.Flags.AccessModeRead)
+            {
+                //Do nothing
+            }
+            else if (StatusCom.StatusFlags.Flags.AccessModeWrite)
+            {
+                AdcValuesSaved.VoltageValue = TmpValue;                     //Raw value for Chademo logic
+                AdcValuesSaved.floatVolatageValue = (float)TmpValue / 10.0; //0.1 A/bit
+                AdcValuesSaved.StatusFlags.Flags.VoltageAnswerFromAdc =
+                    true;
+            }
+            else if ((StatusCom.StatusFlags.Flags.AccessModeRead) && ((StatusCom.StatusFlags.Flags.AccessModeWrite)))
+            {
+                //Do nothing
+            }
         }
         else
         {
-            // Requested Object index received exist
-            if (Diccionario_CanOpen[DictionaryIndex].Modo_Acceso == AccessMode)
-            {
-                // Requested Access mode for that Object index exist
-                if ((AccessMode >= OD_READ) && (AccessMode <= OD_READ_4BYTES))
-                {
-                    StatusCom.StatusFlags.Flags.AccessModeRead = true;
-                    StatusCom.StatusFlags.Flags.AccessModeWrite = false;
-                }
-                else if ((AccessMode >= OD_WRITE) && (AccessMode <= OD_WRITE_4BYTES))
-                {
-                    StatusCom.StatusFlags.Flags.AccessModeRead = false;
-                    StatusCom.StatusFlags.Flags.AccessModeWrite = true;
-                }
-                else if ((AccessMode >= OD_WRITE + OD_READ) && (AccessMode <= OD_WRITE_4BYTES + OD_READ_4BYTES))
-                {
-                    StatusCom.StatusFlags.Flags.AccessModeRead = true;
-                    StatusCom.StatusFlags.Flags.AccessModeWrite = true;
-                }
-                //TODO: Check  Access Command Error 0x80
-                else
-                {
-                    //Requested Access Mode doesn´t exit, then set flag error and tx Error CAN msg
-                    StatusErrors.StatusFlags.Flags.AccessCmdError = true;
-                    Set_CANOpenErrorMsg_To_Tx(DictionaryIndex, &FIFO_CanTx,
-                                              0x00, RSDO + NodeIdRx);
-                    //TODO: No transmission done, only set CAN error frame
-                }
-            }
-        }
-
-        switch (ObjIndex)
-        {
-        case 0x9000: // Get Voltage/Current values from ADC
-
-            if (SubIndex == 0x00) //Vout from ADC
-            {
-                //Request Access Mode correct
-                if (StatusCom.StatusFlags.Flags.AccessModeRead)
-                {
-                    //Do nothing
-                }
-                else if (StatusCom.StatusFlags.Flags.AccessModeWrite)
-                {
-                    AdcValuesSaved.VoltageValue = TmpValue;                     //Raw value for Chademo logic
-                    AdcValuesSaved.floatVolatageValue = (float)TmpValue / 10.0; //0.1 A/bit
-                    AdcValuesSaved.StatusFlags.Flags.VoltageAnswerFromAdc =
-                        true;
-                }
-                else if ((StatusCom.StatusFlags.Flags.AccessModeRead) && ((StatusCom.StatusFlags.Flags.AccessModeWrite)))
-                {
-                    //Do nothing
-                }
-            }
-            else
-            {
-                //Requested Access Mode incorrect, send an error message to the transmitter
-                StatusErrors.StatusFlags.Flags.AccessCmdError = true;
-                Set_CANOpenErrorMsg_To_Tx(DictionaryIndex, &FIFO_CanTx, 0x00,
-                                          RSDO + NodeIdRx);
-            }
-            if (SubIndex == 0x01) //Iout from ADC
-            {
-
-                //Request Access Mode correct
-                if (StatusCom.StatusFlags.Flags.AccessModeRead)
-                {
-                    //Do nothing
-                }
-                else if (StatusCom.StatusFlags.Flags.AccessModeWrite)
-                {
-                    AdcValuesSaved.CurrentValue = TmpValue; //Raw value for Chademo logic
-                    //Get sign of the Current Value
-                    if ((AdcValuesSaved.CurrentValue & 0x80000000) == 0x80000000)
-                    {
-                        AdcValuesSaved.NegativeCurrentValue = true; //Negative number
-                        // If it is negative, make it positive by inverting the bits
-                        // and adding one.
-                        TmpValue = ~TmpValue; //Bitwise negation of all bits
-                        TmpValue += 0x01;
-                    }
-                    else
-                    {
-                        AdcValuesSaved.NegativeCurrentValue = false; //No negative number
-                    }
-                    //AdcValuesSaved.floatCurrentValue = (float)TmpValue / 10.0; //0.1 A/bit
-                    AdcValuesSaved.StatusFlags.Flags.CurrentAnswerFromAdc =
-                        true;
-                }
-                else if ((StatusCom.StatusFlags.Flags.AccessModeRead) && ((StatusCom.StatusFlags.Flags.AccessModeWrite)))
-                {
-                    //Do nothing
-                }
-            }
-            else
-            {
-                //Requested Access Mode incorrect, send an error message to the transmitter
-                StatusErrors.StatusFlags.Flags.AccessCmdError = true;
-                Set_CANOpenErrorMsg_To_Tx(DictionaryIndex, &FIFO_CanTx, 0x00,
-                                          RSDO + NodeIdRx);
-            }
-            break;
-
-        case 0x1008: //Power Supply Device Name
-
-            if (SubIndex == 0x04)
-            {
-                //Check answer from Power Supply. "V2G500V15A" model return the string "_V2G"
-                if (TmpValue == 0x47325620) //Chars values of string "G2V_", little-endian of "_V2G"
-                {
-                    PowerSupplyValues.StatusFlags.Flags.AnswerDeviceName = true;
-                }
-                else
-                {
-                    PowerSupplyValues.StatusFlags.Flags.AnswerDeviceNameError = false;
-                }
-            }
-            else
-            {
-                StatusErrors.StatusFlags.Flags.SubIndexError = true;
-            }
-            break;
-
-        case 0x2109:
-            if (SubIndex == 0x00)
-            {
-                if (AccessMode == 60)
-                {
-                    PowerSupplyValues.StatusFlags.Flags.AnswerVSet = true;
-                }
-            }
-            break;
-
-        case 0x210A:
-            if (SubIndex == 0x00)
-            {
-                if (AccessMode == 60)
-                {
-                    PowerSupplyValues.StatusFlags.Flags.AnswerISet = true;
-                }
-            }
-            break;
-
-        default:
-            StatusErrors.StatusFlags.Flags.ObjectIndexError = true;
+            //Requested Access Mode incorrect, send an error message to the transmitter
+            StatusErrors.StatusFlags.Flags.AccessCmdError = true;
             Set_CANOpenErrorMsg_To_Tx(DictionaryIndex, &FIFO_CanTx, 0x00,
                                       RSDO + NodeIdRx);
-            break;
         }
+        if (SubIndex == 0x01) //Iout from ADC
+        {
+
+            //Request Access Mode correct
+            if (StatusCom.StatusFlags.Flags.AccessModeRead)
+            {
+                //Do nothing
+            }
+            else if (StatusCom.StatusFlags.Flags.AccessModeWrite)
+            {
+                AdcValuesSaved.CurrentValue = TmpValue; //Raw value for Chademo logic
+                //Get sign of the Current Value
+                if ((AdcValuesSaved.CurrentValue & 0x80000000) == 0x80000000)
+                {
+                    AdcValuesSaved.NegativeCurrentValue = true; //Negative number
+                    // If it is negative, make it positive by inverting the bits
+                    // and adding one.
+                    TmpValue = ~TmpValue; //Bitwise negation of all bits
+                    TmpValue += 0x01;
+                }
+                else
+                {
+                    AdcValuesSaved.NegativeCurrentValue = false; //No negative number
+                }
+                //AdcValuesSaved.floatCurrentValue = (float)TmpValue / 10.0; //0.1 A/bit
+                AdcValuesSaved.StatusFlags.Flags.CurrentAnswerFromAdc =
+                    true;
+            }
+            else if ((StatusCom.StatusFlags.Flags.AccessModeRead) && ((StatusCom.StatusFlags.Flags.AccessModeWrite)))
+            {
+                //Do nothing
+            }
+        }
+        else
+        {
+            //Requested Access Mode incorrect, send an error message to the transmitter
+            StatusErrors.StatusFlags.Flags.AccessCmdError = true;
+            Set_CANOpenErrorMsg_To_Tx(DictionaryIndex, &FIFO_CanTx, 0x00,
+                                      RSDO + NodeIdRx);
+        }
+        break;
+
+    case 0x1008: //Power Supply Device Name
+
+        if (SubIndex == 0x04)
+        {
+            //Check answer from Power Supply. "V2G500V15A" model return the string "_V2G"
+            if (TmpValue == 0x47325620) //Chars values of string "G2V_", little-endian of "_V2G"
+            {
+                PowerSupplyValues.StatusFlags.Flags.AnswerDeviceName = true;
+            }
+            else
+            {
+                PowerSupplyValues.StatusFlags.Flags.AnswerDeviceNameError =
+                    false;
+            }
+        }
+        else
+        {
+            StatusErrors.StatusFlags.Flags.SubIndexError = true;
+        }
+        break;
+
+    case 0x2109: //Output voltage set point
+
+        if (SubIndex == 0x00)
+        {
+            if (AccessMode == 0x60)
+            {
+                PowerSupplyValues.StatusFlags.Flags.AnswerVSet = true;
+            }
+        }
+        break;
+
+    case 0x210A: //Output current set point
+
+        if (SubIndex == 0x00)
+        {
+            if (AccessMode == 0x60)
+            {
+                PowerSupplyValues.StatusFlags.Flags.AnswerISet = true;
+            }
+        }
+        break;
+
+    default:
+        StatusErrors.StatusFlags.Flags.ObjectIndexError = true;
+        Set_CANOpenErrorMsg_To_Tx(DictionaryIndex, &FIFO_CanTx, 0x00,
+                                  RSDO + NodeIdRx);
+        break;
     }
 }
 /*  END CONTROL LOGIC FUNCTIONS */

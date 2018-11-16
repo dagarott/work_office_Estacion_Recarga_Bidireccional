@@ -38,11 +38,11 @@ void Init_HW ()
 #endif   
     // Configurar Timer 0
     //
-    // Configure CPU-Timer 0 to __interrupt every 10 milliseconds:
-    // 200MHz CPU Freq, 10 millisecond Period (in uSeconds)
+    // Configure CPU-Timer 0 to __interrupt every 1 milliseconds:
+    // 200MHz CPU Freq, 1 millisecond Period (in uSeconds)
     //
     InitCpuTimers();
-    ConfigCpuTimer(&CpuTimer0, (T_clk/1000000) , 10000);
+    ConfigCpuTimer(&CpuTimer0, (T_clk/1000000) , 1000);
     //
     // To ensure precise timing, use write-only instructions to write to the entire
     // register. Therefore, if any of the configuration bits are changed in

@@ -38,9 +38,9 @@ tCanMsg Diccionario_CanOpen[] = {
     //------------------------------------------------------------------------------
     //  0x100x
     //------------------------------------------------------------------------------
-    {OD_READ, 0x1008, 0x04 },            //Nombre_dispositivo
-    {OD_READ, 0x1009, 0x04 },            //Hardware_dispositivo
-    {OD_READ, 0x100A, 0x04 },            //Software_dispositivo
+    {OD_READ_4BYTES, 0x1008, 0x04 },            //Nombre_dispositivo
+    {OD_READ_4BYTES, 0x1009, 0x04 },            //Hardware_dispositivo
+    {OD_READ_4BYTES, 0x100A, 0x04 },            //Software_dispositivo
     //------------------------------------------------------------------------------
     //  0x101x
     //------------------------------------------------------------------------------

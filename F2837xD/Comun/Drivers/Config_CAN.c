@@ -126,8 +126,14 @@ void Config_CANB(uint32_t BitRate)
     CANEnable(CANB_BASE);
 
 }
-void Transmitir_CANB()
+void Transmitir_CANA(uint32_t Ptr_Datos, uint16_t ID_CAN)
 {
+    memcpy (&sTXCANMessage.pucMsgData, &Ptr_Datos, sizeof(sTXCANMessage.pucMsgData));
+
+    sTXCANMessage.ui32MsgID = (uint32_t)ID_CAN;
+
+    CANMessageSet(CANA_BASE, TX_MSG_OBJ_ID, &sTXCANMessage, MSG_OBJ_TYPE_TX);
+
 
 } // FIN Transmitir CAN B
 

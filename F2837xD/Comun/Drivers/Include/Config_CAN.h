@@ -13,6 +13,7 @@
 void    Config_CANB         (uint32_t BitRate);
 void    Config_CANA         (uint32_t BitRate);
 void    Transmitir_CANB     (void);
+void    Transmitir_CANA (uint32_t Ptr_Datos, uint16_t ID_CAN);
 void    Init_Buzones        (tCANMsgObject CANBuzon,tMsgObjType TipoMsg, uint32_t NumBuzon);
 
 

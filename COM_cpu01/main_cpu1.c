@@ -29,13 +29,16 @@
 #include "ComModule.h"
 /* USER CODE END Includes */
 
-
+tCANMsgObject sTXCANMessage;
 /**
  * @brief  Main function, initialize clock system, HW, etc.
  * 
  */
 void main(void)
 {
+
+    uint16_t status = 0;
+
     Init_HW(); /* Initialize all the HW*/
     Hablitar_ISR();
     Config_CANA(500); //500kbit/s
@@ -45,14 +48,13 @@ void main(void)
     Set_MailboxOne();
     Set_MailboxTwo();
 
-    //InitAdc();
     /* USER CODE END */
 
     for (;;)
     {
-        if (ulSysTickFlag)
+        if (SysTickFlag == true)
         {
-            ulSysTickFlag = false;
+            SysTickFlag = false;
             Scheduler(); //Triggered every 10ms
         }
 

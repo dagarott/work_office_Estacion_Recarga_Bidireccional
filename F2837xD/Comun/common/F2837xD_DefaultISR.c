@@ -25,11 +25,7 @@
 
 #include "ComModule.h"
 
-//
-// Variables globales
-//
-// Variable manejada por el Timer 0 para sincronizar los timeou
-volatile uint32_t ulSysTickFlag = false; //Variable used by scheduler function
+volatile uint16_t SysTickFlag; //Variable used by scheduler function
 
 //
 // CPU Timer 1 Interrupt
@@ -522,7 +518,7 @@ interrupt void ADCD1_ISR(void)
 //
 interrupt void TIMER0_ISR(void)
 {
-    ulSysTickFlag = true; //Time base used by Scheduler
+    SysTickFlag = true; //Time base used by Scheduler
     // Acknowledge this __interrupt to receive more __interrupts from group 1
     PieCtrlRegs.PIEACK.all = PIEACK_GROUP1;
 }
