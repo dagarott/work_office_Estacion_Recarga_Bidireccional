@@ -26,23 +26,23 @@
 #define MAILBOX_TWO 3 // and Power Supply
 #define ENABLE_ADC 0x01000101
 #define DISABLE_ADC 0x01000000
+#define ENABLE_PS 0x00000001
 #define COM_NODE_ID 0x01
 #define ADC_NODE_ID 0x03
 #define PS_NODE_ID 0x30
 #define TIMEOUT_CAN_RX 1 //SysTick == 10ms. TIMEOUT_RX_CAN= SysTick*1=10ms
 
 //Hardware dependent. Powersupply features
-#define V2G500V15A_VOLTAGE 500                               //500V
-#define V2G500V15A_MIN_VOLTAGE 50                            //50V
-#define V2G500V15A_CURRENT 15                                //-+15A
-#define LENGHT_SECONDS_RAMP 4                                //Total number of seconds of ramp up/down process
-#define NUMBER_STEPS_RAMP 8                                  //Number of steps-iterations to do ramp up/dowm process
-#define MS_STEP_RAMP LENGHT_SECONDS_RAMP / NUMBER_STEPS_RAMP //500 ms/step
+#define V2G500V15A_MAX_VOLTAGE 5000 //Model works with resolution of 0.1V/bit. Then 5000 = 5000/10 = 500V
+#define V2G500V15A_MIN_VOLTAGE 500  //Model works with resolution of 0.1V/bit. Then 500 = 500/10 = 50V
+#define V2G500V15A_CURRENT 150      //Model works with resolution of 0.1A/bit. then 150/10 = 15A
+#define LENGHT_SECONDS_RAMP 2       //Total number of seconds of ramp up/down process
+#define NUMBER_STEPS_RAMP 20        //Number of steps-iterations to do ramp up/dowm process
+#define MS_STEP_RAMP  LENGHT_SECONDS_RAMP / NUMBER_STEPS_RAMP   //200 ms/step=LENGHT_SECONDS_RAMP / NUMBER_STEPS_RAMP
 
 #define CPU01_TO_CPU02_PASSMSG 0x0003FC00 // CPU01 TO CPU02 MSG RAM (256 words)
 #define CPU02_TO_CPU01_PASSMSG 0x0003F800 // CPU02 TO CPU01 MSG RAM (256 words)
-//TODO: Define end Ram memory
-//#define END_PASSMSG 0x0003FDF4            // CPU01 TO CPU02 MSG RAM
+#define END_PASSMSG 0x00003FF00
 
 extern FIFO FIFO_CanTx; //Unique CAN FIFO defined for store CAN tx
 extern FIFO FIFO_CanRx; //Unique CAN FIFO defined for store CAN rx
@@ -134,7 +134,10 @@ typedef struct sPowerSupplyValues
     unsigned char Model[4];       //Store device name/model
     int16_t CurrentDeviceValue;   //Values according to model
     uint16_t VoltageDeviceValue;  //Values according to model
-    uint16_t PowerModuleStatus;   //0x2101 / [0-15]bit status
+    uint16_t PowerModuleStatus;   //[0-15]bit status
+                                  //Bit /   Description /   Value
+                                  // 0      Charger On  / 0: OFF; 1: ON
+                                  // 1      Communication / 0: NO COM; 1:COM
     uint16_t DCOutputVoltage;     //0x2107 Actual output voltage 0.1V/step
     int16_t DCOutputCurrrent;     //0x2108 Actual output current 0.1A/step
     uint16_t DCOutputVSetpoint;   //0x2109 Set point output voltage 0.1A/step
@@ -156,9 +159,12 @@ typedef struct sPowerSupplyValues
             uint16_t AnswerVSetError : 1;
             uint16_t AnswerISet : 1;
             uint16_t AnswerISetError : 1;
+            uint16_t AnswerEnablePs : 1;
         } Flags;
     } StatusFlags;
 } PowerSupplyValues_t;
+
+
 
 //
 //  Flags IPC de sincronizacion con CPU1 y CPU2
