@@ -36,9 +36,9 @@
 #define V2G500V15A_MAX_VOLTAGE 5000 //Model works with resolution of 0.1V/bit. Then 5000 = 5000/10 = 500V
 #define V2G500V15A_MIN_VOLTAGE 500  //Model works with resolution of 0.1V/bit. Then 500 = 500/10 = 50V
 #define V2G500V15A_CURRENT 150      //Model works with resolution of 0.1A/bit. then 150/10 = 15A
-#define LENGHT_SECONDS_RAMP 2       //Total number of seconds of ramp up/down process
-#define NUMBER_STEPS_RAMP 20        //Number of steps-iterations to do ramp up/dowm process
-#define MS_STEP_RAMP  LENGHT_SECONDS_RAMP / NUMBER_STEPS_RAMP   //200 ms/step=LENGHT_SECONDS_RAMP / NUMBER_STEPS_RAMP
+#define LENGHT_SECONDS_RAMP 4       //Total number of seconds of ramp up/down process
+#define NUMBER_STEPS_RAMP 8        //Number of steps-iterations to do ramp up/dowm process
+
 
 #define CPU01_TO_CPU02_PASSMSG 0x0003FC00 // CPU01 TO CPU02 MSG RAM (256 words)
 #define CPU02_TO_CPU01_PASSMSG 0x0003F800 // CPU02 TO CPU01 MSG RAM (256 words)
@@ -138,6 +138,7 @@ typedef struct sPowerSupplyValues
                                   //Bit /   Description /   Value
                                   // 0      Charger On  / 0: OFF; 1: ON
                                   // 1      Communication / 0: NO COM; 1:COM
+                                  // 2      Updated Value / 0: NO; 1: YES
     uint16_t DCOutputVoltage;     //0x2107 Actual output voltage 0.1V/step
     int16_t DCOutputCurrrent;     //0x2108 Actual output current 0.1A/step
     uint16_t DCOutputVSetpoint;   //0x2109 Set point output voltage 0.1A/step
@@ -236,7 +237,7 @@ uint16_t Set_CANOpenErrorMsg_To_Tx(enum Indice_Diccionario_TPO Idx,
 sEstadoFIFO Transmit_CANOPenMsg(FIFO MsgToTx);
 uint16_t InitAdc(void);
 uint16_t InitPowerSupply(void);
-uint16_t PsRampup(uint16_t VoltageTarget, int16_t CurrentTarget);
 uint16_t PsSetVoltageCurrent(uint16_t VoltageRequest, int16_t CurrentRequest, bool EnablePs);
+uint16_t PsKeepAlive(void);
 void Scheduler(void);
 #endif /* COMMODULE_H_ */

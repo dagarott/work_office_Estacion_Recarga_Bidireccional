@@ -48,6 +48,10 @@ void main(void)
     Set_MailboxOne();
     Set_MailboxTwo();
 
+    //Power Supply OFF. This sentence execute only once.
+    //Check communication with power supply and set known values
+    status = InitPowerSupply();
+
     /* USER CODE END */
 
     for (;;)

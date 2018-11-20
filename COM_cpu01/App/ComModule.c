@@ -458,9 +458,8 @@ uint16_t InitPowerSupply(void)
 
     case 3: //Next set V to zero values, just in case
         OD_Index = Udc_Out_Setpoint;
-        status = Set_CANOpenMsg_To_Tx(OD_Index, &FIFO_CanTx,
-        V2G500V15A_MIN_VOLTAGE,
-                                      RSDO + PS_NODE_ID,
+        status = Set_CANOpenMsg_To_Tx(OD_Index, &FIFO_CanTx, 0x00,
+        RSDO + PS_NODE_ID,
                                       OD_WRITE_2BYTES);
         if (FIFO_CanTx.Estado_PILA != PILA_VACIA)
         {
@@ -472,7 +471,7 @@ uint16_t InitPowerSupply(void)
 
     case 4: //Next set I to zero values, just in case
         OD_Index = Idc_Out_Setpoint;
-        status = Set_CANOpenMsg_To_Tx(OD_Index, &FIFO_CanTx, 0,
+        status = Set_CANOpenMsg_To_Tx(OD_Index, &FIFO_CanTx, 0x00,
         RSDO + PS_NODE_ID,
                                       OD_WRITE_2BYTES);
         if (FIFO_CanTx.Estado_PILA != PILA_VACIA)
@@ -485,7 +484,7 @@ uint16_t InitPowerSupply(void)
 
     case 5:
         PowerSupplyValues.ActualCurrentValue = 0x00;
-        PowerSupplyValues.ActualVoltageValue = V2G500V15A_MIN_VOLTAGE;
+        PowerSupplyValues.ActualVoltageValue = 0x00;
         PowerSupplyValues.PowerModuleStatus |= 0x02; //Communication / 0: NO COM; 1: COM
         stateInitPs = 0;
         status = 0X01;
@@ -516,6 +515,7 @@ bool EnablePs)
     static uint16_t CounterCurrentIterations = 11;
     static float SlopeVoltage = 0.0;
     static float SlopeCurrent = 0.0;
+    static float Ms_Step_Ramp = (LENGHT_SECONDS_RAMP / NUMBER_STEPS_RAMP); //500 ms/step=LENGHT_SECONDS_RAMP / NUMBER_STEPS_RAMP
     enum OD_Index;
 
     switch (stateSetPsVI)
@@ -535,42 +535,16 @@ bool EnablePs)
 
         }
 
-        if ((PowerSupplyValues.PowerModuleStatus & 0x01) == 0x01)
-        {
-            //If we are here is because we finished a ramp up/down
-            //In order to have Power Supply running is necessary to send
-            //Enable command periodically
-            OD_Index = Module_Enable;
-            status = Set_CANOpenMsg_To_Tx(OD_Index, &FIFO_CanTx, ENABLE_PS,
-            RSDO + PS_NODE_ID,
-                                          OD_WRITE_2BYTES);
-        }
-        else
-        {
-            //We use this message for test communication with Power Supply
-            OD_Index = Module_Enable;
-            status = Set_CANOpenMsg_To_Tx(OD_Index, &FIFO_CanTx, 0,
-            RSDO + PS_NODE_ID,
-                                          OD_READ_2BYTES);
-        }
+        //Check communication with Power
+        OD_Index = Nombre_dispositivo;
+        status = Set_CANOpenMsg_To_Tx(OD_Index, &FIFO_CanTx, 0,
+        RSDO + PS_NODE_ID,
+                                      OD_READ_2BYTES);
         if (FIFO_CanTx.Estado_PILA != PILA_VACIA)
         {
             status = Desencolar_FIFO(&FIFO_CanTx);
             Transmit_CANOPenMsg(FIFO_CanTx);
-            stateSetPsVI = 1; //We go to state one, where we check if an Ack for this command
-            //it has been sent by the Power Supply
         }
-
-        //Check communication with Power
-        /*OD_Index = Nombre_dispositivo;
-         status = Set_CANOpenMsg_To_Tx(OD_Index, &FIFO_CanTx, 0,
-         RSDO + PS_NODE_ID,
-         OD_READ_2BYTES);
-         if (FIFO_CanTx.Estado_PILA != PILA_VACIA)
-         {
-         status = Desencolar_FIFO(&FIFO_CanTx);
-         Transmit_CANOPenMsg(FIFO_CanTx);
-         }*/
         stateSetPsVI = 1;
         break;
 
@@ -578,12 +552,49 @@ bool EnablePs)
         //set an error
         if (StatusCom.StatusFlags.Flags.DataAvailable)
         {
-            stateSetPsVI = 2;
+            //stateSetPsVI = 2;
+            if ((OD_Index == Nombre_dispositivo)
+                    && (PowerSupplyValues.StatusFlags.Flags.AnswerDeviceName))
+            {
+                //Correct CAN message received
+                PowerSupplyValues.StatusFlags.Flags.AnswerDeviceName = false;
+                stateSetPsVI = 3;
+            }
+            else if ((OD_Index == Udc_Out_Setpoint)
+                    && (PowerSupplyValues.StatusFlags.Flags.AnswerVSet))
+            {
+                //PowerSupplyValues.StatusFlags.Flags.AnswerVSet = false;
+                stateSetPsVI = 6; //Go to Send Enable command
+            }
+            else if ((OD_Index == Idc_Out_Setpoint)
+                    && (PowerSupplyValues.StatusFlags.Flags.AnswerISet))
+            {
+                //PowerSupplyValues.StatusFlags.Flags.AnswerISet = false;
+                stateSetPsVI = 6; //Go to Send Enable command
+            }
+            else if (((OD_Index == Module_Enable)
+                    && (PowerSupplyValues.StatusFlags.Flags.AnswerEnablePs)))
+            {
+                //Confirmed reception of ACk for Enable Power Supply command
+                if (PowerSupplyValues.StatusFlags.Flags.AnswerVSet == true)
+                {
+                    //Go to Set Voltage
+                    PowerSupplyValues.StatusFlags.Flags.AnswerVSet = false;
+                    stateSetPsVI = 4;
+                }
+                else if (PowerSupplyValues.StatusFlags.Flags.AnswerISet)
+                {
+                    //Go to Set Current
+                    PowerSupplyValues.StatusFlags.Flags.AnswerISet = false;
+                    stateSetPsVI = 5;
+                }
+
+            }
         }
         else if (StatusCom.StatusFlags.Flags.ErrorCom)
         {
             //TODO: Set an error flag, stop everything and display it in user interface
-            return (0x00);
+            status=0x00;
         }
         break;
 
@@ -600,15 +611,15 @@ bool EnablePs)
                 && (PowerSupplyValues.StatusFlags.Flags.AnswerVSet))
         {
             //PowerSupplyValues.StatusFlags.Flags.AnswerVSet = false;
-            stateSetPsVI = 6; //Go to Send Enable command
+            stateSetPsVI = 4; //Go to Send Enable command
         }
         else if ((OD_Index == Idc_Out_Setpoint)
                 && (PowerSupplyValues.StatusFlags.Flags.AnswerISet))
         {
             //PowerSupplyValues.StatusFlags.Flags.AnswerISet = false;
-            stateSetPsVI = 6; //Go to Send Enable command
+            stateSetPsVI = 5; //Go to Send Enable command
         }
-        else if (((OD_Index == Module_Enable)
+        /*else if (((OD_Index == Module_Enable)
                 && (PowerSupplyValues.StatusFlags.Flags.AnswerEnablePs)))
         {
             //Confirmed reception of ACk for Enable Power Supply command
@@ -625,7 +636,7 @@ bool EnablePs)
                 stateSetPsVI = 5;
             }
 
-        }
+        }*/
 
         break;
 
@@ -689,23 +700,23 @@ bool EnablePs)
                     - PowerSupplyValues.ActualCurrentValue) /
             LENGHT_SECONDS_RAMP; // slope I/s
             CounterCurrentIterations = 0;
-            stateSetPsVI = 4;
+            stateSetPsVI = 5;
         }
         else if ((VoltageRequest == PowerSupplyValues.ActualVoltageValue)
                 && (CurrentRequest == PowerSupplyValues.ActualCurrentValue))
         {
-            //No changes on V/I to be done, then go to case 0 and send keep alive frame
-            stateSetPsVI = 0;
+            //No changes on V/I to be done, then go to case 6
+            stateSetPsVI = 6;
         }
         break;
 
     case 4: //Send new values of voltage
-        if (CounterVoltageIterations < 9)
+        if (CounterVoltageIterations < 7)
         {
             //Start increment voltage. First 7 iterations
             tmpVoltageValue +=
                     (PowerSupplyValues.ActualVoltageValue
-                            + ((CounterVoltageIterations * MS_STEP_RAMP)
+                            + ((CounterVoltageIterations * Ms_Step_Ramp)
                                     * SlopeVoltage));
             OD_Index = Udc_Out_Setpoint;
             status = Set_CANOpenMsg_To_Tx(OD_Index, &FIFO_CanTx,
@@ -722,7 +733,7 @@ bool EnablePs)
             CounterVoltageIterations++;
 
         }
-        else if (CounterVoltageIterations == 9)
+        else if (CounterVoltageIterations == 7)
         {
             //Last iteration, we set the final values as value requested by system
             OD_Index = Udc_Out_Setpoint;
@@ -739,22 +750,22 @@ bool EnablePs)
             CounterVoltageIterations++;
 
         }
-        else if (CounterVoltageIterations == 10)
+        else if (CounterVoltageIterations == 8)
         {
             //At the end of the ramp up/down voltage state, reset step-iterations counter
             //and go to ramp up/dowm current state
-            CounterVoltageIterations = 11;
+            //CounterVoltageIterations = 11;
             stateSetPsVI = 5;
         }
         break;
 
     case 5: //Send new values of current
 
-        if (CounterCurrentIterations < 9)
+        if (CounterCurrentIterations < 7)
         {
             tmpCurrentValue +=
                     (PowerSupplyValues.ActualCurrentValue
-                            + ((CounterCurrentIterations * MS_STEP_RAMP)
+                            + ((CounterCurrentIterations * Ms_Step_Ramp)
                                     * SlopeCurrent));
             OD_Index = Idc_Out_Setpoint;
             status = Set_CANOpenMsg_To_Tx(OD_Index, &FIFO_CanTx,
@@ -770,7 +781,7 @@ bool EnablePs)
             CounterCurrentIterations++;
 
         }
-        else if (CounterCurrentIterations == 9)
+        else if (CounterCurrentIterations == 7)
         {
             //Last iteration, we set the final values as value requested by system
             OD_Index = Idc_Out_Setpoint;
@@ -786,36 +797,36 @@ bool EnablePs)
             CounterCurrentIterations++;
 
         }
-        else if (CounterCurrentIterations == 10)
+        else if (CounterCurrentIterations == 8)
         {
             //Completed ramp up/down for current, we reset step-iteration counter
             //and we go to last state to save final values, and set flag Power Enable
             //to true
-            CounterCurrentIterations = 11;
-            stateSetPsVI = 7;
+            //CounterCurrentIterations = 11;
+            stateSetPsVI = 6;
         }
         break;
 
-    case 6: //Send Enable Command. This command is sent after each V/I set point command
-        //in order to have a new value of V/I in the output of the Power Supply
-        OD_Index = Module_Enable;
-        status = Set_CANOpenMsg_To_Tx(OD_Index, &FIFO_CanTx, ENABLE_PS,
-        RSDO + PS_NODE_ID,
-                                      OD_WRITE_2BYTES);
-        if (FIFO_CanTx.Estado_PILA != PILA_VACIA)
-        {
-            status = Desencolar_FIFO(&FIFO_CanTx);
-            Transmit_CANOPenMsg(FIFO_CanTx);
-            stateSetPsVI = 1; //We go to state one, where we check if an Ack for this command
-            //it has been sent by the Power Supply
-        }
-        break;
-
-    case 7: //Save current values of voltage/current
+        /* case 6: //Send Enable Command. This command is sent after each V/I set point command
+         //in order to have a new value of V/I in the output of the Power Supply
+         OD_Index = Module_Enable;
+         status = Set_CANOpenMsg_To_Tx(OD_Index, &FIFO_CanTx, ENABLE_PS,
+         RSDO + PS_NODE_ID,
+         OD_WRITE_2BYTES);
+         if (FIFO_CanTx.Estado_PILA != PILA_VACIA)
+         {
+         status = Desencolar_FIFO(&FIFO_CanTx);
+         Transmit_CANOPenMsg(FIFO_CanTx);
+         stateSetPsVI = 1; //We go to state one, where we check if an Ack for this command
+         //it has been sent by the Power Supply
+         }
+         break;
+         */
+    case 6: //Save current values of voltage/current
 
         PowerSupplyValues.ActualCurrentValue = CurrentRequest;
         PowerSupplyValues.ActualVoltageValue = VoltageRequest;
-        PowerSupplyValues.PowerModuleStatus |= 0x01;
+        PowerSupplyValues.PowerModuleStatus |= 0x05; //Bit Updated values and bit Power Supply On Set to one
         stateSetPsVI = 0;
         status = 0X01;
         break;
@@ -827,6 +838,54 @@ bool EnablePs)
     }
 
     return (status);
+}
+
+uint16_t PsKeepAlive(void)
+{
+    uint16_t status = 0;
+    static uint_fast16_t stateKeepAlive = 0;
+
+    switch (stateKeepAlive)
+    {
+    case 0:
+
+        OD_Index = Module_Enable;
+        status = Set_CANOpenMsg_To_Tx(OD_Index, &FIFO_CanTx, ENABLE_PS,
+        RSDO + PS_NODE_ID,
+                                      OD_WRITE_2BYTES);
+        if (FIFO_CanTx.Estado_PILA != PILA_VACIA)
+        {
+            status = Desencolar_FIFO(&FIFO_CanTx);
+            Transmit_CANOPenMsg(FIFO_CanTx);
+        }
+        stateKeepAlive=1;
+        break;
+
+    case 1:
+
+        if ((StatusCom.StatusFlags.Flags.DataAvailable) &&
+        (PowerSupplyValues.StatusFlags.Flags.AnswerEnablePs))
+        {
+            {
+                //Confirmed reception of ACk for Enable Power Supply command
+                stateKeepAlive=0;
+            }
+        }
+        else if (StatusCom.StatusFlags.Flags.ErrorCom)
+        {
+            //TODO: Set an error flag, stop everything and display it in user interface
+            status=0x00;
+        }
+
+        break;
+
+    default:
+        //TODO: Set an error flag, stop everything and display it in user interface
+       status=0x00;
+        break;
+    }
+
+   return (status);
 }
 /**
  * @brief 
@@ -856,18 +915,22 @@ void Scheduler(void)
             //No timeout in Rx and there are data on FIFO Rx to analyze
             AnalyzeCanMsg();
         }
-        if ((PowerSupplyValues.PowerModuleStatus & 0x02) != 0x02)
-        {
-            //Power Supply OFF. This sentence execute only once.
-            //Check communication with power supply and set known values
-            status = InitPowerSupply();
-        }
+        //if ((PowerSupplyValues.PowerModuleStatus & 0x02) != 0x02)
+        //{
+        //Power Supply OFF. This sentence execute only once.
+        //Check communication with power supply and set known values
+        //status = InitPowerSupply();
+
+        //}
     }
     if (Count50ms == 5)
     {
         Count50ms = 0;
         //Every 50ms
-
+        if (((PowerSupplyValues.PowerModuleStatus) & 0x01) == 0x01)
+        {
+            PsKeepAlive();
+        }
     }
     if (Count100ms == 10)
     {
@@ -882,13 +945,13 @@ void Scheduler(void)
     {
         Count200ms = 0;
         //Every 200ms
-        PsSetVoltageCurrent(0x3E8, 0x0A, true); //Test function
 
     }
     if (Count500ms == 5)
     {
         Count500ms = 0;
         //Every 5000ms
+        PsSetVoltageCurrent(0x3E8, 0x0A, true);
 
     }
     if (Count1s == 10)
