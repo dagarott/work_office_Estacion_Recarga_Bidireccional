@@ -19,6 +19,7 @@
 #include "systick.h"
 
 #include "Config_CAN.h"
+#include "Config_SCI.h"
 #include "Diccionario_CANOpen.h"
 #include "FIFO.h"
 
@@ -37,7 +38,7 @@
 #define V2G500V15A_MIN_VOLTAGE 500  //Model works with resolution of 0.1V/bit. Then 500 = 500/10 = 50V
 #define V2G500V15A_CURRENT 150      //Model works with resolution of 0.1A/bit. then 150/10 = 15A
 #define LENGHT_SECONDS_RAMP 4       //Total number of seconds of ramp up/down process
-#define NUMBER_STEPS_RAMP 8        //Number of steps-iterations to do ramp up/dowm process
+#define MS_STEP_RAMP 500
 
 
 #define CPU01_TO_CPU02_PASSMSG 0x0003FC00 // CPU01 TO CPU02 MSG RAM (256 words)
@@ -87,6 +88,7 @@ typedef struct sFlagsCom
             uint16_t AccessModeWrite : 1;
             uint16_t TransmittedCanMsg : 1;
             uint16_t DataAvailable : 1;
+            uint16_t DataAnalyzed : 1;
             uint16_t ErrorAdcCom : 1;
             uint16_t ErrorPsCom : 1;
             uint16_t ErrorCom : 1;
@@ -136,9 +138,10 @@ typedef struct sPowerSupplyValues
     uint16_t VoltageDeviceValue;  //Values according to model
     uint16_t PowerModuleStatus;   //[0-15]bit status
                                   //Bit /   Description /   Value
-                                  // 0      Charger On  / 0: OFF; 1: ON
-                                  // 1      Communication / 0: NO COM; 1:COM
+                                  // 0      Ps On  / 0: OFF; 1: ON
+                                  // 1      Communication / 0: OK COM; 1: ERROR COM
                                   // 2      Updated Value / 0: NO; 1: YES
+                                  // 3      Initiated Ps  / 0: NO; 1: YES
     uint16_t DCOutputVoltage;     //0x2107 Actual output voltage 0.1V/step
     int16_t DCOutputCurrrent;     //0x2108 Actual output current 0.1A/step
     uint16_t DCOutputVSetpoint;   //0x2109 Set point output voltage 0.1A/step
@@ -161,6 +164,8 @@ typedef struct sPowerSupplyValues
             uint16_t AnswerISet : 1;
             uint16_t AnswerISetError : 1;
             uint16_t AnswerEnablePs : 1;
+            uint16_t AnswerReadVoutput : 1;
+            uint16_t AnswerReadIoutput : 1;           
         } Flags;
     } StatusFlags;
 } PowerSupplyValues_t;
@@ -225,6 +230,10 @@ typedef enum eStationMode
 
 } tStationMode;
 
+/**
+ * @brief Public Functions
+ * 
+ */
 void Init_CANOpenMsgFIFOs(void);
 void Set_MailboxOne(void);
 void Set_MailboxTwo(void);
@@ -235,9 +244,6 @@ uint16_t Set_CANOpenErrorMsg_To_Tx(enum Indice_Diccionario_TPO Idx,
                                    FIFO *ptr_MsgToTx, uint32_t DataToTx,
                                    uint16_t Idx_Node);
 sEstadoFIFO Transmit_CANOPenMsg(FIFO MsgToTx);
-uint16_t InitAdc(void);
-uint16_t InitPowerSupply(void);
-uint16_t PsSetVoltageCurrent(uint16_t VoltageRequest, int16_t CurrentRequest, bool EnablePs);
-uint16_t PsKeepAlive(void);
 void Scheduler(void);
+
 #endif /* COMMODULE_H_ */

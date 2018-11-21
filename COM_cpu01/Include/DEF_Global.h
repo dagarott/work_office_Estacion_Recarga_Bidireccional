@@ -51,12 +51,12 @@ typedef union {
 
 #define Stop P4_3
 #define StatusStop() GPIO_ReadPin(Stop)
-#define PsEnnable P9_9
-#define PsEnable_ON() GPIO_WritePin(PsEnnable, 1)
-#define PsEnable_OFF() GPIO_WritePin(PsEnnable, 0)
+#define PsEnable P9_9
+#define PsEnable_ON() GPIO_WritePin(PsEnable, 1)
+#define PsEnable_OFF() GPIO_WritePin(PsEnable, 0)
 #define EarthTest P9_10
-#define EarthTest_ON() GPIO_WritePin(PsEnnable, 1)
-#define EarthTest_OFF() GPIO_WritePin(PsEnnable, 0)
+#define EarthTest_ON() GPIO_WritePin(EarthTest, 1)
+#define EarthTest_OFF() GPIO_WritePin(EarthTest, 0)
 #define EarthEmergency P4_4
 #define StatusEarthEmergency() GPIO_ReadPin(EarthEmergency)
 

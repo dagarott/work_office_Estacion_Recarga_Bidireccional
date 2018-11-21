@@ -37,7 +37,7 @@ tCANMsgObject sTXCANMessage;
 void main(void)
 {
 
-    uint16_t status = 0;
+    //uint16_t status = 0;
 
     Init_HW(); /* Initialize all the HW*/
     Hablitar_ISR();
@@ -50,7 +50,7 @@ void main(void)
 
     //Power Supply OFF. This sentence execute only once.
     //Check communication with power supply and set known values
-    status = InitPowerSupply();
+
 
     /* USER CODE END */
 

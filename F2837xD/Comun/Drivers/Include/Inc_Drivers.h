@@ -20,6 +20,7 @@
 //#include "Config_ADC.h"
 //#include "MEM.h"
 #include "Config_CAN.h"
+#include "Config_SCI.h"
 #include "FIFO.h"
 
 //

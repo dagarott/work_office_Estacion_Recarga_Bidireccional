@@ -31,6 +31,12 @@ uint16_t Set_CANOpenErrorMsg_To_Tx(enum Indice_Diccionario_TPO Idx,
                                    uint16_t Idx_Node);
 
 void TimeOutRxCanMsg(void);
+uint16_t InitAdc(void);
+uint16_t InitPowerSupply(void);
+uint16_t PsSetVoltageCurrent(uint16_t VoltageRequest, int16_t CurrentRequest);
+uint16_t PsEnableDisable(bool EnablePs);
+uint16_t PsKeepAlive(void);
+uint16_t PsReadOutputVI(void);
 
 /* USER CODE END PFP */
 
@@ -45,8 +51,8 @@ tCANMsgObject sTX_CANOpenMsg;        //Can message objet for tx
 tCANMsgObject sMailboxOneCANOpenMsg; //Can message object for rx
 tCANMsgObject sMailboxTwoCANOpenMsg; //Can message object for rx
 
-unsigned char rxPsMsgData[8] = { 0 };  //Array to store data from CAN object
-unsigned char rxAdcMsgData[8] = { 0 }; //Array to store data from CAN object
+unsigned char rxPsMsgData[8] = {0};  //Array to store data from CAN object
+unsigned char rxAdcMsgData[8] = {0}; //Array to store data from CAN object
 
 volatile uint32_t ulTimeOutCANRx; //Variable used by function TimeOut
 uint16_t Count1ms = 0;            //Variable used by scheduler
@@ -66,11 +72,11 @@ typedef struct sObjectTx
     uint16_t Node_ID; //Id of Node that has sent last Object
 } LastObjectTx_t;
 
-LastObjectTx_t PowerSupply_LastObjectTx = { 0x00, 0x00 };
+LastObjectTx_t PowerSupply_LastObjectTx = {0x00, 0x00};
 
-AdcValues_t AdcValuesSaved = { 0, 0.0, 0, 0.0, 0, 0, 0, 0 };
+AdcValues_t AdcValuesSaved = {0, 0.0, 0, 0.0, 0, 0, 0, 0};
 
-PowerSupplyValues_t PowerSupplyValues = { " ", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+PowerSupplyValues_t PowerSupplyValues = {" ", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 
 uint16_t CurrentProcess = 0; //
 
@@ -79,8 +85,8 @@ uint16_t CurrentProcess = 0; //
 /* USER CODE BEGIN NPV */
 /* Non Private variables ---------------------------------------------------------*/
 enum Indice_Diccionario_TPO OD_Index = FIN_Diccionario;
-FlagsCom_t StatusCom = { 0x00 };
-FlagsError_t StatusErrors = { 0x00 };
+FlagsCom_t StatusCom = {0x00};
+FlagsError_t StatusErrors = {0x00};
 /* USER CODE END NPV */
 
 /*-----------------------------------BEGIN MISCELANIOUS FUNCTIONS--------------------------------------*/
@@ -149,23 +155,23 @@ uint16_t Set_CANOpenMsg_To_Tx(enum Indice_Diccionario_TPO Idx,
         *(ptrMsg++) = AccesMode; //Command Byte (CD) Read/write operation
     }
 
-    *(ptrMsg++) = (uint16_t) ((Diccionario_CanOpen[Idx].ID) & 0x00FF); //Object Dictionary Index
-    *(ptrMsg++) = (uint16_t) ((Diccionario_CanOpen[Idx].ID) >> 8); //Stored as little endian
-    *(ptrMsg++) = ((Diccionario_CanOpen[Idx].SubIndice));      //Stored SubIndex
+    *(ptrMsg++) = (uint16_t)((Diccionario_CanOpen[Idx].ID) & 0x00FF); //Object Dictionary Index
+    *(ptrMsg++) = (uint16_t)((Diccionario_CanOpen[Idx].ID) >> 8);     //Stored as little endian
+    *(ptrMsg++) = ((Diccionario_CanOpen[Idx].SubIndice));             //Stored SubIndex
 
     tmp = DataToTx;
-    *(ptrMsg++) = (uint16_t) (tmp & 0x00FF); // Data are saves as little endian
+    *(ptrMsg++) = (uint16_t)(tmp & 0x00FF); // Data are saves as little endian
     tmp = tmp >> 8;
-    *(ptrMsg++) = (uint16_t) (tmp & 0x00FF); // Data are saves little endian
+    *(ptrMsg++) = (uint16_t)(tmp & 0x00FF); // Data are saves little endian
     tmp = tmp >> 8;
-    *(ptrMsg++) = (uint16_t) (tmp & 0x00FF); // Data are saves little endian
+    *(ptrMsg++) = (uint16_t)(tmp & 0x00FF); // Data are saves little endian
     tmp = tmp >> 8;
-    *(ptrMsg++) = (uint16_t) (tmp & 0x00FF); // Data are savesas little endian
+    *(ptrMsg++) = (uint16_t)(tmp & 0x00FF); // Data are savesas little endian
 
     ptrMsg = CANMsg; //Restart pointer to first position of buffer
-    memcpy((void *) (ptr_MsgToTx->New_Datos), (void *) (ptrMsg),
-    MSG_DATA_LENGTH + 1); //Message in correct format
-                          //stored in one item of FIFO struct
+    memcpy((void *)(ptr_MsgToTx->New_Datos), (void *)(ptrMsg),
+           MSG_DATA_LENGTH + 1); //Message in correct format
+                                 //stored in one item of FIFO struct
 
     status = Encolar_FIFO(ptr_MsgToTx);
 
@@ -203,25 +209,25 @@ uint16_t Set_CANOpenErrorMsg_To_Tx(enum Indice_Diccionario_TPO Idx,
         return (0x00);  //NULL pointer. Error
 
     *(ptrMsg++) = Idx_Node;
-    *(ptrMsg++) = OD_ERROR;                   //Command Byte (CD), OR_ERROR=0x80
-    *(ptrMsg++) = (uint16_t) ((Diccionario_CanOpen[Idx].ID) & 0x00FF); //Object Dictionary Index stored as
-    *(ptrMsg++) = (uint16_t) ((Diccionario_CanOpen[Idx].ID) >> 8); //little endian
-    *(ptrMsg++) = ((Diccionario_CanOpen[Idx].SubIndice));      //Stored SubIndex
+    *(ptrMsg++) = OD_ERROR;                                           //Command Byte (CD), OR_ERROR=0x80
+    *(ptrMsg++) = (uint16_t)((Diccionario_CanOpen[Idx].ID) & 0x00FF); //Object Dictionary Index stored as
+    *(ptrMsg++) = (uint16_t)((Diccionario_CanOpen[Idx].ID) >> 8);     //little endian
+    *(ptrMsg++) = ((Diccionario_CanOpen[Idx].SubIndice));             //Stored SubIndex
 
     // Data are saves as little endian
     tmp = DataToTx;
-    *(ptrMsg++) = (uint16_t) (tmp & 0x00FF);
+    *(ptrMsg++) = (uint16_t)(tmp & 0x00FF);
     tmp = tmp >> 8;
-    *(ptrMsg++) = (uint16_t) (tmp & 0x00FF);
+    *(ptrMsg++) = (uint16_t)(tmp & 0x00FF);
     tmp = tmp >> 8;
-    *(ptrMsg++) = (uint16_t) (tmp & 0x00FF);
+    *(ptrMsg++) = (uint16_t)(tmp & 0x00FF);
     tmp = tmp >> 8;
-    *(ptrMsg++) = (uint16_t) (tmp & 0x00FF);
+    *(ptrMsg++) = (uint16_t)(tmp & 0x00FF);
 
     ptrMsg = CANMsg; //Restart pointer to first position of buffer
-    memcpy((void *) (ptr_MsgToTx->New_Datos), (void *) (ptrMsg),
-    MSG_DATA_LENGTH + 1); //Message in correct format
-                          //stored in one item of FIFO struct
+    memcpy((void *)(ptr_MsgToTx->New_Datos), (void *)(ptrMsg),
+           MSG_DATA_LENGTH + 1); //Message in correct format
+                                 //stored in one item of FIFO struct
 
     status = Encolar_FIFO(ptr_MsgToTx);
 
@@ -270,7 +276,7 @@ sEstadoFIFO Transmit_CANOPenMsg(FIFO MsgToTx)
     sTX_CANOpenMsg.ui32Flags = 0;
     sTX_CANOpenMsg.ui32MsgLen = MSG_DATA_LENGTH;
     memcpy(sTX_CANOpenMsg.pucMsgData, MsgToTx.Datos_Recibidos + 1,
-    MSG_DATA_LENGTH);
+           MSG_DATA_LENGTH);
     //TODO: Add condition to check that, "Not send a new CAN frame
     //if no exit a previously succes tx"
     CANMessageSet(CANA_BASE, 1, &sTX_CANOpenMsg, MSG_OBJ_TYPE_TX);
@@ -278,8 +284,8 @@ sEstadoFIFO Transmit_CANOPenMsg(FIFO MsgToTx)
     {
         //CanaRegs.CAN_ES.bit.TxOk
     }; //Wait until CAN tx finish
-       //DELAY_US(6000);
-       //Start CAN tx timeOut exception
+        //DELAY_US(6000);
+        //Start CAN tx timeOut exception
     StatusCom.StatusFlags.Flags.TransmittedCanMsg = 1;
     //TODO: Check if we shall put a delay() instead of while (...)
 
@@ -297,8 +303,7 @@ void Set_MailboxOne(void)
 
     sMailboxOneCANOpenMsg.ui32MsgID = TSDO + PS_NODE_ID;
     sMailboxOneCANOpenMsg.ui32MsgIDMask = 0x1FFFFFFF;
-    sMailboxOneCANOpenMsg.ui32Flags = MSG_OBJ_RX_INT_ENABLE
-            | MSG_OBJ_USE_ID_FILTER;
+    sMailboxOneCANOpenMsg.ui32Flags = MSG_OBJ_RX_INT_ENABLE | MSG_OBJ_USE_ID_FILTER;
     sMailboxOneCANOpenMsg.ui32MsgLen = MSG_DATA_LENGTH;
     sMailboxOneCANOpenMsg.pucMsgData = rxPsMsgData;
     CANMessageSet(CANA_BASE, MAILBOX_ONE, &sMailboxOneCANOpenMsg,
@@ -313,8 +318,7 @@ void Set_MailboxTwo(void)
 
     sMailboxTwoCANOpenMsg.ui32MsgID = RSDO + COM_NODE_ID;
     sMailboxTwoCANOpenMsg.ui32MsgIDMask = 0x1FFFFFFF;
-    sMailboxTwoCANOpenMsg.ui32Flags = MSG_OBJ_RX_INT_ENABLE
-            | MSG_OBJ_USE_ID_FILTER;
+    sMailboxTwoCANOpenMsg.ui32Flags = MSG_OBJ_RX_INT_ENABLE | MSG_OBJ_USE_ID_FILTER;
     sMailboxTwoCANOpenMsg.ui32MsgLen = MSG_DATA_LENGTH;
     sMailboxTwoCANOpenMsg.pucMsgData = rxAdcMsgData;
     CANMessageSet(CANA_BASE, MAILBOX_TWO, &sMailboxTwoCANOpenMsg,
@@ -336,7 +340,7 @@ uint16_t InitAdc(void)
     case 0:
         OD_Index = Config_ADC; //CAN command array Index. Commands present in Diccionario_CANOpen.c file
         status = Set_CANOpenMsg_To_Tx(OD_Index, &FIFO_CanTx, ENABLE_ADC,
-        RSDO + ADC_NODE_ID,
+                                      RSDO + ADC_NODE_ID,
                                       0);
         if (FIFO_CanTx.Estado_PILA != PILA_VACIA)
         {
@@ -409,7 +413,7 @@ uint16_t InitPowerSupply(void)
         PsEnable_ON();
         OD_Index = Nombre_dispositivo;
         status = Set_CANOpenMsg_To_Tx(OD_Index, &FIFO_CanTx, 0,
-        RSDO + PS_NODE_ID,
+                                      RSDO + PS_NODE_ID,
                                       OD_READ_2BYTES);
         if (FIFO_CanTx.Estado_PILA != PILA_VACIA)
         {
@@ -421,45 +425,48 @@ uint16_t InitPowerSupply(void)
 
     case 1: //Check if we have a TimeOut reception from PS, if so,
         //set an error
-        if (StatusCom.StatusFlags.Flags.DataAvailable)
+        if (StatusCom.StatusFlags.Flags.DataAnalyzed)
         {
-            StatusCom.StatusFlags.Flags.DataAvailable = false;
-            stateInitPs = 2;
+            if ((StatusErrors.StatusFlags.Flags.AccessCmdError == false) &&
+                (StatusErrors.StatusFlags.Flags.SubIndexError == false) &&
+                (StatusErrors.StatusFlags.Flags.ObjectIndexError == false))
+            {
+
+                if ((OD_Index == Nombre_dispositivo) && (PowerSupplyValues.StatusFlags.Flags.AnswerDeviceName))
+                {
+                    //Correct CAN message received
+                    PowerSupplyValues.StatusFlags.Flags.AnswerDeviceName = false;
+                    stateInitPs = 2;
+                }
+                else if ((OD_Index == Udc_Out_Setpoint) && (PowerSupplyValues.StatusFlags.Flags.AnswerVSet))
+                {
+                    PowerSupplyValues.StatusFlags.Flags.AnswerVSet = false;
+                    stateInitPs = 3;
+                }
+                else if ((OD_Index == Idc_Out_Setpoint) && (PowerSupplyValues.StatusFlags.Flags.AnswerISet))
+                {
+                    PowerSupplyValues.StatusFlags.Flags.AnswerISet = false;
+                    stateInitPs = 4;
+                }
+            }
+            else
+            {
+                //TODO: Set an error flag, stop everything and display it in user interface
+                status = 0x00;
+            }
         }
         else if (StatusCom.StatusFlags.Flags.ErrorCom)
         {
             //TODO: Set an error flag, stop everything and display it in user interface
+            stateInitPs = 6;
             status = 0x00;
         }
         break;
 
-    case 2: //No TimeOut reception from PS, then analyze CAN message received
-        //AnalyzeCanMsg();
-        if ((OD_Index == Nombre_dispositivo)
-                && (PowerSupplyValues.StatusFlags.Flags.AnswerDeviceName))
-        {
-            //Correct CAN message received
-            PowerSupplyValues.StatusFlags.Flags.AnswerDeviceName = false;
-            stateInitPs = 3;
-        }
-        else if ((OD_Index == Udc_Out_Setpoint)
-                && (PowerSupplyValues.StatusFlags.Flags.AnswerVSet))
-        {
-            PowerSupplyValues.StatusFlags.Flags.AnswerVSet = false;
-            stateInitPs = 4;
-        }
-        else if ((OD_Index == Idc_Out_Setpoint)
-                && (PowerSupplyValues.StatusFlags.Flags.AnswerISet))
-        {
-            PowerSupplyValues.StatusFlags.Flags.AnswerISet = false;
-            stateInitPs = 5;
-        }
-        break;
-
-    case 3: //Next set V to zero values, just in case
+    case 2: //Next set V to zero values, just in case
         OD_Index = Udc_Out_Setpoint;
         status = Set_CANOpenMsg_To_Tx(OD_Index, &FIFO_CanTx, 0x00,
-        RSDO + PS_NODE_ID,
+                                      RSDO + PS_NODE_ID,
                                       OD_WRITE_2BYTES);
         if (FIFO_CanTx.Estado_PILA != PILA_VACIA)
         {
@@ -469,10 +476,10 @@ uint16_t InitPowerSupply(void)
         stateInitPs = 1;
         break;
 
-    case 4: //Next set I to zero values, just in case
+    case 3: //Next set I to zero values, just in case
         OD_Index = Idc_Out_Setpoint;
         status = Set_CANOpenMsg_To_Tx(OD_Index, &FIFO_CanTx, 0x00,
-        RSDO + PS_NODE_ID,
+                                      RSDO + PS_NODE_ID,
                                       OD_WRITE_2BYTES);
         if (FIFO_CanTx.Estado_PILA != PILA_VACIA)
         {
@@ -482,12 +489,22 @@ uint16_t InitPowerSupply(void)
         stateInitPs = 1;
         break;
 
-    case 5:
+    case 4:
+        //All done. save actual values and set bit "Initiated Ps" to inform
+        //the system that Power supply is set with knows values Voltage=0/Current=0
         PowerSupplyValues.ActualCurrentValue = 0x00;
         PowerSupplyValues.ActualVoltageValue = 0x00;
-        PowerSupplyValues.PowerModuleStatus |= 0x02; //Communication / 0: NO COM; 1: COM
+        PowerSupplyValues.PowerModuleStatus |= 0x04; //Bit /   Description /   Value
+                                                     // 0      Ps On  / 0: OFF; 1: ON
+                                                     // 1      Communication / 0: OK COM; 1: ERROR COM
+                                                     // 2      Updated Value / 0: NO; 1: YES
+                                                     // 3      Initiated Ps  / 0: NO; 1: YES
         stateInitPs = 0;
         status = 0X01;
+        break;
+
+    case 5: //TODO: State asigned for trigger "Error Machine"
+
         break;
 
     default:
@@ -504,8 +521,7 @@ uint16_t InitPowerSupply(void)
  * @param VoltageRequest 
  * @return uint16_t 
  */
-uint16_t PsSetVoltageCurrent(uint16_t VoltageRequest, int16_t CurrentRequest,
-bool EnablePs)
+uint16_t PsSetVoltageCurrent(uint16_t VoltageRequest, int16_t CurrentRequest)
 {
     static uint16_t stateSetPsVI = 0;
     uint16_t status = 0x01; //By default all ok
@@ -513,458 +529,472 @@ bool EnablePs)
     static int16_t tmpCurrentValue = 0;
     static uint16_t CounterVoltageIterations = 11;
     static uint16_t CounterCurrentIterations = 11;
+    static uint16_t NUMBER_STEPS_RAMP=((LENGHT_SECONDS_RAMP / MS_STEP_RAMP)*1000);  //Number of steps-iterations to do ramp up/dowm process
     static float SlopeVoltage = 0.0;
     static float SlopeCurrent = 0.0;
-    static float Ms_Step_Ramp = (LENGHT_SECONDS_RAMP / NUMBER_STEPS_RAMP); //500 ms/step=LENGHT_SECONDS_RAMP / NUMBER_STEPS_RAMP
     enum OD_Index;
 
-    switch (stateSetPsVI)
+    if ((PowerSupplyValues.PowerModuleStatus &= 0x01) == 0x01) //Check if Power Supply is ON
     {
-    case 0: //Send a Device Name CAN message to test communication with PS
-        //this CAN message is also used as keep alive frame
-        if (EnablePs == false)
+
+        switch (stateSetPsVI)
         {
-            PsEnable_OFF();
-            PowerSupplyValues.PowerModuleStatus &= 0xFE; //Disable bit Chager ON
-            stateSetPsVI = 0;
+        case 0: //Send a Device Name CAN message to test communication with PS
+
+            OD_Index = Nombre_dispositivo;
+            status = Set_CANOpenMsg_To_Tx(OD_Index, &FIFO_CanTx, 0,
+                                          RSDO + PS_NODE_ID,
+                                          OD_READ_2BYTES);
+            if (FIFO_CanTx.Estado_PILA != PILA_VACIA)
+            {
+                status = Desencolar_FIFO(&FIFO_CanTx);
+                Transmit_CANOPenMsg(FIFO_CanTx);
+            }
+            stateSetPsVI = 1;
             break;
-        }
-        else if (EnablePs == true)
-        {
-            PsEnable_ON();
 
-        }
-
-        //Check communication with Power
-        OD_Index = Nombre_dispositivo;
-        status = Set_CANOpenMsg_To_Tx(OD_Index, &FIFO_CanTx, 0,
-        RSDO + PS_NODE_ID,
-                                      OD_READ_2BYTES);
-        if (FIFO_CanTx.Estado_PILA != PILA_VACIA)
-        {
-            status = Desencolar_FIFO(&FIFO_CanTx);
-            Transmit_CANOPenMsg(FIFO_CanTx);
-        }
-        stateSetPsVI = 1;
-        break;
-
-    case 1: //Check if we have a TimeOut reception from PS, if so,
-        //set an error
-        if (StatusCom.StatusFlags.Flags.DataAvailable)
-        {
-            //stateSetPsVI = 2;
-            if ((OD_Index == Nombre_dispositivo)
-                    && (PowerSupplyValues.StatusFlags.Flags.AnswerDeviceName))
+        case 1: //Check if we have a TimeOut reception from PS. Check if data received
+            //has been analyzed
+            if (StatusCom.StatusFlags.Flags.DataAnalyzed)
             {
-                //Correct CAN message received
-                PowerSupplyValues.StatusFlags.Flags.AnswerDeviceName = false;
-                stateSetPsVI = 3;
-            }
-            else if ((OD_Index == Udc_Out_Setpoint)
-                    && (PowerSupplyValues.StatusFlags.Flags.AnswerVSet))
-            {
-                //PowerSupplyValues.StatusFlags.Flags.AnswerVSet = false;
-                stateSetPsVI = 6; //Go to Send Enable command
-            }
-            else if ((OD_Index == Idc_Out_Setpoint)
-                    && (PowerSupplyValues.StatusFlags.Flags.AnswerISet))
-            {
-                //PowerSupplyValues.StatusFlags.Flags.AnswerISet = false;
-                stateSetPsVI = 6; //Go to Send Enable command
-            }
-            else if (((OD_Index == Module_Enable)
-                    && (PowerSupplyValues.StatusFlags.Flags.AnswerEnablePs)))
-            {
-                //Confirmed reception of ACk for Enable Power Supply command
-                if (PowerSupplyValues.StatusFlags.Flags.AnswerVSet == true)
+                if ((StatusErrors.StatusFlags.Flags.AccessCmdError == false) &&
+                    (StatusErrors.StatusFlags.Flags.SubIndexError == false) &&
+                    (StatusErrors.StatusFlags.Flags.ObjectIndexError == false))
                 {
-                    //Go to Set Voltage
-                    PowerSupplyValues.StatusFlags.Flags.AnswerVSet = false;
-                    stateSetPsVI = 4;
+
+                    if ((OD_Index == Nombre_dispositivo) && (PowerSupplyValues.StatusFlags.Flags.AnswerDeviceName))
+                    {
+                        //Correct CAN message received
+                        PowerSupplyValues.StatusFlags.Flags.AnswerDeviceName = false;
+                        stateSetPsVI = 2;
+                    }
+                    else if ((OD_Index == Udc_Out_Setpoint) && (PowerSupplyValues.StatusFlags.Flags.AnswerVSet))
+                    {
+                        PowerSupplyValues.StatusFlags.Flags.AnswerVSet = false;
+                        stateSetPsVI = 3;
+                    }
+                    else if ((OD_Index == Idc_Out_Setpoint) && (PowerSupplyValues.StatusFlags.Flags.AnswerISet))
+                    {
+                        PowerSupplyValues.StatusFlags.Flags.AnswerISet = false;
+                        stateSetPsVI = 4;
+                    }
                 }
-                else if (PowerSupplyValues.StatusFlags.Flags.AnswerISet)
+                else
                 {
-                    //Go to Set Current
-                    PowerSupplyValues.StatusFlags.Flags.AnswerISet = false;
-                    stateSetPsVI = 5;
+                    //TODO: Set an error flag, stop everything and display it in user interface
+                    status = 0x00;
                 }
-
             }
-        }
-        else if (StatusCom.StatusFlags.Flags.ErrorCom)
-        {
-            //TODO: Set an error flag, stop everything and display it in user interface
-            status=0x00;
-        }
-        break;
-
-    case 2: //No TimeOut reception from PS, then analyze CAN message received
-        //AnalyzeCanMsg();
-        if ((OD_Index == Nombre_dispositivo)
-                && (PowerSupplyValues.StatusFlags.Flags.AnswerDeviceName))
-        {
-            //Correct CAN message received
-            PowerSupplyValues.StatusFlags.Flags.AnswerDeviceName = false;
-            stateSetPsVI = 3;
-        }
-        else if ((OD_Index == Udc_Out_Setpoint)
-                && (PowerSupplyValues.StatusFlags.Flags.AnswerVSet))
-        {
-            //PowerSupplyValues.StatusFlags.Flags.AnswerVSet = false;
-            stateSetPsVI = 4; //Go to Send Enable command
-        }
-        else if ((OD_Index == Idc_Out_Setpoint)
-                && (PowerSupplyValues.StatusFlags.Flags.AnswerISet))
-        {
-            //PowerSupplyValues.StatusFlags.Flags.AnswerISet = false;
-            stateSetPsVI = 5; //Go to Send Enable command
-        }
-        /*else if (((OD_Index == Module_Enable)
-                && (PowerSupplyValues.StatusFlags.Flags.AnswerEnablePs)))
-        {
-            //Confirmed reception of ACk for Enable Power Supply command
-            if (PowerSupplyValues.StatusFlags.Flags.AnswerVSet == true)
+            else if (StatusCom.StatusFlags.Flags.ErrorCom)
             {
-                //Go to Set Voltage
-                PowerSupplyValues.StatusFlags.Flags.AnswerVSet = false;
-                stateSetPsVI = 4;
+                //TODO: Set an error flag, stop everything and display it in user interface
+                stateSetPsVI = 6;
+                status = 0x00;
             }
-            else if (PowerSupplyValues.StatusFlags.Flags.AnswerISet)
-            {
-                //Go to Set Current
-                PowerSupplyValues.StatusFlags.Flags.AnswerISet = false;
-                stateSetPsVI = 5;
-            }
+            break;
 
-        }*/
+        case 2: //Analize desired current/voltage values. If they are different from previous
+            //current/voltage values, then calculate necessary values to ramp up/down
+            //and go to next state. If not, go to first state and send keep alive frame every 500ms
 
-        break;
-
-    case 3: //Analize desired current/voltage values. If they are different from previous
-        //current/voltage values, then calculate necessary values to ramp up/down
-        //and go to next state. If not, go to first state and send keep alive frame every 500ms
-
-        /* if (VoltageRequest < 0) //Not possible. but just in case
+            /* if (VoltageRequest < 0) //Not possible. but just in case
          {
          //TODO: Set an error flag, stop everything and display it in user interface
          status=0x00;
          break;
          }*/
-        if (VoltageRequest != PowerSupplyValues.ActualVoltageValue)
-        {
-            if (VoltageRequest > V2G500V15A_MAX_VOLTAGE)
+            if (VoltageRequest != PowerSupplyValues.ActualVoltageValue)
             {
-                //Maximum value allowed
-                VoltageRequest = V2G500V15A_MAX_VOLTAGE;
-            }
-            //Linear Interpolation. We calculate slope as:
-            //Slope = ((Requested Value - Actual Values) / Seconds to ramp up/down)
-            //Function, PsSetVoltageCurrent() is triggered every 200ms using our scheduler,
-            //then after all iterations has been executed, ramp up or down process will have
-            //lasted four seconds. Total number of steps-iteration = 10, each
-            //step-iteration take 200ms.
-            SlopeVoltage = (VoltageRequest
-                    - PowerSupplyValues.ActualVoltageValue) /
-            LENGHT_SECONDS_RAMP; // slope V/s
-            CounterVoltageIterations = 0;
-            stateSetPsVI = 4;
-        }
-
-        if (CurrentRequest != PowerSupplyValues.ActualCurrentValue)
-        {
-            if ((CurrentRequest & 0x80000000) == 0x80000000)
-            {
-                //Negative current
-                if (CurrentRequest < -(V2G500V15A_CURRENT))
+                if (VoltageRequest > V2G500V15A_MAX_VOLTAGE)
                 {
                     //Maximum value allowed
-                    CurrentRequest = -(V2G500V15A_CURRENT);
+                    VoltageRequest = V2G500V15A_MAX_VOLTAGE;
                 }
+                //Linear Interpolation. We calculate slope as:
+                //Slope = ((Requested Value - Actual Values) / Seconds to ramp up/down)
+                //Function, PsSetVoltageCurrent(), is triggered every 500ms using our scheduler.
+                //After all iterations has been executed, ramp up or down process must have
+                //lasted 4 seconds. Total number of steps-iteration = 8, each
+                //step-iteration takes 500ms.
+                SlopeVoltage = (VoltageRequest - PowerSupplyValues.ActualVoltageValue) /
+                               LENGHT_SECONDS_RAMP; // slope V/s
+                CounterVoltageIterations = 0;
             }
-            else
-            {
-                //Positive current
-                if (CurrentRequest > V2G500V15A_CURRENT)
-                {
-                    //Maximum value allowed
-                    CurrentRequest = V2G500V15A_CURRENT;
-                }
-            }
-            //Linear Interpolation. We calculate slope as:
-            //Slope = ((Requested Value - Actual Values) / Total step-iteration)
-            //Total steps-iteration = 108, each step-iteration take 200ms.
-            //Function, PsSetVoltageCurrent() is triggered every 200ms using our scheduler,
-            //then after all iterations has been executed, ramp up or down process will have
-            //lasted four seconds
-            SlopeCurrent = (CurrentRequest
-                    - PowerSupplyValues.ActualCurrentValue) /
-            LENGHT_SECONDS_RAMP; // slope I/s
-            CounterCurrentIterations = 0;
-            stateSetPsVI = 5;
-        }
-        else if ((VoltageRequest == PowerSupplyValues.ActualVoltageValue)
-                && (CurrentRequest == PowerSupplyValues.ActualCurrentValue))
-        {
-            //No changes on V/I to be done, then go to case 6
-            stateSetPsVI = 6;
-        }
-        break;
 
-    case 4: //Send new values of voltage
-        if (CounterVoltageIterations < 7)
+            if (CurrentRequest != PowerSupplyValues.ActualCurrentValue)
+            {
+                if ((CurrentRequest & 0x80000000) == 0x80000000)
+                {
+                    //Negative current
+                    if (CurrentRequest < -(V2G500V15A_CURRENT))
+                    {
+                        //Maximum value allowed
+                        CurrentRequest = -(V2G500V15A_CURRENT);
+                    }
+                }
+                else
+                {
+                    //Positive current
+                    if (CurrentRequest > V2G500V15A_CURRENT)
+                    {
+                        //Maximum value allowed
+                        CurrentRequest = V2G500V15A_CURRENT;
+                    }
+                }
+                //Linear Interpolation. We calculate slope as:
+                //Slope = ((Requested Value - Actual Values) / Total step-iteration)
+                //Total steps-iteration = 108, each step-iteration take 200ms.
+                //Function, PsSetVoltageCurrent() is triggered every 200ms using our scheduler,
+                //then after all iterations has been executed, ramp up or down process will have
+                //lasted four seconds
+                SlopeCurrent = (CurrentRequest - PowerSupplyValues.ActualCurrentValue) /
+                               LENGHT_SECONDS_RAMP; // slope I/s
+                CounterCurrentIterations = 0;
+            }
+            else if ((VoltageRequest == PowerSupplyValues.ActualVoltageValue) && (CurrentRequest == PowerSupplyValues.ActualCurrentValue))
+            {
+                //No changes on V/I to be done, then go to case 6
+                stateSetPsVI = 5;
+            }
+            break;
+
+        case 3: //Send new values of voltage
+            if (CounterVoltageIterations < (NUMBER_STEPS_RAMP - 1))
+            {
+                //Start increment voltage. First 7 iterations
+                tmpVoltageValue =
+                    (PowerSupplyValues.ActualVoltageValue + ((CounterVoltageIterations * MS_STEP_RAMP) * SlopeVoltage));
+                OD_Index = Udc_Out_Setpoint;
+                status = Set_CANOpenMsg_To_Tx(OD_Index, &FIFO_CanTx,
+                                              tmpVoltageValue,
+                                              RSDO + PS_NODE_ID,
+                                              OD_WRITE_2BYTES);
+                if (FIFO_CanTx.Estado_PILA != PILA_VACIA)
+                {
+                    status = Desencolar_FIFO(&FIFO_CanTx);
+                    Transmit_CANOPenMsg(FIFO_CanTx);
+                    stateSetPsVI = 1; //We go to state one, where we check if an Ack for this command
+                    //it has been sent by the Power Supply
+                }
+                CounterVoltageIterations++;
+            }
+            else if (CounterVoltageIterations == (NUMBER_STEPS_RAMP - 1))
+            {
+                //Last iteration, we set the final values as value requested by system
+                OD_Index = Udc_Out_Setpoint;
+                status = Set_CANOpenMsg_To_Tx(OD_Index, &FIFO_CanTx, VoltageRequest,
+                                              RSDO + PS_NODE_ID,
+                                              OD_WRITE_2BYTES);
+                if (FIFO_CanTx.Estado_PILA != PILA_VACIA)
+                {
+                    status = Desencolar_FIFO(&FIFO_CanTx);
+                    Transmit_CANOPenMsg(FIFO_CanTx);
+                    stateSetPsVI = 1; //We go to state one, where we check if an Ack for this command
+                    //it has been sent by the Power Supply
+                }
+                CounterVoltageIterations++;
+            }
+            else if (CounterVoltageIterations == NUMBER_STEPS_RAMP)
+            {
+                //At the end of the ramp up/down voltage state, reset step-iterations counter
+                //and go to ramp up/dowm current state
+                CounterVoltageIterations = (NUMBER_STEPS_RAMP + 1);
+                stateSetPsVI = 4;
+            }
+        case 4: //Send new values of current
+
+            if (CounterCurrentIterations < (NUMBER_STEPS_RAMP - 1))
+            {
+                tmpCurrentValue =
+                    (PowerSupplyValues.ActualCurrentValue + ((CounterCurrentIterations * MS_STEP_RAMP) * SlopeCurrent));
+                OD_Index = Idc_Out_Setpoint;
+                status = Set_CANOpenMsg_To_Tx(OD_Index, &FIFO_CanTx,
+                                              tmpCurrentValue,
+                                              RSDO + PS_NODE_ID,
+                                              OD_WRITE_2BYTES);
+                if (FIFO_CanTx.Estado_PILA != PILA_VACIA)
+                {
+                    status = Desencolar_FIFO(&FIFO_CanTx);
+                    Transmit_CANOPenMsg(FIFO_CanTx);
+                    stateSetPsVI = 1;
+                }
+                CounterCurrentIterations++;
+            }
+            else if (CounterCurrentIterations == (NUMBER_STEPS_RAMP - 1))
+            {
+                //Last iteration, we set the final values as value requested by system
+                OD_Index = Idc_Out_Setpoint;
+                status = Set_CANOpenMsg_To_Tx(OD_Index, &FIFO_CanTx, CurrentRequest,
+                                              RSDO + PS_NODE_ID,
+                                              OD_WRITE_2BYTES);
+                if (FIFO_CanTx.Estado_PILA != PILA_VACIA)
+                {
+                    status = Desencolar_FIFO(&FIFO_CanTx);
+                    Transmit_CANOPenMsg(FIFO_CanTx);
+                    stateSetPsVI = 1;
+                }
+                CounterCurrentIterations++;
+            }
+            else if (CounterCurrentIterations == NUMBER_STEPS_RAMP)
+            {
+                //Completed ramp up/down for current, we reset step-iteration counter
+                //and we go to last state to save final values, and set flag Power Enable
+                //to true
+                CounterCurrentIterations = (NUMBER_STEPS_RAMP + 1);
+                stateSetPsVI = 5;
+            }
+            break;
+
+        case 5: //Save current values of voltage/current
+
+            PowerSupplyValues.ActualCurrentValue = CurrentRequest;
+            PowerSupplyValues.ActualVoltageValue = VoltageRequest;
+            PowerSupplyValues.PowerModuleStatus |= 0x05; //Bit Updated values and bit Power Supply On Set to one
+            stateSetPsVI = 0;
+            status = 0X01;
+            break;
+
+        case 6: //TODO: State asigned for trigger "Error Machine"
+
+            break;
+
+        default:
+            //TODO: Set an error flag, stop everything and display it in user interface
+            status = 0x00;
+            break;
+        }
+    }
+    return (status);
+}
+/**
+ * @brief  To have Power Supply in ON state it is necessary to send CANbus data with 
+ *         an interval of at least <1000ms. We send an enable command as CAN message.
+ * 
+ * @return uint16_t 
+ */
+uint16_t PsKeepAlive(void)
+{
+    uint16_t status = 0x01; //By default all ok
+    static uint_fast16_t stateKeepAlive = 0;
+
+    if ((PowerSupplyValues.PowerModuleStatus &= 0x01) == 0x01) //Check if Power Supply is ON
+    {
+        switch (stateKeepAlive)
         {
-            //Start increment voltage. First 7 iterations
-            tmpVoltageValue +=
-                    (PowerSupplyValues.ActualVoltageValue
-                            + ((CounterVoltageIterations * Ms_Step_Ramp)
-                                    * SlopeVoltage));
-            OD_Index = Udc_Out_Setpoint;
-            status = Set_CANOpenMsg_To_Tx(OD_Index, &FIFO_CanTx,
-                                          tmpVoltageValue,
+        case 0:
+
+            OD_Index = Module_Enable;
+            status = Set_CANOpenMsg_To_Tx(OD_Index, &FIFO_CanTx, ENABLE_PS,
                                           RSDO + PS_NODE_ID,
                                           OD_WRITE_2BYTES);
             if (FIFO_CanTx.Estado_PILA != PILA_VACIA)
             {
                 status = Desencolar_FIFO(&FIFO_CanTx);
                 Transmit_CANOPenMsg(FIFO_CanTx);
-                stateSetPsVI = 1; //We go to state one, where we check if an Ack for this command
-                //it has been sent by the Power Supply
             }
-            CounterVoltageIterations++;
+            stateKeepAlive = 1;
+            break;
 
-        }
-        else if (CounterVoltageIterations == 7)
-        {
-            //Last iteration, we set the final values as value requested by system
-            OD_Index = Udc_Out_Setpoint;
-            status = Set_CANOpenMsg_To_Tx(OD_Index, &FIFO_CanTx, VoltageRequest,
-            RSDO + PS_NODE_ID,
-                                          OD_WRITE_2BYTES);
-            if (FIFO_CanTx.Estado_PILA != PILA_VACIA)
+        case 1:
+
+            if ((StatusCom.StatusFlags.Flags.DataAnalyzed) && (PowerSupplyValues.StatusFlags.Flags.AnswerEnablePs))
             {
-                status = Desencolar_FIFO(&FIFO_CanTx);
-                Transmit_CANOPenMsg(FIFO_CanTx);
-                stateSetPsVI = 1; //We go to state one, where we check if an Ack for this command
-                //it has been sent by the Power Supply
+
+                //Confirmed reception of ACk for Enable Power Supply command
+                stateKeepAlive = 0;
             }
-            CounterVoltageIterations++;
+            else if (StatusCom.StatusFlags.Flags.ErrorCom)
+            {
+                //TODO: Set an error flag, stop everything and display it in user interface
+                //TODO: State asigned for trigger "Error Machine"
+                status = 0x00;
+                stateKeepAlive = 2;
+            }
 
+            break;
+
+        case 2: //TODO: State asigned for trigger "Error Machine"
+
+            break;
+
+        default:
+            //TODO: Set an error flag, stop everything and display it in user interface
+            //TODO: State asigned for trigger "Error Machine"
+            status = 0x00;
+            break;
         }
-        else if (CounterVoltageIterations == 8)
-        {
-            //At the end of the ramp up/down voltage state, reset step-iterations counter
-            //and go to ramp up/dowm current state
-            //CounterVoltageIterations = 11;
-            stateSetPsVI = 5;
-        }
-        break;
+    }
+    return (status);
+}
+uint16_t PsReadOutputVI(void)
+{
+    uint16_t status = 0x01; //By default all ok
+    static uint_fast16_t stateReadOutput = 0;
 
-    case 5: //Send new values of current
-
-        if (CounterCurrentIterations < 7)
+    if ((PowerSupplyValues.PowerModuleStatus &= 0x01) == 0x01) //Check if Power Supply is ON
+    {
+        switch (stateReadOutput)
         {
-            tmpCurrentValue +=
-                    (PowerSupplyValues.ActualCurrentValue
-                            + ((CounterCurrentIterations * Ms_Step_Ramp)
-                                    * SlopeCurrent));
-            OD_Index = Idc_Out_Setpoint;
-            status = Set_CANOpenMsg_To_Tx(OD_Index, &FIFO_CanTx,
-                                          tmpCurrentValue,
+        case 0:
+
+            OD_Index = Udc_Out;
+            status = Set_CANOpenMsg_To_Tx(OD_Index, &FIFO_CanTx, 0x00,
                                           RSDO + PS_NODE_ID,
                                           OD_WRITE_2BYTES);
             if (FIFO_CanTx.Estado_PILA != PILA_VACIA)
             {
                 status = Desencolar_FIFO(&FIFO_CanTx);
                 Transmit_CANOPenMsg(FIFO_CanTx);
-                stateSetPsVI = 1;
             }
-            CounterCurrentIterations++;
+            stateReadOutput = 2;
+            break;
 
-        }
-        else if (CounterCurrentIterations == 7)
-        {
-            //Last iteration, we set the final values as value requested by system
-            OD_Index = Idc_Out_Setpoint;
-            status = Set_CANOpenMsg_To_Tx(OD_Index, &FIFO_CanTx, CurrentRequest,
-            RSDO + PS_NODE_ID,
+        case 1:
+
+            OD_Index = Idc_Out;
+            status = Set_CANOpenMsg_To_Tx(OD_Index, &FIFO_CanTx, 0x00,
+                                          RSDO + PS_NODE_ID,
                                           OD_WRITE_2BYTES);
             if (FIFO_CanTx.Estado_PILA != PILA_VACIA)
             {
                 status = Desencolar_FIFO(&FIFO_CanTx);
                 Transmit_CANOPenMsg(FIFO_CanTx);
-                stateSetPsVI = 1;
             }
-            CounterCurrentIterations++;
+            stateReadOutput = 2;
+            break;
 
+        case 2:
+
+            if (StatusCom.StatusFlags.Flags.DataAnalyzed)
+            {
+                if ((StatusErrors.StatusFlags.Flags.AccessCmdError == false) &&
+                    (StatusErrors.StatusFlags.Flags.SubIndexError == false) &&
+                    (StatusErrors.StatusFlags.Flags.ObjectIndexError == false))
+                {
+
+                    if ((OD_Index == Udc_Out) &&
+                        (PowerSupplyValues.StatusFlags.Flags.AnswerReadVoutput))
+                    {
+                        PowerSupplyValues.StatusFlags.Flags.AnswerReadVoutput = false;
+                        stateReadOutput = 1;
+                    }
+                    else if ((OD_Index == Idc_Out) &&
+                             (PowerSupplyValues.StatusFlags.Flags.AnswerReadIoutput))
+                    {
+                        PowerSupplyValues.StatusFlags.Flags.AnswerReadIoutput = false;
+                        stateReadOutput = 0;
+                    }
+                }
+                else
+                {
+                    //TODO: Set an error flag, stop everything and display it in user interface
+                    status = 0x00;
+                }
+            }
+            else if (StatusCom.StatusFlags.Flags.ErrorCom)
+            {
+                //TODO: Set an error flag, stop everything and display it in user interface
+                //TODO: State asigned for trigger "Error Machine"
+                status = 0x00;
+                stateReadOutput = 3;
+            }
+
+            break;
+
+        case 3: //TODO: State asigned for trigger "Error Machine"
+
+            break;
+
+        default:
+            //TODO: Set an error flag, stop everything and display it in user interface
+            //TODO: State asigned for trigger "Error Machine"
+            status = 0x00;
+            break;
         }
-        else if (CounterCurrentIterations == 8)
+    }
+    return (status);
+}
+/**
+ * @brief 
+ * 
+ * @param EnablePs 
+ * @return uint16_t 
+ */
+uint16_t PsEnableDisable(bool EnablePs)
+{
+    uint16_t status = 0;
+    static uint_fast16_t stateEnablePs = 0;
+
+    switch (stateEnablePs)
+    {
+    case 0:
+
+        OD_Index = Module_Enable;
+        if (EnablePs == true)
         {
-            //Completed ramp up/down for current, we reset step-iteration counter
-            //and we go to last state to save final values, and set flag Power Enable
-            //to true
-            //CounterCurrentIterations = 11;
-            stateSetPsVI = 6;
+            PsEnable_ON();
+            status = Set_CANOpenMsg_To_Tx(OD_Index, &FIFO_CanTx, ENABLE_PS,
+                                          RSDO + PS_NODE_ID,
+                                          OD_WRITE_2BYTES);
+            if (FIFO_CanTx.Estado_PILA != PILA_VACIA)
+            {
+                status = Desencolar_FIFO(&FIFO_CanTx);
+                Transmit_CANOPenMsg(FIFO_CanTx);
+            }
         }
+        else if (EnablePs == false)
+        {
+            status = Set_CANOpenMsg_To_Tx(OD_Index, &FIFO_CanTx, 0x00,
+                                          RSDO + PS_NODE_ID,
+                                          OD_WRITE_2BYTES);
+            if (FIFO_CanTx.Estado_PILA != PILA_VACIA)
+            {
+                status = Desencolar_FIFO(&FIFO_CanTx);
+                Transmit_CANOPenMsg(FIFO_CanTx);
+            }
+        }
+        else
+        {
+            //TODO: Set an error flag, stop everything and display it in user interface
+            //TODO: State asigned for trigger "Error Machine"
+            status = 0x00;
+        }
+        stateEnablePs = 1;
         break;
 
-        /* case 6: //Send Enable Command. This command is sent after each V/I set point command
-         //in order to have a new value of V/I in the output of the Power Supply
-         OD_Index = Module_Enable;
-         status = Set_CANOpenMsg_To_Tx(OD_Index, &FIFO_CanTx, ENABLE_PS,
-         RSDO + PS_NODE_ID,
-         OD_WRITE_2BYTES);
-         if (FIFO_CanTx.Estado_PILA != PILA_VACIA)
-         {
-         status = Desencolar_FIFO(&FIFO_CanTx);
-         Transmit_CANOPenMsg(FIFO_CanTx);
-         stateSetPsVI = 1; //We go to state one, where we check if an Ack for this command
-         //it has been sent by the Power Supply
-         }
-         break;
-         */
-    case 6: //Save current values of voltage/current
+    case 1:
 
-        PowerSupplyValues.ActualCurrentValue = CurrentRequest;
-        PowerSupplyValues.ActualVoltageValue = VoltageRequest;
-        PowerSupplyValues.PowerModuleStatus |= 0x05; //Bit Updated values and bit Power Supply On Set to one
-        stateSetPsVI = 0;
-        status = 0X01;
+        if ((StatusCom.StatusFlags.Flags.DataAnalyzed) &&
+            (PowerSupplyValues.StatusFlags.Flags.AnswerEnablePs))
+        {
+            //Confirmed reception of Ack for Enable Power Supply command.
+            PowerSupplyValues.PowerModuleStatus |= 0x01; //Bit /   Description /   Value
+                                                         // 0      Ps On  / 0: OFF; 1: ON
+            if (EnablePs == false)
+            {
+                //Switch off via GPIO signal
+                PsEnable_OFF();
+                PowerSupplyValues.PowerModuleStatus &= 0xFFFE; //Bit /   Description /   Value
+                                                               // 0      Ps On  / 0: OFF; 1: ON
+            }
+            stateEnablePs = 0;
+        }
+        else if (StatusCom.StatusFlags.Flags.ErrorCom)
+        {
+            //TODO: Set an error flag, stop everything and display it in user interface
+            //TODO: State asigned for trigger "Error Machine"
+            status = 0x00;
+        }
         break;
 
     default:
         //TODO: Set an error flag, stop everything and display it in user interface
+        //TODO: State asigned for trigger "Error Machine"
         status = 0x00;
         break;
     }
 
     return (status);
-}
-
-uint16_t PsKeepAlive(void)
-{
-    uint16_t status = 0;
-    static uint_fast16_t stateKeepAlive = 0;
-
-    switch (stateKeepAlive)
-    {
-    case 0:
-
-        OD_Index = Module_Enable;
-        status = Set_CANOpenMsg_To_Tx(OD_Index, &FIFO_CanTx, ENABLE_PS,
-        RSDO + PS_NODE_ID,
-                                      OD_WRITE_2BYTES);
-        if (FIFO_CanTx.Estado_PILA != PILA_VACIA)
-        {
-            status = Desencolar_FIFO(&FIFO_CanTx);
-            Transmit_CANOPenMsg(FIFO_CanTx);
-        }
-        stateKeepAlive=1;
-        break;
-
-    case 1:
-
-        if ((StatusCom.StatusFlags.Flags.DataAvailable) &&
-        (PowerSupplyValues.StatusFlags.Flags.AnswerEnablePs))
-        {
-            {
-                //Confirmed reception of ACk for Enable Power Supply command
-                stateKeepAlive=0;
-            }
-        }
-        else if (StatusCom.StatusFlags.Flags.ErrorCom)
-        {
-            //TODO: Set an error flag, stop everything and display it in user interface
-            status=0x00;
-        }
-
-        break;
-
-    default:
-        //TODO: Set an error flag, stop everything and display it in user interface
-       status=0x00;
-        break;
-    }
-
-   return (status);
-}
-/**
- * @brief 
- * 
- */
-void Scheduler(void)
-{
-    uint16_t status = 0x01; //By default all ok
-
-    Count1ms++;
-    if (Count1ms == 10)
-    {
-        Count1ms = 0;
-        Count20ms++;
-        Count50ms++;
-        Count100ms++;
-        //Every 10ms
-        TimeOutRxCanMsg();
-    }
-    if (Count20ms == 2)
-    {
-        Count20ms = 0;
-        //Every 20ms
-        if ((StatusCom.StatusFlags.Flags.ErrorCom != true)
-                && (FIFO_CanRx.Estado_PILA != PILA_VACIA))
-        {
-            //No timeout in Rx and there are data on FIFO Rx to analyze
-            AnalyzeCanMsg();
-        }
-        //if ((PowerSupplyValues.PowerModuleStatus & 0x02) != 0x02)
-        //{
-        //Power Supply OFF. This sentence execute only once.
-        //Check communication with power supply and set known values
-        //status = InitPowerSupply();
-
-        //}
-    }
-    if (Count50ms == 5)
-    {
-        Count50ms = 0;
-        //Every 50ms
-        if (((PowerSupplyValues.PowerModuleStatus) & 0x01) == 0x01)
-        {
-            PsKeepAlive();
-        }
-    }
-    if (Count100ms == 10)
-    {
-        Count100ms = 0;
-        Count200ms++;
-        Count500ms++;
-        Count1s++;
-        //Every 100ms
-
-    }
-    if (Count200ms == 2)
-    {
-        Count200ms = 0;
-        //Every 200ms
-
-    }
-    if (Count500ms == 5)
-    {
-        Count500ms = 0;
-        //Every 5000ms
-        PsSetVoltageCurrent(0x3E8, 0x0A, true);
-
-    }
-    if (Count1s == 10)
-    {
-        Count1s = 0;
-        Count2s++;
-        //Every 1000ms
-    }
-    if (Count2s == 2)
-    {
-        Count2s = 0;
-        //Every 20000ms
-    }
 }
 /**
  * @brief 
@@ -972,15 +1002,14 @@ void Scheduler(void)
  */
 void TimeOutRxCanMsg(void)
 {
-    if ((StatusCom.StatusFlags.Flags.TransmittedCanMsg == true)
-            && (StatusCom.StatusFlags.Flags.DataAvailable != true))
+    if ((StatusCom.StatusFlags.Flags.TransmittedCanMsg == true) && (StatusCom.StatusFlags.Flags.DataAvailable != true))
     {
         ulTimeOutCANRx++;
         if (ulTimeOutCANRx == TIMEOUT_CAN_RX)
         {
             StatusCom.StatusFlags.Flags.TransmittedCanMsg = false;
             StatusCom.StatusFlags.Flags.DataAvailable = false;
-            StatusCom.StatusFlags.Flags.ErrorCom = true;
+            StatusCom.StatusFlags.Flags.ErrorCom = true; //Show that a reception timeout has happened
             ulTimeOutCANRx = 0;
         }
     }
@@ -997,28 +1026,28 @@ void AnalyzeCanMsg(void)
     uint16_t SubIndex = 0; //Temporal variable to save SubIndex
     uint16_t ObjIndex = 0; //Temporal variable to save Object Index
     uint16_t AccessMode = 0;
-    uint16_t DataSaved[9] = { 0x00 }; //Temporal array where store data received from CAN
+    uint16_t DataSaved[9] = {0x00}; //Temporal array where store data received from CAN
     uint32_t TmpValue = 0;          //
-    uint16_t DictionaryIndex = 0; //Temporal variable used for check ObjectIndex
-                                  //and AccesCmd
-    uint16_t NodeIdRx = 0; //Temporal variable to store Id from node transmitter
+    uint16_t DictionaryIndex = 0;   //Temporal variable used for check ObjectIndex
+                                    //and AccesCmd
+    uint16_t NodeIdRx = 0;          //Temporal variable to store Id from node transmitter
 
     //TODO: Check this
     //memset(DataSaved, 0x00, 9); //Reset array to zero
 
     Desencolar_FIFO(&FIFO_CanRx);
     //Move data from FIFO to variable DataSaved for post-processing
-    memcpy((void *) DataSaved, (void *) FIFO_CanRx.Datos_Recibidos, 9);
+    memcpy((void *)DataSaved, (void *)FIFO_CanRx.Datos_Recibidos, 9);
 
-    NodeIdRx = (uint16_t) DataSaved[0];
-    AccessMode = (uint16_t) DataSaved[1];
-    ObjIndex = (uint16_t) DataSaved[2] + (uint16_t) (DataSaved[3] << 8);
-    SubIndex = (uint16_t) DataSaved[4];
+    NodeIdRx = (uint16_t)DataSaved[0];
+    AccessMode = (uint16_t)DataSaved[1];
+    ObjIndex = (uint16_t)DataSaved[2] + (uint16_t)(DataSaved[3] << 8);
+    SubIndex = (uint16_t)DataSaved[4];
     //AdcValue = datos_char_to_int(DataSaved[5]);
-    TmpValue = (uint32_t) DataSaved[8] << 24;
-    TmpValue += (uint32_t) DataSaved[7] << 16;
-    TmpValue += (uint32_t) DataSaved[6] << 8;
-    TmpValue += (uint32_t) DataSaved[5];
+    TmpValue = (uint32_t)DataSaved[8] << 24;
+    TmpValue += (uint32_t)DataSaved[7] << 16;
+    TmpValue += (uint32_t)DataSaved[6] << 8;
+    TmpValue += (uint32_t)DataSaved[5];
 
     DictionaryIndex = Econtrar_Indice_Diccionario(ObjIndex, SubIndex);
 
@@ -1027,7 +1056,7 @@ void AnalyzeCanMsg(void)
         // Requested Object index doesn´t exit, then set flag error and tx Error CAN msg
         StatusErrors.StatusFlags.Flags.ObjectIndexError = true;
         Set_CANOpenErrorMsg_To_Tx(DictionaryIndex, &FIFO_CanTx, 0x00,
-        RSDO + NodeIdRx);
+                                  RSDO + NodeIdRx);
     }
     else
     {
@@ -1040,14 +1069,12 @@ void AnalyzeCanMsg(void)
                 StatusCom.StatusFlags.Flags.AccessModeRead = true;
                 StatusCom.StatusFlags.Flags.AccessModeWrite = false;
             }
-            else if ((AccessMode >= OD_WRITE)
-                    && (AccessMode <= OD_WRITE_4BYTES))
+            else if ((AccessMode >= OD_WRITE) && (AccessMode <= OD_WRITE_4BYTES))
             {
                 StatusCom.StatusFlags.Flags.AccessModeRead = false;
                 StatusCom.StatusFlags.Flags.AccessModeWrite = true;
             }
-            else if ((AccessMode >= OD_WRITE + OD_READ)
-                    && (AccessMode <= OD_WRITE_4BYTES + OD_READ_4BYTES))
+            else if ((AccessMode >= OD_WRITE + OD_READ) && (AccessMode <= OD_WRITE_4BYTES + OD_READ_4BYTES))
             {
                 StatusCom.StatusFlags.Flags.AccessModeRead = true;
                 StatusCom.StatusFlags.Flags.AccessModeWrite = true;
@@ -1058,7 +1085,7 @@ void AnalyzeCanMsg(void)
                 //Requested Access Mode doesn´t exit, then set flag error and tx Error CAN msg
                 StatusErrors.StatusFlags.Flags.AccessCmdError = true;
                 Set_CANOpenErrorMsg_To_Tx(DictionaryIndex, &FIFO_CanTx, 0x00,
-                RSDO + NodeIdRx);
+                                          RSDO + NodeIdRx);
                 //TODO: No transmission done, only set CAN error frame
             }
         }
@@ -1077,25 +1104,25 @@ void AnalyzeCanMsg(void)
             }
             else if (StatusCom.StatusFlags.Flags.AccessModeWrite)
             {
-                AdcValuesSaved.VoltageValue = TmpValue; //Raw value for Chademo logic
-                AdcValuesSaved.floatVolatageValue = (float) TmpValue / 10.0; //0.1 A/bit
+                AdcValuesSaved.VoltageValue = TmpValue;                     //Raw value for Chademo logic
+                AdcValuesSaved.floatVolatageValue = (float)TmpValue / 10.0; //0.1 A/bit
                 AdcValuesSaved.StatusFlags.Flags.VoltageAnswerFromAdc =
-                true;
+                    true;
             }
-            else if ((StatusCom.StatusFlags.Flags.AccessModeRead)
-                    && ((StatusCom.StatusFlags.Flags.AccessModeWrite)))
+            else if ((StatusCom.StatusFlags.Flags.AccessModeRead) && ((StatusCom.StatusFlags.Flags.AccessModeWrite)))
             {
                 //Do nothing
             }
+            else
+            {
+                //Requested Access Mode incorrect, send an error message to the transmitter
+                StatusErrors.StatusFlags.Flags.AccessCmdError = true;
+                Set_CANOpenErrorMsg_To_Tx(DictionaryIndex, &FIFO_CanTx, 0x00,
+                                          RSDO + NodeIdRx);
+            }
         }
-        else
-        {
-            //Requested Access Mode incorrect, send an error message to the transmitter
-            StatusErrors.StatusFlags.Flags.AccessCmdError = true;
-            Set_CANOpenErrorMsg_To_Tx(DictionaryIndex, &FIFO_CanTx, 0x00,
-            RSDO + NodeIdRx);
-        }
-        if (SubIndex == 0x01) //Iout from ADC
+
+        else if (SubIndex == 0x01) //Iout from ADC
         {
 
             //Request Access Mode correct
@@ -1121,20 +1148,26 @@ void AnalyzeCanMsg(void)
                 }
                 //AdcValuesSaved.floatCurrentValue = (float)TmpValue / 10.0; //0.1 A/bit
                 AdcValuesSaved.StatusFlags.Flags.CurrentAnswerFromAdc =
-                true;
+                    true;
             }
-            else if ((StatusCom.StatusFlags.Flags.AccessModeRead)
-                    && ((StatusCom.StatusFlags.Flags.AccessModeWrite)))
+            else if ((StatusCom.StatusFlags.Flags.AccessModeRead) && ((StatusCom.StatusFlags.Flags.AccessModeWrite)))
             {
                 //Do nothing
+            }
+            else
+            {
+                //Requested Access Mode incorrect, send an error message to the transmitter
+                StatusErrors.StatusFlags.Flags.AccessCmdError = true;
+                Set_CANOpenErrorMsg_To_Tx(DictionaryIndex, &FIFO_CanTx, 0x00,
+                                          RSDO + NodeIdRx);
             }
         }
         else
         {
-            //Requested Access Mode incorrect, send an error message to the transmitter
-            StatusErrors.StatusFlags.Flags.AccessCmdError = true;
+            //Requested Sub-Index incorrect, send an error message to the transmitter
+            StatusErrors.StatusFlags.Flags.SubIndexError = true;
             Set_CANOpenErrorMsg_To_Tx(DictionaryIndex, &FIFO_CanTx, 0x00,
-            RSDO + NodeIdRx);
+                                      RSDO + NodeIdRx);
         }
         break;
 
@@ -1150,44 +1183,203 @@ void AnalyzeCanMsg(void)
             else
             {
                 PowerSupplyValues.StatusFlags.Flags.AnswerDeviceNameError =
-                false;
+                    false;
             }
         }
         else
         {
             StatusErrors.StatusFlags.Flags.SubIndexError = true;
+            Set_CANOpenErrorMsg_To_Tx(DictionaryIndex, &FIFO_CanTx, 0x00,
+                                      RSDO + NodeIdRx);
         }
         break;
 
     case 0x2100: //Enable Power Supply command
 
-        if ((SubIndex == 0x00) && (AccessMode == 0x60))
+        if (SubIndex == 0x00)
         {
-            PowerSupplyValues.StatusFlags.Flags.AnswerEnablePs = true;
+            if (AccessMode == 0x60)
+            {
+                PowerSupplyValues.StatusFlags.Flags.AnswerEnablePs = true;
+            }
+            else
+            {
+                //Requested Access Mode incorrect, send an error message to the transmitter
+                StatusErrors.StatusFlags.Flags.AccessCmdError = true;
+                Set_CANOpenErrorMsg_To_Tx(DictionaryIndex, &FIFO_CanTx, 0x00,
+                                          RSDO + NodeIdRx);
+            }
+        }
+        else
+        {
+            //Requested Sub-Index incorrect, send an error message to the transmitter
+            StatusErrors.StatusFlags.Flags.SubIndexError = true;
+            Set_CANOpenErrorMsg_To_Tx(DictionaryIndex, &FIFO_CanTx, 0x00,
+                                      RSDO + NodeIdRx);
+        }
+        break;
+
+    case 0x2107: //DC Output Voltage
+
+        if (SubIndex == 0x00)
+        {
+            if (AccessMode == 0x4B)
+            {
+                PowerSupplyValues.DCOutputVoltage = TmpValue;
+            }
+            else
+            {
+                //Requested Access Mode incorrect, send an error message to the transmitter
+                StatusErrors.StatusFlags.Flags.AccessCmdError = true;
+                Set_CANOpenErrorMsg_To_Tx(DictionaryIndex, &FIFO_CanTx, 0x00,
+                                          RSDO + NodeIdRx);
+            }
+        }
+        else
+        {
+            //Requested Sub-Index incorrect, send an error message to the transmitter
+            StatusErrors.StatusFlags.Flags.SubIndexError = true;
+            Set_CANOpenErrorMsg_To_Tx(DictionaryIndex, &FIFO_CanTx, 0x00,
+                                      RSDO + NodeIdRx);
         }
         break;
 
     case 0x2109: //Output voltage set point
 
-        if ((SubIndex == 0x00) && (AccessMode == 0x60))
+        if (SubIndex == 0x00)
         {
-            PowerSupplyValues.StatusFlags.Flags.AnswerVSet = true;
+            if (AccessMode == 0x60)
+            {
+                PowerSupplyValues.StatusFlags.Flags.AnswerVSet = true;
+            }
+            else
+            {
+                //Requested Access Mode incorrect, send an error message to the transmitter
+                StatusErrors.StatusFlags.Flags.AccessCmdError = true;
+                Set_CANOpenErrorMsg_To_Tx(DictionaryIndex, &FIFO_CanTx, 0x00,
+                                          RSDO + NodeIdRx);
+            }
+        }
+        else
+        {
+            //Requested Sub-Index incorrect, send an error message to the transmitter
+            StatusErrors.StatusFlags.Flags.SubIndexError = true;
+            Set_CANOpenErrorMsg_To_Tx(DictionaryIndex, &FIFO_CanTx, 0x00,
+                                      RSDO + NodeIdRx);
         }
         break;
 
     case 0x210A: //Output current set point
 
-        if ((SubIndex == 0x00) && (AccessMode == 0x60))
+        if (SubIndex == 0x00)
         {
-            PowerSupplyValues.StatusFlags.Flags.AnswerISet = true;
+            if (AccessMode == 0x60)
+            {
+                PowerSupplyValues.StatusFlags.Flags.AnswerISet = true;
+            }
+            else
+            {
+                //Requested Access Mode incorrect, send an error message to the transmitter
+                StatusErrors.StatusFlags.Flags.AccessCmdError = true;
+                Set_CANOpenErrorMsg_To_Tx(DictionaryIndex, &FIFO_CanTx, 0x00,
+                                          RSDO + NodeIdRx);
+            }
+        }
+        else
+        {
+            //Requested Sub-Index incorrect, send an error message to the transmitter
+            StatusErrors.StatusFlags.Flags.SubIndexError = true;
+            Set_CANOpenErrorMsg_To_Tx(DictionaryIndex, &FIFO_CanTx, 0x00,
+                                      RSDO + NodeIdRx);
         }
         break;
 
     default:
+        //Requested Object Index incorrect, send an error message to the transmitter
         StatusErrors.StatusFlags.Flags.ObjectIndexError = true;
         Set_CANOpenErrorMsg_To_Tx(DictionaryIndex, &FIFO_CanTx, 0x00,
-        RSDO + NodeIdRx);
+                                  RSDO + NodeIdRx);
         break;
+    }
+    StatusCom.StatusFlags.Flags.DataAvailable = false; //Data received has been analyzed
+    //by this function yet, it is not longer useful, then set flag to zero for the next time
+    StatusCom.StatusFlags.Flags.DataAnalyzed = true; //This flag is used by other functions that
+    //are waiting some result from analyzed data received
+}
+
+/**
+ * @brief 
+ * 
+ */
+void Scheduler(void)
+{
+    uint16_t status = 0x01; //By default all ok
+
+    Count1ms++;
+    if (Count1ms == 10)
+    {
+        Count1ms = 0;
+        Count20ms++;
+        Count50ms++;
+        Count100ms++;
+        //Every 10ms
+        TimeOutRxCanMsg();
+    }
+    if (Count20ms == 2)
+    {
+        Count20ms = 0;
+        //Every 20ms
+        if ((StatusCom.StatusFlags.Flags.ErrorCom != true) &&
+            (FIFO_CanRx.Estado_PILA != PILA_VACIA))
+        {
+            //No timeout in Rx and there are data on FIFO Rx to analyze
+            AnalyzeCanMsg();
+        }
+        if ((PowerSupplyValues.PowerModuleStatus & 0x04) != 0x04)
+        {
+            //Power Supply OFF. This sentence execute only once.
+            status = InitPowerSupply();
+        }
+    }
+    if (Count50ms == 5)
+    {
+        Count50ms = 0;
+        //Every 50ms
+        if (((PowerSupplyValues.PowerModuleStatus) & 0x01) == 0x01)
+        {
+            //As long as Power Supply is switched ON.
+            PsKeepAlive();
+        }
+    }
+    if (Count100ms == 10)
+    {
+        Count100ms = 0;
+        Count200ms++;
+        Count500ms++;
+        Count1s++;
+        //Every 100ms
+    }
+    if (Count200ms == 2)
+    {
+        Count200ms = 0;
+        //Every 200ms
+    }
+    if (Count500ms == 5)
+    {
+        Count500ms = 0;
+        //Every 5000ms
+        PsSetVoltageCurrent(0x3E8, 0x0A);
+    }
+    if (Count1s == 10)
+    {
+        Count1s = 0;
+        Count2s++;
+        //Every 1000ms
+    }
+    if (Count2s == 2)
+    {
+        Count2s = 0;
+        //Every 20000ms
     }
 }
 /*  END CONTROL LOGIC FUNCTIONS */
