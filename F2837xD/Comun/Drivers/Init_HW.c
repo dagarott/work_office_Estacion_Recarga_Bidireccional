@@ -114,6 +114,7 @@ void Hablitar_ISR ()
     PieCtrlRegs.PIEIER1.bit.INTx7 = 1;     // CPU1 Timer0 Interrupt INTx.7
     //PieCtrlRegs.PIEIER9.bit.INTx7 = 1;   // CPU1 CANB_0 Interrupt INTx.7
     PieCtrlRegs.PIEIER9.bit.INTx5 = 1;     // CPU1 CANA_0 Interrupt INTx.5
+    PieCtrlRegs.PIEIER8.bit.INTx5 = 1;     // CPU1 SCI_RX Interrupt INTx.5
 
 #endif
 

@@ -163,6 +163,15 @@ void Config_GPIO()
     // CANA_TX
     GPIO_SetupPinMux(P6_1_TX, GPIO_MUX_CPU1, 3);
     GPIO_SetupPinOptions(P6_1_TX, GPIO_OUTPUT, GPIO_PUSHPULL);
+
+    // RS232_RX
+    GPIO_SetupPinMux(J1_RX, GPIO_MUX_CPU1, 5);
+    GPIO_SetupPinOptions(J1_RX, GPIO_INPUT, GPIO_PUSHPULL);
+    // RS232_TX
+    GPIO_SetupPinMux(J1_TX, GPIO_MUX_CPU1, 5);
+    GPIO_SetupPinOptions(J1_TX, GPIO_OUTPUT, GPIO_ASYNC);
+
+
     /*-------------END CONFIGURATION FOR CPU1-------------------*/
 }
 

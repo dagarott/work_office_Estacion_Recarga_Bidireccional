@@ -29,39 +29,52 @@
 #include "ComModule.h"
 /* USER CODE END Includes */
 
+
+uint16_t count1,count2;
+uint16_t sdataC[9];    // Send data for SCI-A
 tCANMsgObject sTXCANMessage;
+
 /**
  * @brief  Main function, initialize clock system, HW, etc.
  * 
  */
 void main(void)
 {
-
-    //uint16_t status = 0;
-
-    Init_HW(); /* Initialize all the HW*/
+    Init_HW(); /* Initialize HW*/
     Hablitar_ISR();
-    Config_CANA(500); //500kbit/s
+    InitPeripherals();
 
     /* USER CODE BEGIN */
     Init_CANOpenMsgFIFOs();
     Set_MailboxOne();
     Set_MailboxTwo();
 
-    //Power Supply OFF. This sentence execute only once.
-    //Check communication with power supply and set known values
+    //Init send data.  After each transmission this data
+    // will be updated for the next transmission
+    //
+       for(count1 = 0; count1<9; count1++)
+       {
+          sdataC[count1] = count1;
+       }
+
+
+
 
 
     /* USER CODE END */
 
     for (;;)
     {
-        if (SysTickFlag == true)
+        //if (SysTickFlag == true)
+        //{
+        //    SysTickFlag = false;
+        //    Scheduler(); //Triggered every 1ms
+        //}
+        for(count2=0; count2< 9; count2++)
         {
-            SysTickFlag = false;
-            Scheduler(); //Triggered every 10ms
+            ScicRegs.SCITXBUF.all=sdataC[count2];  // Send data
         }
-
+        DELAY_US(5000000);
     }
 }
 

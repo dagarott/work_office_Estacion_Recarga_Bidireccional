@@ -37,9 +37,6 @@
 #define V2G500V15A_MAX_VOLTAGE 5000 //Model works with resolution of 0.1V/bit. Then 5000 = 5000/10 = 500V
 #define V2G500V15A_MIN_VOLTAGE 500  //Model works with resolution of 0.1V/bit. Then 500 = 500/10 = 50V
 #define V2G500V15A_CURRENT 150      //Model works with resolution of 0.1A/bit. then 150/10 = 15A
-#define LENGHT_SECONDS_RAMP 4       //Total number of seconds of ramp up/down process
-#define MS_STEP_RAMP 500
-
 
 #define CPU01_TO_CPU02_PASSMSG 0x0003FC00 // CPU01 TO CPU02 MSG RAM (256 words)
 #define CPU02_TO_CPU01_PASSMSG 0x0003F800 // CPU02 TO CPU01 MSG RAM (256 words)
@@ -170,7 +167,9 @@ typedef struct sPowerSupplyValues
     } StatusFlags;
 } PowerSupplyValues_t;
 
-
+#define Length_Seconds_Ramp 4.0    //Total number of mili-seconds of ramp up/down process
+#define Ms_Step_ramp 0.5       //Number of milli-seconds of every step/iteration
+#define Number_Steps_Ramp (Length_Seconds_Ramp/Ms_Step_ramp)
 
 //
 //  Flags IPC de sincronizacion con CPU1 y CPU2
@@ -245,5 +244,5 @@ uint16_t Set_CANOpenErrorMsg_To_Tx(enum Indice_Diccionario_TPO Idx,
                                    uint16_t Idx_Node);
 sEstadoFIFO Transmit_CANOPenMsg(FIFO MsgToTx);
 void Scheduler(void);
-
+void InitPeripherals(void);
 #endif /* COMMODULE_H_ */

@@ -1588,19 +1588,16 @@ interrupt void SCIC_RX_ISR(void)
     // Insert ISR Code here
     //
 
+
+
     //
     // To receive more interrupts from this PIE group,
     // acknowledge this interrupt.
     // PieCtrlRegs.PIEACK.all = PIEACK_GROUP8;
     //
-
-    //
-    // Next two lines for debug only to halt the processor here
-    // Remove after inserting ISR Code
-    //
-    asm("      ESTOP0");
-    for (;;)
-        ;
+    ScicRegs.SCIFFRX.bit.RXFFOVRCLR=1;   // Clear Overflow flag
+    ScicRegs.SCIFFRX.bit.RXFFINTCLR=1;   // Clear Interrupt flag
+    PieCtrlRegs.PIEACK.all|=PIEACK_GROUP8;       // Issue PIE ack
 }
 
 //
