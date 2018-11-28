@@ -14,7 +14,8 @@
 			"chademo.h": "c",
 			"commodule.h": "c",
 			"systick.h": "c",
-			"can.h": "c"
+			"can.h": "c",
+			"f2837xd_ipc_drivers.h": "c"
 		}
 	}
 }

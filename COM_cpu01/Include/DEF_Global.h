@@ -60,4 +60,19 @@ typedef union {
 #define EarthEmergency P4_4
 #define StatusEarthEmergency() GPIO_ReadPin(EarthEmergency)
 
+//TODO: Init Only for debug. Erase in realese
+#define ContactorGnd P9_7
+#define ContactorGndON() GPIO_WritePin(ContactorGnd, 1)
+#define ContactorGndOFF() GPIO_WritePin(ContactorGnd, 0)
+#define ContactorPreCharge P9_4
+#define ContactorPreChargeON() GPIO_WritePin(ContactorPreCharge, 1)
+#define ContactorPreChargeOFF() GPIO_WritePin(ContactorPreCharge, 0)
+#define ContactorCharge P9_5
+#define ContactorChargeON() GPIO_WritePin(ContactorCharge, 1)
+#define ContactorChargeOFF() GPIO_WritePin(ContactorCharge, 0)
+#define ContactorDischarge P9_6
+#define ContactorDischargeON() GPIO_WritePin(ContactorDischarge, 1)
+#define ContactorDischargeOFF() GPIO_WritePin(ContactorDischarge, 0)
+//End Only for debug. Erase in realese
+
 #endif /* DEF_GLOBAL_H_ */

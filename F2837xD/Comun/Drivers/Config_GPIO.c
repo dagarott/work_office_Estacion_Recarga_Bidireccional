@@ -109,16 +109,16 @@ void Config_GPIO()
     //GPIOs OUTPUTs
     GPIO_SetupPinMux(P9_8, GPIO_MUX_CPU2, 0);
     GPIO_SetupPinOptions(P9_8, GPIO_OUTPUT, GPIO_PUSHPULL);
-    GPIO_SetupPinMux(P9_7, GPIO_MUX_CPU2, 0);
+    //TODO: Init Uncomment in the realese. Only for debug
+    /*GPIO_SetupPinMux(P9_7, GPIO_MUX_CPU2, 0);
     GPIO_SetupPinOptions(P9_7, GPIO_OUTPUT, GPIO_PUSHPULL);
     GPIO_SetupPinMux(P9_6, GPIO_MUX_CPU2, 0);
     GPIO_SetupPinOptions(P9_6, GPIO_OUTPUT, GPIO_PUSHPULL);
     GPIO_SetupPinMux(P9_5, GPIO_MUX_CPU2, 0);
     GPIO_SetupPinOptions(P9_5, GPIO_OUTPUT, GPIO_PUSHPULL);
-    GPIO_SetupPinMux(P9_5, GPIO_MUX_CPU2, 0);
-    GPIO_SetupPinOptions(P9_5, GPIO_OUTPUT, GPIO_PUSHPULL);
     GPIO_SetupPinMux(P9_4, GPIO_MUX_CPU2, 0);
-    GPIO_SetupPinOptions(P9_4, GPIO_OUTPUT, GPIO_PUSHPULL);
+    GPIO_SetupPinOptions(P9_4, GPIO_OUTPUT, GPIO_PUSHPULL);*/
+    //End Uncomment in the realese. Only for debug
     GPIO_SetupPinMux(P9_3, GPIO_MUX_CPU2, 0);
     GPIO_SetupPinOptions(P9_3, GPIO_OUTPUT, GPIO_PUSHPULL);
     GPIO_SetupPinMux(P9_2, GPIO_MUX_CPU2, 0);
@@ -148,6 +148,17 @@ void Config_GPIO()
     GPIO_SetupPinMux(P9_10, GPIO_MUX_CPU1, 0);
     GPIO_SetupPinOptions(P9_10, GPIO_OUTPUT, GPIO_PUSHPULL);
 
+    //TODO: Init Only for debug. Erase in realese
+    GPIO_SetupPinMux(P9_7, GPIO_MUX_CPU1, 0);
+    GPIO_SetupPinOptions(P9_7, GPIO_OUTPUT, GPIO_PUSHPULL);
+    GPIO_SetupPinMux(P9_6, GPIO_MUX_CPU1, 0);
+    GPIO_SetupPinOptions(P9_6, GPIO_OUTPUT, GPIO_PUSHPULL);
+    GPIO_SetupPinMux(P9_5, GPIO_MUX_CPU1, 0);
+    GPIO_SetupPinOptions(P9_5, GPIO_OUTPUT, GPIO_PUSHPULL);
+    GPIO_SetupPinMux(P9_4, GPIO_MUX_CPU1, 0);
+    GPIO_SetupPinOptions(P9_4, GPIO_OUTPUT, GPIO_PUSHPULL);
+    //End Only for debug. Erase in realese
+
     //GPIOs INPUTs
     GPIO_SetupPinMux(P4_4, GPIO_MUX_CPU1, 0);
     GPIO_SetupPinOptions(P4_4, GPIO_INPUT, GPIO_ASYNC);
@@ -165,11 +176,11 @@ void Config_GPIO()
     GPIO_SetupPinOptions(P6_1_TX, GPIO_OUTPUT, GPIO_PUSHPULL);
 
     // RS232_RX
-    GPIO_SetupPinMux(J1_RX, GPIO_MUX_CPU1, 5);
-    GPIO_SetupPinOptions(J1_RX, GPIO_INPUT, GPIO_PUSHPULL);
+    GPIO_SetupPinMux(J1_RX, GPIO_MUX_CPU1, 6);
+    GPIO_SetupPinOptions(J1_RX, GPIO_INPUT, GPIO_ASYNC);
     // RS232_TX
-    GPIO_SetupPinMux(J1_TX, GPIO_MUX_CPU1, 5);
-    GPIO_SetupPinOptions(J1_TX, GPIO_OUTPUT, GPIO_ASYNC);
+    GPIO_SetupPinMux(J1_TX, GPIO_MUX_CPU1, 6);
+    GPIO_SetupPinOptions(J1_TX, GPIO_OUTPUT, GPIO_PUSHPULL);
 
 
     /*-------------END CONFIGURATION FOR CPU1-------------------*/

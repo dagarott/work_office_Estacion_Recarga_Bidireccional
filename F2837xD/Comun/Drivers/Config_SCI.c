@@ -1,24 +1,24 @@
 /**
-***************************************************************************
-\defgroup       DRIVERS
+ ***************************************************************************
+ \defgroup       DRIVERS
 
-\brief          Modulo de inicializacion de los perifericos del
-                TMS320F2877s
+ \brief          Modulo de inicializacion de los perifericos del
+ TMS320F2877s
 
-                Microcontroladores en los que se ha probado:
-                TMS320F2877s
+ Microcontroladores en los que se ha probado:
+ TMS320F2877s
 
-**************************************************************************/
+ **************************************************************************/
 /**
-***************************************************************************
-\file           CONFIG_CAN.c
-\brief          Modulo de configuracion de los CAN del microcontrolador
-                TMS320F2877s.
+ ***************************************************************************
+ \file           CONFIG_CAN.c
+ \brief          Modulo de configuracion de los CAN del microcontrolador
+ TMS320F2877s.
 
-\author         Jesus Nieto Hervas
-\version        V0.0
-\date           16/05/2018
-**************************************************************************/
+ \author         Jesus Nieto Hervas
+ \version        V0.0
+ \date           16/05/2018
+ **************************************************************************/
 
 //
 // Included
@@ -30,81 +30,82 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-
 //
 // Defines
 //
-
 
 //
 // Estructuras
 //
 
-
 uint16_t BRR;
 
 /**
-***************************************************************************
-\fn         Transmitir_SCI
-\brief      Funcion para transmitir por el SCI.
+ ***************************************************************************
+ \fn         Transmitir_SCI
+ \brief      Funcion para transmitir por el SCI.
 
-\param[in]  SCIx numero de SCI por el que transmitir
-\return     void
+ \param[in]  SCIx numero de SCI por el que transmitir
+ \return     void
 
-**************************************************************************/
-void Transmitir_SCI (tNumSCI SCIx, uint16_t Data)
+ **************************************************************************/
+void Transmitir_SCI(tNumSCI SCIx, uint16_t Data)
 {
     switch (SCIx)
     {
-        case (SCI_A):
-            {
-            // Esperamos que se envie los datos
-           while (SciaRegs.SCIFFTX.bit.TXFFST != 0);
+    case (SCI_A):
+    {
+        // Esperamos que se envie los datos
+        while (SciaRegs.SCIFFTX.bit.TXFFST != 0)
+            ;
 
-            SciaRegs.SCITXBUF.all = Data;
+        SciaRegs.SCITXBUF.all = Data;
 
-            // Esperamos a que este todo correcto antes de enviar otra trama
-            //while (SciaRegs.SCICTL2.bit.TXRDY != 1) {}
-            break;
-            }
-        case (SCI_B):
-            {
-            // Esperamos que se envie los datos
-           while (ScibRegs.SCIFFTX.bit.TXFFST != 0);
+        // Esperamos a que este todo correcto antes de enviar otra trama
+        //while (SciaRegs.SCICTL2.bit.TXRDY != 1) {}
+        break;
+    }
+    case (SCI_B):
+    {
+        // Esperamos que se envie los datos
+        while (ScibRegs.SCIFFTX.bit.TXFFST != 0)
+            ;
 
-            ScibRegs.SCITXBUF.all = Data;
+        ScibRegs.SCITXBUF.all = Data;
 
-            // Esperamos a que este todo correcto antes de enviar otra trama
-            while (ScibRegs.SCICTL2.bit.TXRDY != 1) {}
-            break;
-            }
-        case (SCI_C):
-            {
-            // Esperamos que se envie los datos
-           while (ScicRegs.SCIFFTX.bit.TXFFST != 0);
+        // Esperamos a que este todo correcto antes de enviar otra trama
+        while (ScibRegs.SCICTL2.bit.TXRDY != 1)
+        {
+        }
+        break;
+    }
+    case (SCI_C):
+    {
+        // Esperamos que se envie los datos
+        while (ScicRegs.SCIFFTX.bit.TXFFST != 0)
+            ;
 
-            ScicRegs.SCITXBUF.all = Data;
+        ScicRegs.SCITXBUF.all = Data;
 
-            // Esperamos a que este todo correcto antes de enviar otra trama
-            while (ScicRegs.SCICTL2.bit.TXRDY != 1) {}
-            break;
-            }
-    }//FIN switch
+        // Esperamos a que este todo correcto antes de enviar otra trama
+        while (ScicRegs.SCICTL2.bit.TXRDY != 1)
+        {
+        }
+        break;
+    }
+    }            //FIN switch
 }
 
-
-
-
 /**
-***************************************************************************
-\fn         Config_SCIB
-\brief      Funcion principal de configuracion del SCIA.
+ ***************************************************************************
+ \fn         Config_SCIB
+ \brief      Funcion principal de configuracion del SCIA.
 
-\param[in]  BaudRate in Bauds
-\return     void
+ \param[in]  BaudRate in Bauds
+ \return     void
 
-**************************************************************************/
-void Config_SCIA (uint32_t BaudRate)
+ **************************************************************************/
+void Config_SCIA(uint32_t BaudRate)
 {
     //-------------------------------------------------------------------------
     //    Setup SCICCR
@@ -153,7 +154,7 @@ void Config_SCIA (uint32_t BaudRate)
      * |----------------------|--------------------------|--------------------|
      *
      */
-    SciaRegs.SCICCR.bit.LOOPBKENA = 0x01; // Loop Back Disable
+    SciaRegs.SCICCR.bit.LOOPBKENA = 0x00; // Loop Back Disable
 
     /* |----------------------|--------------------------|--------------------|
      * |    NAME BIT (BITS)   |       Descripcion        |       Valores      |
@@ -183,7 +184,6 @@ void Config_SCIA (uint32_t BaudRate)
      *
      */
     SciaRegs.SCICCR.bit.SCICHAR = 0x07; //SCIACHAR_LEGNTH_8
-
 
     //-------------------------------------------------------------------------
     //    Setup SCICTL1
@@ -223,16 +223,16 @@ void Config_SCIA (uint32_t BaudRate)
      *
      */
     /*
-        0h (R / W) = La función de transmisión no está seleccionada. En modo inactivo: escriba un
-    1 a TXWAKE, luego escriba los datos para registrar SCITXBUF para generar un
-    período de inactividad de 11 bits de datos En modo de bit de dirección: escriba un 1 en
-    TXWAKE, luego escriba los datos en SCITXBUF para establecer el bit de dirección para
-    ese marco a 1
-        1h (R / W) = La función de transmisión seleccionada depende del modo,
-    línea inactiva o bit de dirección: TXWAKE no se borra mediante el SW RESET
-    bit (SCICTL1, bit 5)
-    se borra mediante un reinicio del sistema o la transferencia de TXWAKE al
-    Bandera WUT*/
+     0h (R / W) = La función de transmisión no está seleccionada. En modo inactivo: escriba un
+     1 a TXWAKE, luego escriba los datos para registrar SCITXBUF para generar un
+     período de inactividad de 11 bits de datos En modo de bit de dirección: escriba un 1 en
+     TXWAKE, luego escriba los datos en SCITXBUF para establecer el bit de dirección para
+     ese marco a 1
+     1h (R / W) = La función de transmisión seleccionada depende del modo,
+     línea inactiva o bit de dirección: TXWAKE no se borra mediante el SW RESET
+     bit (SCICTL1, bit 5)
+     se borra mediante un reinicio del sistema o la transferencia de TXWAKE al
+     Bandera WUT*/
 
     SciaRegs.SCICTL1.bit.TXWAKE = 0x00;
 
@@ -282,7 +282,7 @@ void Config_SCIA (uint32_t BaudRate)
      *
      */
     SciaRegs.SCICTL2.bit.TXRDY = 0x00; // Resgistro de lectura para enviar la
-                                      //siguiente trama de datos.
+                                       //siguiente trama de datos.
 
     /* |----------------------|--------------------------|--------------------|
      * |    NAME BIT (BITS)   |       Descripcion        |       Valores      |
@@ -328,7 +328,7 @@ void Config_SCIA (uint32_t BaudRate)
      * |----------------------|--------------------------|--------------------|
      *
      */
-    SciaRegs.SCIFFTX.bit.SCIRST  = 0x01; // Reset SCI
+    SciaRegs.SCIFFTX.bit.SCIRST = 0x01; // Reset SCI
 
     /* |----------------------|--------------------------|--------------------|
      * |    NAME BIT (BITS)   |       Descripcion        |       Valores      |
@@ -415,18 +415,18 @@ void Config_SCIA (uint32_t BaudRate)
     //-------------------------------------------------------------------------
     //    Setup SCIFFCT
     //-------------------------------------------------------------------------
-   /*
-    * Configuracion del AutoBaud
-    */
+    /*
+     * Configuracion del AutoBaud
+     */
     SciaRegs.SCIFFCT.all = 0x00;
 
     //-------------------------------------------------------------------------
     //    Setup BAUD
     //-------------------------------------------------------------------------
-   /*
-    * Configuracion del Baud
-    */
-    BRR = ((T_clk/4) / (BaudRate*8)) - 1;
+    /*
+     * Configuracion del Baud
+     */
+    BRR = ((T_clk / 4) / (BaudRate * 8)) - 1;
 
     SciaRegs.SCILBAUD.bit.BAUD = BRR & 0x00FF;
 
@@ -438,17 +438,16 @@ void Config_SCIA (uint32_t BaudRate)
     SciaRegs.SCIFFRX.bit.RXFIFORESET = 1;
 } // FIN void Config_SCIA
 
-
 /**
-***************************************************************************
-\fn         Config_SCIB
-\brief      Funcion principal de configuracion del SCIB.
+ ***************************************************************************
+ \fn         Config_SCIB
+ \brief      Funcion principal de configuracion del SCIB.
 
-\param[in]  BaudRate in Bauds
-\return     void
+ \param[in]  BaudRate in Bauds
+ \return     void
 
-**************************************************************************/
-void Config_SCIB (uint32_t BaudRate)
+ **************************************************************************/
+void Config_SCIB(uint32_t BaudRate)
 {
     //-------------------------------------------------------------------------
     //    Setup SCICCR
@@ -456,10 +455,9 @@ void Config_SCIB (uint32_t BaudRate)
     ScibRegs.SCICCR.bit.STOPBITS = 0x00; // 1 stop bit
     ScibRegs.SCICCR.bit.PARITY = 0x00; // No parity
     ScibRegs.SCICCR.bit.PARITYENA = 0x00; // No parity
-    ScibRegs.SCICCR.bit.LOOPBKENA = 0x01; // Loop Back Disable
+    ScibRegs.SCICCR.bit.LOOPBKENA = 0x00; // Loop Back Disable
     ScibRegs.SCICCR.bit.ADDRIDLE_MODE = 0x00; // idle-line protocol
     ScibRegs.SCICCR.bit.SCICHAR = 0x07; //SCIACHAR_LEGNTH_8
-
 
     //-------------------------------------------------------------------------
     //    Setup SCICTL1
@@ -480,7 +478,7 @@ void Config_SCIB (uint32_t BaudRate)
     //-------------------------------------------------------------------------
     //    Setup SCIFFTX
     //-------------------------------------------------------------------------
-    ScibRegs.SCIFFTX.bit.SCIRST  = 0x01; // Reset SCI
+    ScibRegs.SCIFFTX.bit.SCIRST = 0x01; // Reset SCI
     ScibRegs.SCIFFTX.bit.SCIFFENA = 0x01; //Enable FIFO
     ScibRegs.SCIFFTX.bit.TXFIFORESET = 0x00; //reset FIFO
     ScibRegs.SCIFFTX.bit.TXFFIENA = 0x00; //Registro de lectura
@@ -504,40 +502,52 @@ void Config_SCIB (uint32_t BaudRate)
     /*
      * Configuracion del Baud
      */
-     BRR = ((T_clk/4) / (BaudRate*8)) - 1;
+    BRR = ((T_clk / 4) / (BaudRate * 8)) - 1;
 
-     ScibRegs.SCILBAUD.bit.BAUD = BRR & 0x00FF;
+    ScibRegs.SCILBAUD.bit.BAUD = BRR & 0x00FF;
 
-     ScibRegs.SCIHBAUD.bit.BAUD = (BRR >> 8) & 0x00FF;
-         //Reset SCIA
+    ScibRegs.SCIHBAUD.bit.BAUD = (BRR >> 8) & 0x00FF;
+    //Reset SCIA
     ScibRegs.SCICTL1.bit.SWRESET = 1;
     ScibRegs.SCIFFTX.bit.TXFIFORESET = 1;
     ScibRegs.SCIFFRX.bit.RXFIFORESET = 1;
 }
 // FIN void Config_SCIB
 
-
 /**
-***************************************************************************
-\fn         Config_SCIC
-\brief      Funcion principal de configuracion del SCIA.
+ ***************************************************************************
+ \fn         Config_SCIC
+ \brief      Funcion principal de configuracion del SCIA.
 
-\param[in]  BaudRate in Bauds
-\return     void
+ \param[in]  BaudRate in Bauds
+ \return     void
 
-**************************************************************************/
-void Config_SCIC (uint32_t BaudRate)
+ **************************************************************************/
+void Config_SCIC(uint32_t BaudRate)
 {
+    /*
+     ScicRegs.SCIFFTX.all = 0xE040;
+     ScicRegs.SCIFFRX.all = 0x2044;
+     ScicRegs.SCIFFCT.all = 0x0;
+     ScicRegs.SCICCR.all = 0x0007;   // 1 stop bit,  No loopback
+     // No parity,8 char bits,
+     // async mode, idle-line protocol
+     ScicRegs.SCICTL1.all = 0x0003;  // enable TX, RX, internal SCICLK,
+     // Disable RX ERR, SLEEP, TXWAKE
+     ScicRegs.SCICTL2.all = 0x0003;
+     ScicRegs.SCICTL2.bit.TXINTENA = 0;
+     ScicRegs.SCICTL2.bit.RXBKINTENA = 1;
+
+     */
     //-------------------------------------------------------------------------
     //    Setup SCICCR
     //-------------------------------------------------------------------------
     ScicRegs.SCICCR.bit.STOPBITS = 0x00; // 1 stop bit
     ScicRegs.SCICCR.bit.PARITY = 0x00; // No parity
     ScicRegs.SCICCR.bit.PARITYENA = 0x00; // No parity
-    ScicRegs.SCICCR.bit.LOOPBKENA = 0x01; // Loop Back Disable
+    ScicRegs.SCICCR.bit.LOOPBKENA = 0x00; // Loop Back Disable
     ScicRegs.SCICCR.bit.ADDRIDLE_MODE = 0x00; // idle-line protocol
     ScicRegs.SCICCR.bit.SCICHAR = 0x07; //SCIACHAR_LEGNTH_8
-
 
     //-------------------------------------------------------------------------
     //    Setup SCICTL1
@@ -558,7 +568,7 @@ void Config_SCIC (uint32_t BaudRate)
     //-------------------------------------------------------------------------
     //    Setup SCIFFTX
     //-------------------------------------------------------------------------
-    ScicRegs.SCIFFTX.bit.SCIRST  = 0x01; // Reset SCI
+    ScicRegs.SCIFFTX.bit.SCIRST = 0x01; // Reset SCI
     ScicRegs.SCIFFTX.bit.SCIFFENA = 0x01; //Enable FIFO
     ScicRegs.SCIFFTX.bit.TXFIFORESET = 0x00; //reset FIFO
     ScicRegs.SCIFFTX.bit.TXFFIENA = 0x00; //Registro de lectura
@@ -579,19 +589,21 @@ void Config_SCIC (uint32_t BaudRate)
     //-------------------------------------------------------------------------
     //    Setup BAUD
     //-------------------------------------------------------------------------
-    /*
-     * Configuracion del Baud
-     */
-     BRR = ((T_clk/4) / (BaudRate*8)) - 1;
 
-     ScicRegs.SCILBAUD.bit.BAUD = BRR & 0x00FF;
+    //Configuracion del Baud
 
-     ScicRegs.SCIHBAUD.bit.BAUD = (BRR >> 8) & 0x00FF;
+    BRR = ((T_clk / 4) / (BaudRate * 8)) - 1;
+
+    ScicRegs.SCILBAUD.bit.BAUD = BRR & 0x00FF;
+
+    ScicRegs.SCIHBAUD.bit.BAUD = (BRR >> 8) & 0x00FF;
 
     //Reset SCIA
     ScicRegs.SCICTL1.bit.SWRESET = 1;
     ScicRegs.SCIFFTX.bit.TXFIFORESET = 1;
     ScicRegs.SCIFFRX.bit.RXFIFORESET = 1;
+
+    ScicRegs.SCICTL1.all = 0x0023;  // Relinquish SCI from Reset
 }
 // FIN void Config_SCIC
 //

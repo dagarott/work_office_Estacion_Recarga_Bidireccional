@@ -31,7 +31,7 @@
 #define COM_NODE_ID 0x01
 #define ADC_NODE_ID 0x03
 #define PS_NODE_ID 0x30
-#define TIMEOUT_CAN_RX 1 //SysTick == 10ms. TIMEOUT_RX_CAN= SysTick*1=10ms
+#define TIMEOUT_CAN_RX 1 //SysTick == 1ms. TIMEOUT_RX_CAN= SysTick*10=10ms
 
 //Hardware dependent. Powersupply features
 #define V2G500V15A_MAX_VOLTAGE 5000 //Model works with resolution of 0.1V/bit. Then 5000 = 5000/10 = 500V
@@ -125,8 +125,8 @@ typedef struct sAdcValues
 //extern AdcValues_t AdcValuesSaved;
 
 /**
- * @brief 
- * 
+ * @brief Struct used to get status and
+ * save values for power supply
  */
 typedef struct sPowerSupplyValues
 {
@@ -147,6 +147,9 @@ typedef struct sPowerSupplyValues
     int16_t DCBusVoltageMeasured; //0x212A DC Bus voltage filtered
     uint16_t ActualVoltageValue;
     int16_t ActualCurrentValue;
+    uint16_t RequiredVoltageValue;
+    int16_t RequiredCurrentValue;
+    uint16_t RequiredOnOffProcess; //Used to inform that Power Supply must be switched ON/OFF    
 
     union {
         uint16_t AllFlags;
@@ -162,18 +165,28 @@ typedef struct sPowerSupplyValues
             uint16_t AnswerISetError : 1;
             uint16_t AnswerEnablePs : 1;
             uint16_t AnswerReadVoutput : 1;
-            uint16_t AnswerReadIoutput : 1;           
+            uint16_t AnswerReadIoutput : 1;
         } Flags;
     } StatusFlags;
 } PowerSupplyValues_t;
 
-#define Length_Seconds_Ramp 4.0    //Total number of mili-seconds of ramp up/down process
-#define Ms_Step_ramp 0.5       //Number of milli-seconds of every step/iteration
-#define Number_Steps_Ramp (Length_Seconds_Ramp/Ms_Step_ramp)
+extern PowerSupplyValues_t PowerSupplyValues;
 
-//
-//  Flags IPC de sincronizacion con CPU1 y CPU2
-//
+#define Ps_ON 0x01
+#define Ps_OFF 0x00
+#define Length_Seconds_Ramp 2.0 //Total number of mili-seconds of ramp up/down process
+#define Ms_Step_ramp 0.25        //Number of seconds of every step/iteration
+#define Number_Steps_Ramp (Length_Seconds_Ramp / Ms_Step_ramp)
+#define VOLTAGE_THRESHOLD   20  //20/10=2V @ 0.1b/V.
+                                //Power Supply manufacturer specification related to
+                                //Voltage Ripple + Noise (2) : 500mVp-p
+#define CURRENT_THRESHOLD   20  //20/10=2A @ 0.1b/A.
+                                //Power Supply manufacturer specification related to
+                                //current Ripple: <1Arms
+/**
+ * @brief Defined to designate different flags with IPC registed,
+ *  Those flags are used to synchronize CPU1 and CPU2
+ */
 #define IPC_Start IpcRegs.IPCSTS.bit.IPC1
 #define Set_IPC_Start() IPCLtoRFlagSet(IPC_FLAG1)
 #define Clear_IPC_Start() IPCLtoRFlagClear(IPC_FLAG1)
@@ -199,6 +212,10 @@ typedef struct sPowerSupplyValues
 #define Set_IPC_EVPS_Inversor() IPCLtoRFlagSet(IPC_FLAG8)
 #define Clear_IPC_EVPS_Inversor() IPCLtoRFlagClear(IPC_FLAG8)
 
+/**
+ * @brief Struct related to IPC registers
+ * 
+ */
 typedef struct sIPCRegisterValues
 {
     uint16_t Start : 1;
@@ -210,14 +227,55 @@ typedef struct sIPCRegisterValues
 } IPCregisterValues_t;
 
 /**
-*******************************************************************************
-\typedef        tModoEstacion
-\brief          Tipo definido para la identificación del modo de actuar la
-                estacion.
-\enum           eModoEstacion
-\brief          Enumerado definido para la identificación del modo de actuar la
-                estacion.
-******************************************************************************/
+ * @brief Enum for the different state that  
+ * we have during a charge/discharge process
+ */
+typedef enum eEstadoProcesoCarga
+{
+    /** Vehiculo no conectado */
+    PC_VehicleUnconnected = 0,
+    /**  */
+    PC_VehicleConnected,
+    /**  */
+    PC_VehicleConnectorLock,
+    /**  */
+    PC_Handshaking,
+    /**  */
+    PC_WatingInterfaceCommand,
+    /**  */
+    PC_IsolationTest,
+    /**  */
+    PC_FinishIsolationTest,
+    /**  */
+    PC_WatingOKPowerModule,
+    /**  */
+    PC_InitEnergyTransfer,
+    /**  */
+    PC_EnergyTransfer,
+    /**  */
+    PC_TerminatioCurrentOutput,
+    /** */
+    PC_WeldingDetection,
+    /**  */
+    PC_VerificationVoltage,
+    /**  */
+    PC_ConnectorUnlock,
+    /**  */
+    PC_StopCOMMPot,
+    /**  */
+    PC_WaitingStopInterface,
+    /**  */
+    PC_NotReady,
+    /** */
+    PC_EmergencyStop,
+    /** */
+    PC_Error
+} EstadoProcesoCarga_t;
+
+/**
+ * @brief Enum to identify the operation mode of the charge station
+ * 
+ */
 typedef enum eStationMode
 {
     /** Sin definido aún */
@@ -227,8 +285,30 @@ typedef enum eStationMode
     /** Modo inversor, injeccion a red   */
     Inversor,
 
-} tStationMode;
+} StationMode_t;
 
+/**
+ * @brief Struct used to get control of flow of FSM 
+ * 
+ */
+typedef struct sFsmStatus
+{
+    uint16_t nextFSM;
+    uint16_t previousFSM;
+} FsmStatus_t;
+
+/**
+ * @brief Enum to name all SFM
+ * 
+ */
+typedef enum eFsmName
+{
+    NoneFSM = 0,
+    FsmIsotest,
+    FsmPreCharge,
+    FsmCharge,
+    FsmDischarge
+} FsmName_t;
 /**
  * @brief Public Functions
  * 
@@ -245,4 +325,5 @@ uint16_t Set_CANOpenErrorMsg_To_Tx(enum Indice_Diccionario_TPO Idx,
 sEstadoFIFO Transmit_CANOPenMsg(FIFO MsgToTx);
 void Scheduler(void);
 void InitPeripherals(void);
+uint16_t FSM_Precharge(void);
 #endif /* COMMODULE_H_ */

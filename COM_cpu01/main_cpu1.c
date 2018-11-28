@@ -29,8 +29,7 @@
 #include "ComModule.h"
 /* USER CODE END Includes */
 
-
-uint16_t count1,count2;
+uint16_t count1, count2;
 uint16_t sdataC[9];    // Send data for SCI-A
 tCANMsgObject sTXCANMessage;
 
@@ -52,11 +51,14 @@ void main(void)
     //Init send data.  After each transmission this data
     // will be updated for the next transmission
     //
-       for(count1 = 0; count1<9; count1++)
-       {
-          sdataC[count1] = count1;
-       }
-
+    //for (count1 = 0; count1 < 9; count1++)
+    //{
+    //    sdataC[count1] = count1;
+    //
+    //}
+    //debug
+     PowerSupplyValues.RequiredOnOffProcess=Ps_ON;
+    //debug
 
 
 
@@ -65,16 +67,21 @@ void main(void)
 
     for (;;)
     {
-        //if (SysTickFlag == true)
-        //{
-        //    SysTickFlag = false;
-        //    Scheduler(); //Triggered every 1ms
-        //}
-        for(count2=0; count2< 9; count2++)
+        if (SysTickFlag == true)
         {
-            ScicRegs.SCITXBUF.all=sdataC[count2];  // Send data
+            SysTickFlag = false;
+            Scheduler(); //Triggered every 1ms
         }
-        DELAY_US(5000000);
+        /*
+        for (count2 = 0; count2 < 9; count2++)
+        {
+            Transmitir_SCI (SCI_C,  sdataC[count2]);  // Send data
+            //DELAY_US(10000);
+        }
+
+        GPIO_TogglePin(P9_9);
+        DELAY_US(1000000);
+        */
     }
 }
 

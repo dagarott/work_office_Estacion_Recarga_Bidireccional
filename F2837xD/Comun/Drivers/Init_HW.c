@@ -54,7 +54,7 @@ void Init_HW ()
 // Step 2. Inicializar GPIO:
 // This example function is found in the F2837xS_Gpio.c file and
 // illustrates how to set the GPIO to it's default state.
-//
+//s
 #ifdef CPU1
 
     Config_GPIO ();
