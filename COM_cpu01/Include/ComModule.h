@@ -150,7 +150,9 @@ typedef struct sPowerSupplyValues
     uint16_t RequiredVoltageValue;
     int16_t RequiredCurrentValue;
     uint16_t RequiredOnOffProcess; //Used to inform that Power Supply must be switched ON/OFF    
-
+    uint16_t tmpDCOutputVoltage;
+    int16_t tmpDCOutputCurrent;
+    
     union {
         uint16_t AllFlags;
         struct
@@ -174,7 +176,7 @@ extern PowerSupplyValues_t PowerSupplyValues;
 
 #define Ps_ON 0x01
 #define Ps_OFF 0x00
-#define Length_Seconds_Ramp 2.0 //Total number of mili-seconds of ramp up/down process
+#define Length_Seconds_Ramp 1.0 //Total number of mili-seconds of ramp up/down process
 #define Ms_Step_ramp 0.25        //Number of seconds of every step/iteration
 #define Number_Steps_Ramp (Length_Seconds_Ramp / Ms_Step_ramp)
 #define VOLTAGE_THRESHOLD   20  //20/10=2V @ 0.1b/V.
@@ -326,4 +328,5 @@ sEstadoFIFO Transmit_CANOPenMsg(FIFO MsgToTx);
 void Scheduler(void);
 void InitPeripherals(void);
 uint16_t FSM_Precharge(void);
+uint16_t FSM_Charge(void);
 #endif /* COMMODULE_H_ */
