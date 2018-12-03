@@ -63,8 +63,16 @@
 			"file": "COM_cpu01/App/ComModule.c",
 			"settings":
 			{
-				"buffer_size": 57556,
+				"buffer_size": 78455,
 				"encoding": "UTF-8",
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "/C/Users/dagaro/AppData/Local/Temp/7zO88B90468/readme.txt",
+			"settings":
+			{
+				"buffer_size": 3062,
 				"line_ending": "Windows"
 			}
 		},
@@ -139,6 +147,7 @@
 	],
 	"file_history":
 	[
+		"/C/Users/dagaro/AppData/Local/Temp/7zO0D90E067/ComModule.c",
 		"/C/Users/dagaro/workspace/Firmware_Test/UFCharger/F2837xD/Comun/Drivers/Init_HW.c",
 		"/C/Users/dagaro/workspace/Firmware_Test/UFCharger/COM_cpu01/main_cpu1.c",
 		"/C/Users/dagaro/workspace/Firmware_Test/UFCharger/F2837xD/Comun/Drivers/Config_CAN.c",
@@ -187,7 +196,7 @@
 	"groups":
 	[
 		{
-			"selected": 0,
+			"selected": 1,
 			"sheets":
 			[
 				{
@@ -196,15 +205,15 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 57556,
+						"buffer_size": 78455,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								56963,
-								56963
+								0,
+								0
 							]
 						],
 						"settings":
@@ -218,11 +227,40 @@
 						"translation.y": 26619.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 0,
+					"stack_index": 1,
 					"type": "text"
 				},
 				{
 					"buffer": 1,
+					"file": "/C/Users/dagaro/AppData/Local/Temp/7zO88B90468/readme.txt",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 3062,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"function_name_status_row": 0,
+							"syntax": "Packages/Text/Plain text.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
+					"type": "text"
+				},
+				{
+					"buffer": 2,
 					"file": "Test_sublime_workspace.sublime-project",
 					"semi_transient": true,
 					"settings":
@@ -247,7 +285,7 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 1,
+					"stack_index": 2,
 					"type": "text"
 				}
 			]

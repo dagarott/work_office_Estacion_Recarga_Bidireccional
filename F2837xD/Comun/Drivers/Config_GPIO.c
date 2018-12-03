@@ -107,10 +107,11 @@ void Config_GPIO()
 
     /*-------------INIT CONFIGURATION FOR CPU2-------------------*/
     //GPIOs OUTPUTs
+    //TODO: Init Uncomment in the realese. Only for debug
+    /*
     GPIO_SetupPinMux(P9_8, GPIO_MUX_CPU2, 0);
     GPIO_SetupPinOptions(P9_8, GPIO_OUTPUT, GPIO_PUSHPULL);
-    //TODO: Init Uncomment in the realese. Only for debug
-    /*GPIO_SetupPinMux(P9_7, GPIO_MUX_CPU2, 0);
+    GPIO_SetupPinMux(P9_7, GPIO_MUX_CPU2, 0);
     GPIO_SetupPinOptions(P9_7, GPIO_OUTPUT, GPIO_PUSHPULL);
     GPIO_SetupPinMux(P9_6, GPIO_MUX_CPU2, 0);
     GPIO_SetupPinOptions(P9_6, GPIO_OUTPUT, GPIO_PUSHPULL);
@@ -149,6 +150,8 @@ void Config_GPIO()
     GPIO_SetupPinOptions(P9_10, GPIO_OUTPUT, GPIO_PUSHPULL);
 
     //TODO: Init Only for debug. Erase in realese
+    GPIO_SetupPinMux(P9_8, GPIO_MUX_CPU1, 0);
+    GPIO_SetupPinOptions(P9_8, GPIO_OUTPUT, GPIO_PUSHPULL);
     GPIO_SetupPinMux(P9_7, GPIO_MUX_CPU1, 0);
     GPIO_SetupPinOptions(P9_7, GPIO_OUTPUT, GPIO_PUSHPULL);
     GPIO_SetupPinMux(P9_6, GPIO_MUX_CPU1, 0);

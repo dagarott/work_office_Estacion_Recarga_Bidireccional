@@ -139,6 +139,7 @@ typedef struct sPowerSupplyValues
                                   // 1      Communication / 0: OK COM; 1: ERROR COM
                                   // 2      Updated Value / 0: NO; 1: YES
                                   // 3      Initiated Ps  / 0: NO; 1: YES
+                                  // 4      Updated ADC values / 0: NO; 1: YES
     uint16_t DCOutputVoltage;     //0x2107 Actual output voltage 0.1V/step
     int16_t DCOutputCurrrent;     //0x2108 Actual output current 0.1A/step
     uint16_t DCOutputVSetpoint;   //0x2109 Set point output voltage 0.1A/step
@@ -150,8 +151,6 @@ typedef struct sPowerSupplyValues
     uint16_t RequiredVoltageValue;
     int16_t RequiredCurrentValue;
     uint16_t RequiredOnOffProcess; //Used to inform that Power Supply must be switched ON/OFF    
-    uint16_t tmpDCOutputVoltage;
-    int16_t tmpDCOutputCurrent;
     
     union {
         uint16_t AllFlags;
@@ -327,6 +326,4 @@ uint16_t Set_CANOpenErrorMsg_To_Tx(enum Indice_Diccionario_TPO Idx,
 sEstadoFIFO Transmit_CANOPenMsg(FIFO MsgToTx);
 void Scheduler(void);
 void InitPeripherals(void);
-uint16_t FSM_Precharge(void);
-uint16_t FSM_Charge(void);
 #endif /* COMMODULE_H_ */

@@ -59,20 +59,20 @@ typedef union {
 #define EarthTest_OFF() GPIO_WritePin(EarthTest, 0)
 #define EarthEmergency P4_4
 #define StatusEarthEmergency() GPIO_ReadPin(EarthEmergency)
-
-//TODO: Init Only for debug. Erase in realese
-#define ContactorGnd P9_7
-#define ContactorGndON() GPIO_WritePin(ContactorGnd, 1)
-#define ContactorGndOFF() GPIO_WritePin(ContactorGnd, 0)
-#define ContactorPreCharge P9_4
-#define ContactorPreChargeON() GPIO_WritePin(ContactorPreCharge, 1)
-#define ContactorPreChargeOFF() GPIO_WritePin(ContactorPreCharge, 0)
-#define ContactorCharge P9_5
+#define ContactorNegativo P9_7
+#define ContactorNegativoON() GPIO_WritePin(ContactorNegativo, 1)
+#define ContactorNegativoOFF() GPIO_WritePin(ContactorNegativo, 0)
+#define RelayPreCharge P9_5
+#define RelayPreChargeON() GPIO_WritePin(RelayPreCharge, 1)
+#define RelayPreChargeOFF() GPIO_WritePin(RelayPreCharge, 0)
+#define ContactorCharge P9_8        //To diode 
 #define ContactorChargeON() GPIO_WritePin(ContactorCharge, 1)
 #define ContactorChargeOFF() GPIO_WritePin(ContactorCharge, 0)
-#define ContactorDischarge P9_6
-#define ContactorDischargeON() GPIO_WritePin(ContactorDischarge, 1)
-#define ContactorDischargeOFF() GPIO_WritePin(ContactorDischarge, 0)
-//End Only for debug. Erase in realese
+#define ContactorPositive P9_6
+#define ContactorPositiveON() GPIO_WritePin(ContactorPositive, 1)
+#define ContactorPositiveOFF() GPIO_WritePin(ContactorPositive, 0)
+#define RelayFan P9_4        //Used for cooling diode
+#define RelayFanON() GPIO_WritePin(RelayFan, 1)
+#define RelayFanOFF() GPIO_WritePin(RelayFan, 0)
 
 #endif /* DEF_GLOBAL_H_ */
