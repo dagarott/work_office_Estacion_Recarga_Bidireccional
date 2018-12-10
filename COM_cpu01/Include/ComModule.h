@@ -105,9 +105,7 @@ extern volatile uint16_t SysTickFlag;
 typedef struct sAdcValues
 {
     uint32_t VoltageValue; //Value used by Chademo logic
-    float floatVolatageValue;
     int32_t CurrentValue; //Value used by Chademo logic
-    float floatCurrentValue;
     int16_t TempPositive;
     int16_t TempNegative;
     uint16_t NegativeCurrentValue;
@@ -116,8 +114,12 @@ typedef struct sAdcValues
         struct
         {
             // Flags used during CAN comunication
+                                            //Description  |   Value
+            uint16_t EnableDisableADC:1;    //Status of ADC | 1: Enable / 0: Disable  
+            uint16_t DisableAnswerFromADC:1; 
             uint16_t VoltageAnswerFromAdc : 1;
             uint16_t CurrentAnswerFromAdc : 1;
+            uint16_t ChkComAnswerFromAdc : 1;
         } Flags;
     } StatusFlags;
 } AdcValues_t;

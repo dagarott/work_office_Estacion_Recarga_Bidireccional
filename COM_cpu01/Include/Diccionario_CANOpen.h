@@ -94,7 +94,8 @@ enum Indice_Diccionario_TPO
 #endif
 //  0x9002
     Config_ADC,         //Enable/disable ADC measure and select protocol 
-                        //CHADEMO or CCS  
+                        //CHADEMO or CCS 
+    ChkCom_ADC,         //Used for check comunication with ADC PCB                              
 //  0xFFFF
     FIN_Diccionario,
 };

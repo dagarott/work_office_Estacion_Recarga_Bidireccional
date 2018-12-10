@@ -56,7 +56,7 @@ void main(void)
     //    sdataC[count1] = count1;
     //
     //}
-
+    PowerSupplyValues.RequiredOnOffProcess = true;
 
 
 
