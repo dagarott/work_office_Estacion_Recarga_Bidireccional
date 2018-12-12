@@ -48,19 +48,9 @@ void main(void)
     Set_MailboxOne();
     Set_MailboxTwo();
 
-    //Init send data.  After each transmission this data
-    // will be updated for the next transmission
-    //
-    //for (count1 = 0; count1 < 9; count1++)
-    //{
-    //    sdataC[count1] = count1;
-    //
-    //}
-    PowerSupplyValues.RequiredOnOffProcess = true;
-
-
-
-
+    //PowerSupplyValues.RequiredOnOffProcess = true;
+    AdcValuesSaved.RequiredOnOffProcess =true;
+    
     /* USER CODE END */
 
     for (;;)
@@ -70,16 +60,6 @@ void main(void)
             SysTickFlag = false;
             Scheduler(); //Triggered every 1ms
         }
-        /*
-        for (count2 = 0; count2 < 9; count2++)
-        {
-            Transmitir_SCI (SCI_C,  sdataC[count2]);  // Send data
-            //DELAY_US(10000);
-        }
-
-        GPIO_TogglePin(P9_9);
-        DELAY_US(1000000);
-        */
     }
 }
 

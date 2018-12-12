@@ -75,6 +75,8 @@ Comun/common/F2837xD_DefaultISR.obj: C:/Users/dagaro/workspace/Firmware_Test/UFC
 Comun/common/F2837xD_DefaultISR.obj: C:/Users/dagaro/workspace/Firmware_Test/UFCharger/F2837xD/F2837xD_common/include/F2837xD_Ipc_drivers.h
 Comun/common/F2837xD_DefaultISR.obj: C:/Users/dagaro/workspace/Firmware_Test/UFCharger/F2837xD/Comun/driverlib/systick.h
 Comun/common/F2837xD_DefaultISR.obj: C:/Users/dagaro/workspace/Firmware_Test/UFCharger/COM_cpu01/Include/Diccionario_CANOpen.h
+Comun/common/F2837xD_DefaultISR.obj: C:/Users/dagaro/workspace/Firmware_Test/UFCharger/COM_cpu01/Include/ADC.h
+Comun/common/F2837xD_DefaultISR.obj: C:/Users/dagaro/workspace/Firmware_Test/UFCharger/COM_cpu01/Include/ComModule.h
 
 C:/Users/dagaro/workspace/Firmware_Test/UFCharger/F2837xD/Comun/common/F2837xD_DefaultISR.c: 
 C:/Users/dagaro/workspace/Firmware_Test/UFCharger/F2837xD/F2837xD_headers/include/F2837xD_device.h: 
@@ -151,3 +153,5 @@ C:/Users/dagaro/workspace/Firmware_Test/UFCharger/COM_cpu01/Include/ComModule.h:
 C:/Users/dagaro/workspace/Firmware_Test/UFCharger/F2837xD/F2837xD_common/include/F2837xD_Ipc_drivers.h: 
 C:/Users/dagaro/workspace/Firmware_Test/UFCharger/F2837xD/Comun/driverlib/systick.h: 
 C:/Users/dagaro/workspace/Firmware_Test/UFCharger/COM_cpu01/Include/Diccionario_CANOpen.h: 
+C:/Users/dagaro/workspace/Firmware_Test/UFCharger/COM_cpu01/Include/ADC.h: 
+C:/Users/dagaro/workspace/Firmware_Test/UFCharger/COM_cpu01/Include/ComModule.h: 

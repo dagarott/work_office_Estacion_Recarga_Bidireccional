@@ -75,6 +75,8 @@ main_cpu1.obj: C:/Users/dagaro/workspace/Firmware_Test/UFCharger/F2837xD/F2837xD
 main_cpu1.obj: C:/Users/dagaro/workspace/Firmware_Test/UFCharger/F2837xD/F2837xD_common/include/inc/hw_can.h
 main_cpu1.obj: C:/Users/dagaro/workspace/Firmware_Test/UFCharger/F2837xD/Comun/driverlib/systick.h
 main_cpu1.obj: C:/Users/dagaro/workspace/Firmware_Test/UFCharger/COM_cpu01/Include/Diccionario_CANOpen.h
+main_cpu1.obj: C:/Users/dagaro/workspace/Firmware_Test/UFCharger/COM_cpu01/Include/ADC.h
+main_cpu1.obj: C:/Users/dagaro/workspace/Firmware_Test/UFCharger/COM_cpu01/Include/ComModule.h
 
 ../main_cpu1.c: 
 C:/Users/dagaro/workspace/Firmware_Test/UFCharger/F2837xD/F2837xD_common/include/F28x_Project.h: 
@@ -151,3 +153,5 @@ C:/Users/dagaro/workspace/Firmware_Test/UFCharger/F2837xD/F2837xD_common/include
 C:/Users/dagaro/workspace/Firmware_Test/UFCharger/F2837xD/F2837xD_common/include/inc/hw_can.h: 
 C:/Users/dagaro/workspace/Firmware_Test/UFCharger/F2837xD/Comun/driverlib/systick.h: 
 C:/Users/dagaro/workspace/Firmware_Test/UFCharger/COM_cpu01/Include/Diccionario_CANOpen.h: 
+C:/Users/dagaro/workspace/Firmware_Test/UFCharger/COM_cpu01/Include/ADC.h: 
+C:/Users/dagaro/workspace/Firmware_Test/UFCharger/COM_cpu01/Include/ComModule.h: 

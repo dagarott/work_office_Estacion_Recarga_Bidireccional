@@ -118,7 +118,7 @@ tCanMsg Diccionario_CanOpen[] = {
     {OD_WRITE, 0x9002, 0x00},  //Enable/disable ADC measurement and select protocol 
                                 //CHADEMO or CCS
     //------------------------------------------------------------------------------
-    //  0x9003  Enable/Disable ADC sensor PCB.
+    //  0x9003  Used to check communication with ADC sensor PCB.
     //------------------------------------------------------------------------------                            
     
     {OD_READ, 0x9003, 0x00 },   //Used for check communication with ADC PCB  
